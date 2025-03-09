@@ -1,5 +1,5 @@
 #pragma once
-#include "commit.h"
+#include "common.h"
 #include "data_storage.h"
 
 extern List *shelf_a_list;
@@ -8,6 +8,7 @@ extern List *shelf_c_list;
 extern List *shelf_d_list;
 extern List *shelf_e_list;
 extern List *users_send_list;
+extern List *users_push_list;
 
 void userShowMenu();
 

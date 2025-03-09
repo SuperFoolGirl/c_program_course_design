@@ -1,9 +1,10 @@
 #pragma once
-#include "commit.h"
+#include "common.h"
 #include "data_storage.h"
 
 extern List *platform_warehouse_list;
 extern List *couriers_list;
+extern List *couriers_push_list;
 
 void platformShowMenu();
 

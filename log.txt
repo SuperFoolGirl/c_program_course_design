@@ -3,8 +3,8 @@ v1.0
 1. 实现了基于task.json的多文件编译
 2. vscode的externalConsole是cmd，修改的windowsPowershell应该是内置的默认终端
 3. 将powershell和cmd的默认编码都改成了utf-8，具体修改方法如下：
-    powershell:https://blog.csdn.net/qq_39494169/article/details/122561317#commentBox
-    cmd:https://blog.csdn.net/qq_45796667/article/details/126107300
+    powershell: https://blog.csdn.net/qq_39494169/article/details/122561317#commentBox
+    cmd: https://blog.csdn.net/qq_45796667/article/details/126107300
 4. 隔壁的基于cmake编译的项目，一直在后台运行？重启后才可以重命名
 5. 之所以放弃cmake，是因为莫名其妙的编码太折磨了，而且无法使用externalconsole
 问题：
@@ -16,7 +16,21 @@ v1.0
 
 v1.1
 说明：
-解决了所有缓冲区问题
+1. 解决了所有缓冲区问题
+2. 拖入vs时一个个拖入，file文件夹直接复制到项目目录下
 问题：
 1. 取件码和快递员的逻辑待修改
 2. 其他新添功能
+
+
+
+v1.2
+说明：
+1. 后悔没有搞一个二维链表。每个用户、快递员下面再跟一个链表，很容易就能存储多个快递信息了
+2. 之前不应该为了简便，加乱七八糟的设定，现在又得补回去。比如包裹没有收件人、平台没有链表等等。当时加容易，现在补很麻烦
+3. 修复了取件码和快递员的逻辑
+4. 新加链表时，别忘了补足链表初始化，以及logic.c的两个函数
+问题：
+1. 加入新的数据和功能，丰富结构体
+2. 输入的四句固定代码水了至少300行
+3. 本次工程经验不足，文件分少了。应继续落实模块化。如把输入模块拿出来等等

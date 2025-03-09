@@ -2,16 +2,37 @@
 
 User *the_user = NULL;
 
+// 创建临时链表，来存储快递信息
+// 不怕退出程序数据消失，因为是基于推送文件的
+List *user_delivery_list = NULL;
+
 void userShowMenu()
 {
     system("cls");
+    
     // 取件弹窗
-    if (the_user->receive_status == 1)
+    if (the_user->receive_status == 1) // 这个还是要有的，迅速判断是否有快递到达，然后进来慢慢找
     {
-        printf("您有快递到达，请及时取件！\n");
-        printf("取件码为：%s\n", the_user->package_id);
-        printf("按任意键继续\n");
-        getchar();
+        user_delivery_list = listInit(); // 初始化临时链表
+        printf("您有快递到达，请及时取件！\n\n");
+
+        // 遍历推送链表，找到自己的推送信息
+        // 与此同时，删除推送链表对应节点。因为有用信息已经转移到临时链表了
+        ListNode *current = users_push_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->receiver_account, the_user->account) == 0)
+            {
+                listAdd(user_delivery_list, package);
+                listRemove(users_push_list, package);
+
+                printf("取件码：%s\n", package->package_id);
+                printf("--------------------\n");
+            }
+            current = current->next;
+        }
+        printCommonInfo();
     }
 
     while (1)
@@ -47,7 +68,8 @@ void userShowMenu()
             userFeedback();
             break;
         default:
-            printf("谢谢，欢迎下次使用！\n");
+            // 退出时释放临时链表
+            listFree(user_delivery_list);
             return;
         }
     }
@@ -56,38 +78,76 @@ void userShowMenu()
 void userPickup()
 {
     system("cls");
-    // 出库操作，在待取快递对应的货架里删除该快递节点
-    // 本来想取子串，但首字母太简单了
-    int index_of_shelf = the_user->package_id[0] - 'A';
-    List *shelf_list;
-    switch (index_of_shelf)
-    {
-    case 0:
-        shelf_list = shelf_a_list;
-        break;
-    case 1:
-        shelf_list = shelf_b_list;
-        break;
-    case 2:
-        shelf_list = shelf_c_list;
-        break;
-    case 3:
-        shelf_list = shelf_d_list;
-        break;
-    case 4:
-        shelf_list = shelf_e_list;
-        break;
-    default:
-        break;
-    }
-    // 从货架中删除，两步函数
-    Package *package = packageElementGet(shelf_list, the_user->package_id);
-    listRemove(shelf_list, package);
 
-    // 取件后，状态置回0
+    // 如果没有快递可取，直接返回
+    if (the_user->receive_status == 0)
+    {
+        printf("暂无快递可取！\n");
+        printCommonInfo();
+        return;
+    }
+
+    // 通过自己的临时链表拿到取件码
+    ListNode *current = user_delivery_list->head;
+    while (current != NULL)
+    {
+        Package *package = (Package *)current->data;
+        printf("请输入取件码：\n");
+        char input[20];
+        scanf("%s", input);
+        clearInputBuffer();
+        puts("");
+
+        // 如果输入正确，则取件成功，并执行出库操作和推送链表删除操作
+        // 出库操作，在待取快递对应的货架里删除该快递节点
+        if (strcmp(input, package->package_id) == 0)
+        {
+            int index_of_shelf = package->package_id[0] - 'A';
+            List *shelf_list;
+
+            // 根据货架号的第一个字母，选择对应的货架链表
+            switch (index_of_shelf)
+            {
+            case 0:
+                shelf_list = shelf_a_list;
+                break;
+            case 1:
+                shelf_list = shelf_b_list;
+                break;
+            case 2:
+                shelf_list = shelf_c_list;
+                break;
+            case 3:
+                shelf_list = shelf_d_list;
+                break;
+            case 4:
+                shelf_list = shelf_e_list;
+                break;
+            default:
+                break;
+            }
+            // 从货架中删除。这里我们把快递信息完整存到临时链表里了，所以不用再调用getElement函数
+            listRemove(shelf_list, package);
+
+            // 取件后，删除临时链表的信息
+            listRemove(user_delivery_list, package);
+
+            // 推移到下一个快递
+            printf("取件成功！\n");
+            current = current->next;
+        }
+        else
+        {
+            // 如果输入错误，则继续循环，直到输入正确（不进行current的更新）
+            printf("取件码错误！\n");
+            printCommonInfo();
+        }
+    }
+    // 全部取完后，将用户的取件状态置为0
     the_user->receive_status = 0;
-    strcpy(the_user->package_id, "0");
-    printf("取件成功！\n");
+    puts("");
+    printf("全部取件成功！\n");
+    printCommonInfo();
 }
 
 void userSend()
@@ -109,10 +169,12 @@ void userSend()
 
     char choice = getchar();
     clearInputBuffer();
+    puts("");
 
     if (choice != '1' && choice != '2')
     {
         printf("输入错误！\n");
+        printCommonInfo();
         return;
     }
     package->isExpress = choice - '0' - 1;
@@ -123,10 +185,12 @@ void userSend()
 
     choice = getchar();
     clearInputBuffer();
+    puts("");
 
     if (choice != '1' && choice != '2')
     {
         printf("输入错误！\n");
+        printCommonInfo();
         return;
     }
     package->volume = choice - '0' - 1;
@@ -137,10 +201,12 @@ void userSend()
 
     choice = getchar();
     clearInputBuffer();
+    puts("");
 
     if (choice != '1' && choice != '2')
     {
         printf("输入错误！\n");
+        printCommonInfo();
         return;
     }
     package->weight = choice - '0' - 1;
@@ -152,10 +218,12 @@ void userSend()
 
     choice = getchar();
     clearInputBuffer();
+    puts("");
 
     if (choice != '1' && choice != '2' && choice != '3')
     {
         printf("输入错误！\n");
+        printCommonInfo();
         return;
     }
     package->special_type = choice - '0' - 1;
@@ -166,10 +234,12 @@ void userSend()
 
     choice = getchar();
     clearInputBuffer();
+    puts("");
 
     if (choice != '1' && choice != '2')
     {
         printf("输入错误！\n");
+        printCommonInfo();
         return;
     }
     package->value = choice - '0' - 1;
@@ -185,7 +255,11 @@ void userSend()
     }
 
     the_user->send_status = 1; // 发件状态置为未发出
+    puts("");
     printf("寄件成功！\n");
+    printf("按任意键跳转付费界面\n");
+    getchar();
+    clearInputBuffer();
 
     // 付费模块
     userPay(package->isExpress);
@@ -231,16 +305,18 @@ void userPay(int isExpress)
     else
     {
         printf("用户类型错误！\n");
+        printCommonInfo();
         return;
     }
 
+    puts("");
     printf("确认支付？\n");
     printf("1. 确认\n");
     printf("按其他任意键取消支付\n");
 
     char choice = getchar();
     clearInputBuffer();
-    
+
     if (choice == '1')
     {
         printf("支付成功！\n");
@@ -250,6 +326,7 @@ void userPay(int isExpress)
     {
         printf("支付取消！\n");
     }
+    printCommonInfo();
 }
 
 void userQueryPickup()
@@ -257,13 +334,24 @@ void userQueryPickup()
     system("cls");
     if (the_user->receive_status == 1)
     {
-        printf("您有快递到达，请及时取件！\n");
-        printf("取件码为：%s\n", the_user->package_id);
+        printf("您有快递到达！\n\n");
+
+        // 这里不用再遍历推送链表，遍历自己的临时链表即可
+        ListNode *current = user_delivery_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            printf("取件码为：%s\n", package->package_id);
+            printf("--------------------\n");
+            current = current->next;
+        }
     }
     else
     {
         printf("暂无快递到达！\n");
     }
+    // 注意显示信息的代码逻辑，要加一个按任意键继续的代码来防止信息一闪而过
+    printCommonInfo();
 }
 
 void userQuerySend()
@@ -282,6 +370,8 @@ void userQuerySend()
         printf("您的快递已发出！\n");
         the_user->send_status = 0; // 重新置为无发件状态
     }
+
+    printCommonInfo();
 }
 
 void userFeedback()
@@ -299,4 +389,5 @@ void userFeedback()
     fprintf(fp, "%s\n", feedback);
     fclose(fp);
     printf("反馈成功！\n");
+    printCommonInfo();
 }

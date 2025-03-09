@@ -92,6 +92,8 @@ void recoverListData()
     writeListFromFile("../files/platform_warehouse.txt", platform_warehouse_list);
     writeListFromFile("../files/admin_warehouse.txt", admin_warehouse_list);
     writeListFromFile("../files/users_send.txt", users_send_list);
+    writeListFromFile("../files/users_push.txt", users_push_list);
+    writeListFromFile("../files/couriers_push.txt", couriers_push_list);
     writeListFromFile("../files/shelf_a.txt", shelf_a_list);
     writeListFromFile("../files/shelf_b.txt", shelf_b_list);
     writeListFromFile("../files/shelf_c.txt", shelf_c_list);
@@ -108,6 +110,8 @@ void rewriteAllFiles()
     writeFileFromList("../files/platform_warehouse.txt", platform_warehouse_list);
     writeFileFromList("../files/admin_warehouse.txt", admin_warehouse_list);
     writeFileFromList("../files/users_send.txt", users_send_list);
+    writeFileFromList("../files/users_push.txt", users_push_list);
+    writeFileFromList("../files/couriers_push.txt", couriers_push_list);
     writeFileFromList("../files/shelf_a.txt", shelf_a_list);
     writeFileFromList("../files/shelf_b.txt", shelf_b_list);
     writeFileFromList("../files/shelf_c.txt", shelf_c_list);
@@ -124,9 +128,29 @@ void freeLists()
     listFree(platform_warehouse_list);
     listFree(admin_warehouse_list);
     listFree(users_send_list);
+    listFree(users_push_list);
+
     listFree(shelf_a_list);
     listFree(shelf_b_list);
     listFree(shelf_c_list);
     listFree(shelf_d_list);
     listFree(shelf_e_list);
+}
+
+// 初始化所有链表
+void listsInit()
+{
+    users_list = listInit();
+    admins_list = listInit();
+    couriers_list = listInit();
+    platform_warehouse_list = listInit();
+    admin_warehouse_list = listInit();
+    users_send_list = listInit();
+    users_push_list = listInit();
+    couriers_push_list = listInit();
+    shelf_a_list = listInit();
+    shelf_b_list = listInit();
+    shelf_c_list = listInit();
+    shelf_d_list = listInit();
+    shelf_e_list = listInit();
 }

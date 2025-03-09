@@ -94,7 +94,7 @@ void writeListFromFile(const char *file, List *list)
     if (strstr(file, "users_info.txt") != NULL)
     {
         User *user = (User *)malloc(sizeof(User));
-        while (fscanf(fp, "%s %s %s %d %d %d %s\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status, user->package_id) != EOF)
+        while (fscanf(fp, "%s %s %s %d %d %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status) != EOF)
         {
             listAdd(list, user);
             user = (User *)malloc(sizeof(User));
@@ -106,7 +106,7 @@ void writeListFromFile(const char *file, List *list)
     else if (strstr(file, "couriers_info.txt") != NULL)
     {
         Courier *courier = (Courier *)malloc(sizeof(Courier));
-        while (fscanf(fp, "%s %s %d %s\n", courier->account, courier->password, &courier->status, courier->receiver_account) != EOF)
+        while (fscanf(fp, "%s %s %d\n", courier->account, courier->password, &courier->status) != EOF)
         {
             listAdd(list, courier);
             courier = (Courier *)malloc(sizeof(Courier));
@@ -128,7 +128,7 @@ void writeListFromFile(const char *file, List *list)
     else if (strstr(file, "platform_warehouse.txt") != NULL || strstr(file, "users_send.txt") != NULL || strstr(file, "shelf_") != NULL) // 这里就不罗列五个架子了
     {
         Package *package = (Package *)malloc(sizeof(Package));
-        while (fscanf(fp, "%s %s %d %d %d %d %d\n", package->package_id, package->receiver_account, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value) != EOF)
+        while (fscanf(fp, "%s %s %s %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value) != EOF)
         {
             listAdd(list, package);
             package = (Package *)malloc(sizeof(Package));
@@ -157,7 +157,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             User *user = (User *)current->data;
-            fprintf(fp, "%s %s %s %d %d %d %s\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status, user->package_id);
+            fprintf(fp, "%s %s %s %d %d %d\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status);
             current = current->next;
         }
     }
@@ -175,7 +175,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Courier *courier = (Courier *)current->data;
-            fprintf(fp, "%s %s %d %s\n", courier->account, courier->password, courier->status, courier->receiver_account);
+            fprintf(fp, "%s %s %d\n", courier->account, courier->password, courier->status);
             current = current->next;
         }
     }
@@ -184,7 +184,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            fprintf(fp, "%s %s %d %d %d %d %d\n", package->package_id, package->receiver_account, package->isExpress, package->volume, package->weight, package->special_type, package->value);
+            fprintf(fp, "%s %s %s %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, package->isExpress, package->volume, package->weight, package->special_type, package->value);
             current = current->next;
         }
     }
@@ -279,4 +279,12 @@ void clearInputBuffer()
     int c;
     while ((c = getchar()) != '\n' && c != EOF)
         ;
+}
+
+void printCommonInfo()
+{
+    puts("");
+    printf("按任意键继续\n");
+    getchar();
+    clearInputBuffer();
 }

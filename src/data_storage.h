@@ -4,7 +4,7 @@
 */
 
 #pragma once
-#include "commit.h"
+#include "common.h"
 
 // 1 通用链表
 // 通用链表节点结构体
@@ -49,8 +49,7 @@ typedef struct User
     char phone_number[20]; // 电话号码
     int user_type;         // 用户类型，5类：0-普通用户，1-会员用户，2-企业用户，3-代理商用户，4-合作商家用户
     int receive_status;    // 收快递状态，0-无需取件，1-需要取件
-    int send_status;       // 寄件状态，0-无寄件，1-未发出，2-已发出
-    char package_id[20];   // 取件码
+    int send_status;       // 寄件状态，0-无寄件，1-未发出，2-已发出  // 取件码
 } User;
 
 // 3 管理员表结构体
@@ -63,8 +62,9 @@ typedef struct Admin
 // 4 包裹表
 typedef struct Package
 {
-    char package_id[20];       // 包裹ID 作为取件码
+    char package_id[20];       // 包裹货架ID 作为取件码
     char receiver_account[20]; // 收件人用户名
+    char courier_account[20];  // 快递员用户名
     int isExpress;             // 是否加急，0-普通件，1-加急件
 
     // 以下内容为包裹属性
@@ -82,7 +82,6 @@ typedef struct Courier
     char account[20];          // 用户名
     char password[20];         // 密码
     int status;                // 快递员状态，0-空闲，1-平台任务中，2-驿站任务中
-    char receiver_account[20]; // 快递员当前正在处理的快递的收货人
 } Courier;
 
 // 6 平台表
@@ -110,3 +109,5 @@ Package *packageElementGetByCourier(List *list, const char *receiver_account);
 Admin *adminElementGet(List *list, const char *account);
 
 void clearInputBuffer();
+
+void printCommonInfo();

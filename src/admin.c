@@ -12,8 +12,8 @@ void adminShowMenu()
         printf("快递已到达，请及时入库！\n");
 
         // 为了防止弹窗一闪而过 需要加一个确认判断
-        printf("按任意键继续\n");
-        getchar();
+        printCommonInfo();
+
         system("cls"); // 为下一个弹窗清屏
     }
     puts("");
@@ -47,8 +47,7 @@ void adminShowMenu()
     }
     if (flag == 1)
     {
-        printf("按任意键继续\n");
-        getchar();
+        printCommonInfo();
     }
 
     while (1)
@@ -96,7 +95,6 @@ void adminShowMenu()
             addressUserSend();
             break;
         default:
-            printf("谢谢，欢迎下次使用！\n");
             return; // 这里必须是return 否则无法退出while循环。在进入这些函数的二级菜单中，最后就是break了，因为外边没有while循环
         }
     }
@@ -180,7 +178,9 @@ void wareHousing()
     }
     listFree(admin_warehouse_list);    // 清空库存
     admin_warehouse_list = listInit(); // 重新初始化链表，不能直接把链表给清空了。要保证在程序运行时，所有链表一直存在
+
     printf("入库成功！\n");
+    printCommonInfo();
 }
 
 void userManagement()
@@ -274,6 +274,7 @@ void viewFeedback()
     fopen("../files/feedback.txt", "w");
     fclose(fp);
     printf("处理完毕！\n");
+    printCommonInfo();
 }
 
 void inventoryCheck()
@@ -286,12 +287,15 @@ void inventoryCheck()
     printf("货架C快递数目：%d\n", shelf_c_list->size);
     printf("货架D快递数目：%d\n", shelf_d_list->size);
     printf("货架E快递数目：%d\n", shelf_e_list->size);
+
+    printCommonInfo();
 }
 
 void viewBusinessStatistics()
 {
     system("cls");
     printf("查看业务统计模块\n");
+    printCommonInfo();
 }
 
 void pushMessage()
@@ -304,7 +308,9 @@ void pushMessage()
     pushMessageToUser(shelf_c_list);
     pushMessageToUser(shelf_d_list);
     pushMessageToUser(shelf_e_list);
+
     printf("消息推送完毕！\n");
+    printCommonInfo();
 }
 
 void pushMessageToUser(List *list)
@@ -321,11 +327,13 @@ void pushMessageToUser(List *list)
             {
                 printf("已向用户 %s 推送消息\n", user->account);
                 user->receive_status = 1;
-                strcpy(user->package_id, package->package_id);
+                listAdd(users_push_list, package);
             }
             current = current->next;
         }
     }
+    printf("消息推送完毕！\n");
+    printCommonInfo();
 }
 
 void addUser()
@@ -406,10 +414,10 @@ void registerUser()
     user->user_type = default_user_type;
     user->receive_status = default_receive_status;
     user->send_status = default_send_status;
-    strcpy(user->package_id, "0");
     listAdd(users_list, user);
 
     printf("添加用户成功！\n");
+    printCommonInfo();
 }
 
 void registerCourier()
@@ -448,6 +456,7 @@ void registerCourier()
     listAdd(couriers_list, courier);
 
     printf("添加快递员成功！\n");
+    printCommonInfo();
 }
 
 void registerAdmin()
@@ -482,6 +491,7 @@ void registerAdmin()
     listAdd(admins_list, admin);
 
     printf("添加管理员成功！\n");
+    printCommonInfo();
 }
 
 // 无链表，直接写入文件
@@ -526,6 +536,7 @@ void registerPlatform()
     fclose(fp);
 
     printf("添加平台成功！\n");
+    printCommonInfo();
 }
 
 void deleteUser()
@@ -552,9 +563,13 @@ void deleteUser()
         if (user == NULL)
         {
             printf("用户不存在！\n");
+            printCommonInfo();
             return;
         }
+
         listRemove(users_list, user);
+        printf("删除成功！\n");
+        printCommonInfo();
         break;
     case '2':
         printf("请输入要删除的快递员账号：\n");
@@ -565,9 +580,13 @@ void deleteUser()
         if (courier == NULL)
         {
             printf("快递员不存在！\n");
+            printCommonInfo();
             return;
         }
+
         listRemove(couriers_list, courier);
+        printf("删除成功！\n");
+        printCommonInfo();
         break;
     case '3':
         printf("请输入要删除的管理员账号：\n");
@@ -578,9 +597,13 @@ void deleteUser()
         if (admin == NULL)
         {
             printf("管理员不存在！\n");
+            printCommonInfo();
             return;
         }
+
         listRemove(admins_list, admin);
+        printf("删除成功！\n");
+        printCommonInfo();
         break;
     default:
         break;
@@ -612,6 +635,7 @@ void modifyUser()
         if (user == NULL)
         {
             printf("用户不存在！\n");
+            printCommonInfo();
             return;
         }
         printf("请选择要修改的信息：\n");
@@ -631,24 +655,33 @@ void modifyUser()
             char new_account[20];
             scanf("%s", new_account);
             clearInputBuffer();
+            puts("");
 
             strcpy(user->account, new_account);
+            printf("修改成功！\n");
+            printCommonInfo();
             break;
         case '2':
             printf("请输入新的密码：\n");
             char new_password[20];
             scanf("%s", new_password);
             clearInputBuffer();
+            puts("");
 
             strcpy(user->password, new_password);
+            printf("修改成功！\n");
+            printCommonInfo();
             break;
         case '3':
             printf("请输入新的电话号码：\n");
             char new_phone_number[20];
             scanf("%s", new_phone_number);
             clearInputBuffer();
+            puts("");
 
             strcpy(user->phone_number, new_phone_number);
+            printf("修改成功！\n");
+            printCommonInfo();
             break;
         case '4':
             printf("请输入新的用户类型：\n");
@@ -660,6 +693,7 @@ void modifyUser()
 
             char new_user_type = getchar();
             clearInputBuffer();
+            puts("");
             // 这里说一下，虽然没输入整形数据
             // 但整形数据不是不需要清空缓存区，而是，如果保证输入的都是整形的话，那不会读空白字符，因此不需要清空缓存区；但这个程序里显然是整形与字符混和输入
 
@@ -668,15 +702,17 @@ void modifyUser()
             if (new_user_type != '1' && new_user_type != '2' && new_user_type != '3' && new_user_type != '4' && new_user_type != '5')
             {
                 printf("输入错误！\n");
+                printCommonInfo();
                 return;
             }
 
             user->user_type = new_user_type - '0' - 1;
+            printf("修改成功！\n");
+            printCommonInfo();
             break;
         default:
             break;
         }
-        printf("修改成功！\n");
         break;
     case '2':
         printf("请输入要修改的快递员账号：\n");
@@ -687,6 +723,7 @@ void modifyUser()
         if (courier == NULL)
         {
             printf("快递员不存在！\n");
+            printCommonInfo();
             return;
         }
         printf("请选择要修改的信息：\n");
@@ -696,6 +733,7 @@ void modifyUser()
 
         choice2 = getchar();
         clearInputBuffer();
+        puts("");
 
         switch (choice2)
         {
@@ -704,6 +742,7 @@ void modifyUser()
             char new_account[20];
             scanf("%s", new_account);
             clearInputBuffer();
+            puts("");
 
             strcpy(courier->account, new_account);
             break;
@@ -712,6 +751,7 @@ void modifyUser()
             char new_password[20];
             scanf("%s", new_password);
             clearInputBuffer();
+            puts("");
 
             strcpy(courier->password, new_password);
             break;
@@ -719,6 +759,7 @@ void modifyUser()
             break;
         }
         printf("修改成功！\n");
+        printCommonInfo();
         break;
     case '3':
         printf("请输入要修改的管理员账号：\n");
@@ -729,6 +770,7 @@ void modifyUser()
         if (admin == NULL)
         {
             printf("管理员不存在！\n");
+            printCommonInfo();
             return;
         }
         printf("请选择要修改的信息：\n");
@@ -738,6 +780,7 @@ void modifyUser()
 
         choice2 = getchar();
         clearInputBuffer();
+        puts("");
 
         switch (choice2)
         {
@@ -746,6 +789,7 @@ void modifyUser()
             char new_account[20];
             scanf("%s", new_account);
             clearInputBuffer();
+            puts("");
 
             strcpy(admin->account, new_account);
             break;
@@ -754,6 +798,7 @@ void modifyUser()
             char new_password[20];
             scanf("%s", new_password);
             clearInputBuffer();
+            puts("");
 
             strcpy(admin->password, new_password);
             break;
@@ -761,6 +806,7 @@ void modifyUser()
             break;
         }
         printf("修改成功！\n");
+        printCommonInfo();
         break;
     default:
         break;
@@ -778,6 +824,7 @@ void viewUserInfo()
 
     char choice = getchar();
     clearInputBuffer();
+    puts("");
 
     char account[20];
     switch (choice)
@@ -786,11 +833,13 @@ void viewUserInfo()
         printf("请输入要查看的用户账号：\n");
         scanf("%s", account);
         clearInputBuffer();
+        puts("");
 
         User *user = userElementGet(users_list, account);
         if (user == NULL)
         {
             printf("用户不存在！\n");
+            printCommonInfo();
             return;
         }
         printf("用户名：%s\n", user->account);
@@ -861,6 +910,7 @@ void viewUserInfo()
         if (courier == NULL)
         {
             printf("快递员不存在！\n");
+            printCommonInfo();
             return;
         }
         printf("用户名：%s\n", courier->account);
@@ -892,6 +942,7 @@ void viewUserInfo()
         if (admin == NULL)
         {
             printf("管理员不存在！\n");
+            printCommonInfo();
             return;
         }
         printf("用户名：%s\n", admin->account);
@@ -900,6 +951,8 @@ void viewUserInfo()
     default:
         break;
     }
+
+    printCommonInfo();
 }
 
 void viewShelfInfo()
@@ -915,6 +968,7 @@ void viewShelfInfo()
 
     char choice = getchar();
     clearInputBuffer();
+    puts("");
 
     switch (choice)
     {
@@ -1021,6 +1075,7 @@ void viewShelf(List *shelf_list)
 
         current = current->next;
     }
+    printCommonInfo();
 }
 
 void modifyShelfInfo()
@@ -1036,6 +1091,7 @@ void modifyShelfInfo()
 
     char choice = getchar();
     clearInputBuffer();
+    puts("");
 
     switch (choice)
     {
@@ -1057,6 +1113,7 @@ void modifyShelfInfo()
     default:
         break;
     }
+    printCommonInfo();
 }
 
 void modifyShelf(List *shelf_list)
@@ -1084,6 +1141,7 @@ void modifyShelf(List *shelf_list)
 
             char choice = getchar();
             clearInputBuffer();
+            gets("");
 
             switch (choice)
             {
@@ -1092,6 +1150,7 @@ void modifyShelf(List *shelf_list)
                 char new_receiver_account[20];
                 scanf("%s", new_receiver_account);
                 clearInputBuffer();
+                gets("");
 
                 // 判断新的收件人账号是否存在
                 // 原则上，必须该用户存在于用户列表中
@@ -1099,6 +1158,7 @@ void modifyShelf(List *shelf_list)
                 if (user == NULL)
                 {
                     printf("用户不存在！\n");
+                    printCommonInfo();
                     return;
                 }
 
@@ -1111,11 +1171,13 @@ void modifyShelf(List *shelf_list)
 
                 char new_express_type = getchar();
                 clearInputBuffer();
+                puts("");
 
                 // 输入错误判断
                 if (new_express_type != '1' && new_express_type != '2')
                 {
                     printf("输入错误！\n");
+                    printCommonInfo();
                     return;
                 }
 
@@ -1128,10 +1190,12 @@ void modifyShelf(List *shelf_list)
 
                 char new_volume = getchar();
                 clearInputBuffer();
+                puts("");
 
                 if (new_volume != '1' && new_volume != '2')
                 {
                     printf("输入错误！\n");
+                    printCommonInfo();
                     return;
                 }
 
@@ -1144,10 +1208,12 @@ void modifyShelf(List *shelf_list)
 
                 char new_weight = getchar();
                 clearInputBuffer();
+                puts("");
 
                 if (new_weight != '1' && new_weight != '2')
                 {
                     printf("输入错误！\n");
+                    printCommonInfo();
                     return;
                 }
 
@@ -1161,10 +1227,12 @@ void modifyShelf(List *shelf_list)
 
                 char new_special_type = getchar();
                 clearInputBuffer();
+                puts("");
 
                 if (new_special_type != '1' && new_special_type != '2' && new_special_type != '3')
                 {
                     printf("输入错误！\n");
+                    printCommonInfo();
                     return;
                 }
 
@@ -1174,13 +1242,15 @@ void modifyShelf(List *shelf_list)
                 printf("请输入新的价值：\n");
                 printf("1. 低价值\n");
                 printf("2. 高价值\n");
-                
+
                 char new_value = getchar();
                 clearInputBuffer();
+                puts("");
 
                 if (new_value != '1' && new_value != '2')
                 {
                     printf("输入错误！\n");
+                    printCommonInfo();
                     return;
                 }
 
@@ -1190,6 +1260,7 @@ void modifyShelf(List *shelf_list)
                 break;
             }
             printf("修改成功！\n");
+            printCommonInfo();
             return;
         }
         current = current->next;
@@ -1203,27 +1274,77 @@ void addressUserSend()
     if (users_send_list->size == 0) // 逻辑判断
     {
         printf("暂无待发货快递！\n");
+        printCommonInfo();
         return;
     }
+
     // 由于链表已“排序”，所以直接顺着取
     ListNode *current = users_send_list->head;
     ListNode *courier_current = couriers_list->head;
-    while (current != NULL)
+
+    if (courier_current == NULL)
     {
-        if (courier_current == NULL)
+        printf("暂无快递员接单！\n");
+        printCommonInfo();
+        return;
+    }
+
+    int base = 0;
+    while (courier_current != NULL)
+    {
+        // 如果快递没了
+        if (current == NULL)
         {
-            printf("暂无快递员接单！\n");
+            printf("已全部发货！\n");
+            printCommonInfo();
             return;
         }
-        Courier *courier = (Courier *)courier_current->data; // 注意是怎么样拿到data的 在这句代码里 data的类型是Courier*
+
+        Courier *courier = (Courier *)courier_current->data;
         Package *package = (Package *)current->data;
-        strcpy(courier->receiver_account, package->receiver_account);
 
-        printf("已向快递员%s推送消息\n", courier->account);
-        courier->status = 2;
-        courier_current = courier_current->next;
+        // 如果快递员现在正在派送从平台到驿站的快递，就跳过
+        if (courier->status == 1)
+        {
+            courier_current = courier_current->next;
+            continue; // 为了防止下一个快递员也是1，这里要continue
+        }
 
-        current = current->next;
-        platform_warehouse_list->size--;
+        strcpy(package->courier_account, courier->account); // 包裹信息上标注快递员信息
+
+        listAdd(couriers_push_list, package); // 加入快递员的推送链表
+        printf("已向快递员 %s 推送消息\n", courier->account);
+        courier->status = 2; // 标记快递员状态为正在由 驿站->平台 派送
+
+        Package *tmp = package;  // 保存当前节点，其实保存的数据，因为remove函数需要数据才能删除
+        current = current->next; // 换下一件快递
+
+        // 每次删除的都是头节点
+        listRemove(users_send_list, tmp);
+
+        // 判断本次base点的情况
+        base++;
+        if (package->volume == 1)
+        {
+            base++;
+        }
+        if (package->weight == 1)
+        {
+            base++;
+        }
+
+        // 如果base点已经到了10，说明这个快递员已经满负荷了
+        if (base == 10)
+        {
+            courier_current = courier_current->next;
+            base = 0;
+            // 判断下一个快递员是否为空
+            if (courier_current == NULL)
+            {
+                printf("暂无快递员接单！\n");
+                printCommonInfo();
+                return;
+            }
+        }
     }
 }

@@ -12,32 +12,36 @@
 // 1. 搜索数据时，之间遍历链表。
 // 2. 文件只负责储存信息，不负责搜索信息工作。
 // 3. 每次对链表进行增删改操作后。无需立刻更新文件。只有在退出程序时，才会统一更新文件，以减少IO操作。
-List *users_list;
-List *admins_list;
-List *couriers_list;
-List *platform_warehouse_list;
-List *admin_warehouse_list;
-List *users_send_list;
-List *shelf_a_list;
-List *shelf_b_list;
-List *shelf_c_list;
-List *shelf_d_list;
-List *shelf_e_list;
+
+// 三条用户链表
+List *users_list; // User类型链表
+List *admins_list; // Admin类型链表
+List *couriers_list; // Courier类型链表
+
+// 两个仓库链表
+List *platform_warehouse_list; // Package类型链表
+List *admin_warehouse_list; // Package类型链表
+
+// 用户寄件链表
+List *users_send_list; // Package类型链表
+
+// 两个推送链表
+List *users_push_list; // Package类型链表
+List *couriers_push_list; // Package类型链表
+
+// 五个货架链表
+List *shelf_a_list; // Package类型链表
+List *shelf_b_list; // Package类型链表
+List *shelf_c_list; // Package类型链表
+List *shelf_d_list; // Package类型链表
+List *shelf_e_list; // Package类型链表
+
+
 
 int main()
 {
-    // 统一逻辑：仅写入链表即可，文件无需同步更新。最后退出时会一并更新。由于每次搜索都以链表为依据，因此不会出现因未及时更新导致数据不一致的情况
-    users_list = listInit();
-    admins_list = listInit();
-    couriers_list = listInit();
-    platform_warehouse_list = listInit();
-    admin_warehouse_list = listInit();
-    users_send_list = listInit();
-    shelf_a_list = listInit();
-    shelf_b_list = listInit();
-    shelf_c_list = listInit();
-    shelf_d_list = listInit();
-    shelf_e_list = listInit();
+    // 初始化所有链表
+    listsInit();
 
     // 读取文件中的数据，恢复链表数据
     recoverListData();
@@ -118,7 +122,6 @@ int main()
                 user->user_type = default_user_type;
                 user->receive_status = default_receive_status;
                 user->send_status = default_send_status;
-                strcpy(user->package_id, "0");
                 listAdd(users_list, user);
 
                 printf("注册成功！\n");
@@ -131,7 +134,7 @@ int main()
             system("cls");
             char account[20];
             char password[20];
-            
+
             printf("请输入用户名:\n");
             scanf("%s", account);
             clearInputBuffer();
@@ -162,6 +165,7 @@ int main()
             if (ret == 0)
             {
                 printf("登陆失败，请检查用户名和密码是否正确\n");
+                printCommonInfo();
                 continue;
             }
 
@@ -185,8 +189,9 @@ int main()
             }
         }
         else // 退出
-            break;
-        // 重写所有文件
+            ;
+
+        // 重写所有文件，注意这句在while循环内部
         rewriteAllFiles();
     }
 

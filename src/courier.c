@@ -2,15 +2,34 @@
 
 Courier *the_courier = NULL;
 
+// 创建临时链表，思路类似于用户推送
+List *courier_delivery_list = NULL;
+
+
 void courierShowMenu()
 {
     system("cls");
     // 推送
     if (the_courier->status == 1 || the_courier->status == 2)
     {
+        courier_delivery_list = listInit();
+
+        // 遍历推送链表，找到自己的推送信息，并添加到临时链表
+        // 与此同时，删除推送链表对应节点
+        ListNode *current = couriers_push_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->courier_account, the_courier->account) == 0) // 如果包裹上标注的快递员账号是自己
+            {
+                listAdd(courier_delivery_list, package);
+                listRemove(couriers_push_list, package);
+            }
+            current = current->next;
+        }
+
         printf("您有新的任务，请及时查看！\n");
-        printf("按任意键继续\n");
-        getchar();
+        printCommonInfo();
     }
 
     while (1)
@@ -34,7 +53,8 @@ void courierShowMenu()
             confirmCurrentDelivery();
             break;
         default:
-            printf("谢谢，欢迎下次使用！\n");
+            // 退出时释放临时链表
+            listFree(courier_delivery_list);
             return;
         }
     }
@@ -46,52 +66,92 @@ void queryCurrentDelivery()
     if (the_courier->status == 0)
     {
         printf("当前无任务！\n");
+        printCommonInfo();
         return;
     }
     else if (the_courier->status == 1)
     {
-        printf("您的任务是：将收件人为 %s 的快递从 快递平台 送至 驿站 \n", the_courier->receiver_account);
+        // 遍历临时链表
+        ListNode *current = courier_delivery_list->head;
+        printf("您的任务是：\n\n");
+
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->courier_account, the_courier->account) == 0)
+            {
+                printf("将收件人为 %s 的快递从 快递平台 送至 驿站 \n", package->receiver_account);
+            }
+            current = current->next;
+        }
+        printCommonInfo();
     }
     else
     {
-        printf("您的任务是：将收件人为 %s 的快递从 驿站 送至 快递平台\n", the_courier->receiver_account);
+        // 遍历临时链表
+        ListNode *current = courier_delivery_list->head;
+        printf("您的任务是：\n\n");
+
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->courier_account, the_courier->account) == 0)
+            {
+                printf("将收件人为 %s 的快递从 驿站 送至 用户 \n", package->receiver_account);
+            }
+            current = current->next;
+        }
+        printCommonInfo();
     }
 }
 
+// 用了临时链表。所以要修改逻辑
+// 每次执行任务，只能是单向，status是1或2
 void confirmCurrentDelivery()
 {
     system("cls");
     if (the_courier->status == 0)
     {
         printf("当前无任务！\n");
+        printCommonInfo();
         return;
     }
     // 平台任务
     else if (the_courier->status == 1)
     {
-        the_courier->status = 0;
-        // 放入驿站仓库，需要从平台仓库中用receiver_account找到对应的快递
-        Package *package = packageElementGetByCourier(platform_warehouse_list, the_courier->receiver_account);
-        listRemove(platform_warehouse_list, package); // 删除平台仓库中的快递
-        listAdd(admin_warehouse_list, package);       // 加入驿站仓库
-        // 修改快递员记录的收件人账号为默认值
-        strcpy(the_courier->receiver_account, "0");
+        the_courier->status = 0; // 状态修改为空闲
+        ListNode *current = courier_delivery_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->courier_account, the_courier->account) == 0)
+            {
+                listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+                listAdd(admin_warehouse_list, package);     // 加入驿站仓库
+            }
+        }
         printf("确认成功！\n");
+        printCommonInfo();
     }
     // 驿站任务
     else
     {
         the_courier->status = 0;
-        // 从用户发件中找到对应的快递
-        Package *package = packageElementGetByCourier(users_send_list, the_courier->receiver_account);
-        listRemove(users_send_list, package); // 删除驿站仓库中的快递
-        // 修改快递员记录的收件人账号为默认值
-        strcpy(the_courier->receiver_account, "0");
-        // 不需要再加入平台仓库，否则无限循环
+        ListNode *current = courier_delivery_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->courier_account, the_courier->account) == 0)
+            {
+                listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+                // 无需再加入平台仓库，因为平台是逻辑上的最后一站。加上就循环了
 
-        // 下面要实现对用户的寄件通知及弹窗操作
-        User *user = userElementGet(users_list, package->receiver_account);
-        user->send_status = 2;
-        printf("已通知用户 %s ，快递已送达！\n", user->account);
+                // 下面要实现对用户的寄件通知及弹窗操作
+                User *user = userElementGet(users_list, package->receiver_account); // 之前有说过，为了方便，这里的receiver_account是寄件人账号。后续可以再调整
+                user->send_status = 2;
+                printf("已通知用户 %s ，快递已送达！\n", user->account);
+            }
+        }
+        printCommonInfo();
     }
 }
