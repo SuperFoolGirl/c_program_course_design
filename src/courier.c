@@ -21,8 +21,10 @@ void courierShowMenu()
         printf("1.查询当前任务\n");
         printf("2.确认当前快递送达\n");
         printf("按任意键退出\n");
+
         char choice = getchar();
-        getchar();
+        clearInputBuffer();
+
         switch (choice)
         {
         case '1':

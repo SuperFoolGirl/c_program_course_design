@@ -6,7 +6,17 @@ v1.0
     powershell:https://blog.csdn.net/qq_39494169/article/details/122561317#commentBox
     cmd:https://blog.csdn.net/qq_45796667/article/details/126107300
 4. 隔壁的基于cmake编译的项目，一直在后台运行？重启后才可以重命名
+5. 之所以放弃cmake，是因为莫名其妙的编码太折磨了，而且无法使用externalconsole
 问题：
 1. 输入缓冲区用gets解决
 2. 取件码和快递员的逻辑待修改
 3. 修改字符串容量，统一给20太少
+
+
+
+v1.1
+说明：
+解决了所有缓冲区问题
+问题：
+1. 取件码和快递员的逻辑待修改
+2. 其他新添功能

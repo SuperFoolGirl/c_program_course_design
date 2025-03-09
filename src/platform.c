@@ -11,8 +11,10 @@ void platformShowMenu()
         printf("2.匹配快递员进行发货\n");
         printf("3.查看发货信息\n");
         printf("按任意键退出\n");
+
         char choice = getchar();
-        getchar();
+        clearInputBuffer();
+
         switch (choice)
         {
         case '1':
@@ -39,26 +41,45 @@ void writeToBeShippedDelivery()
 
     printf("请输入收件人用户名：\n");
     scanf("%s", package->receiver_account);
+    clearInputBuffer();
 
     printf("请选择是否加急：\n");
     printf("1. 否\n");
     printf("2. 是\n");
     char choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->isExpress = choice - '0' - 1;
 
     printf("请选择体积：\n");
     printf("1. 小\n");
     printf("2. 大\n");
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->volume = choice - '0' - 1;
 
     printf("请选择重量：\n");
     printf("1. 轻\n");
     printf("2. 重\n");
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->weight = choice - '0' - 1;
 
     printf("请选择快递类型：\n");
@@ -66,14 +87,26 @@ void writeToBeShippedDelivery()
     printf("2. 易碎品、电子产品\n");
     printf("3. 生鲜\n");
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2' && choice != '3')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->special_type = choice - '0' - 1;
 
     printf("请选择价值：\n");
     printf("1. 低价值\n");
     printf("2. 高价值\n");
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->value = choice - '0' - 1;
 
     if (package->isExpress == 1)
@@ -95,6 +128,7 @@ void matchCourier()
         printf("暂无待发货快递！\n");
         return;
     }
+    
     // 由于链表已“排序”，所以直接顺着取
     ListNode *current = platform_warehouse_list->head;
     ListNode *courier_current = couriers_list->head;

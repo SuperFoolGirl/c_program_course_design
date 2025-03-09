@@ -25,8 +25,9 @@ void userShowMenu()
         printf("4. 查询寄件信息\n");
         printf("5. 反馈\n");
         printf("按其他任意键退出\n");
+
         char choice = getchar();
-        getchar();
+        clearInputBuffer();
 
         switch (choice)
         {
@@ -105,37 +106,72 @@ void userSend()
     printf("请选择是否加急：\n");
     printf("1. 否\n");
     printf("2. 是\n");
+
     char choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->isExpress = choice - '0' - 1;
 
     printf("请选择体积：\n");
     printf("1. 小\n");
     printf("2. 大\n");
+
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->volume = choice - '0' - 1;
 
     printf("请选择重量：\n");
     printf("1. 轻\n");
     printf("2. 重\n");
+
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->weight = choice - '0' - 1;
 
     printf("请选择快递类型：\n");
     printf("1. 普通\n");
     printf("2. 易碎品、电子产品\n");
     printf("3. 生鲜\n");
+
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2' && choice != '3')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->special_type = choice - '0' - 1;
 
     printf("请选择价值：\n");
     printf("1. 低价值\n");
     printf("2. 高价值\n");
+
     choice = getchar();
-    getchar();
+    clearInputBuffer();
+
+    if (choice != '1' && choice != '2')
+    {
+        printf("输入错误！\n");
+        return;
+    }
     package->value = choice - '0' - 1;
 
     // 加急件优先头插
@@ -200,9 +236,11 @@ void userPay(int isExpress)
 
     printf("确认支付？\n");
     printf("1. 确认\n");
-    printf("2. 取消\n");
+    printf("按其他任意键取消支付\n");
+
     char choice = getchar();
-    getchar();
+    clearInputBuffer();
+    
     if (choice == '1')
     {
         printf("支付成功！\n");

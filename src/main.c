@@ -55,8 +55,9 @@ int main()
         printf("5. 注册\n");
         printf("按其他任意键退出\n");
         printf("请选择：\n");
+
         char identity = getchar();
-        getchar(); // 消除回车符
+        clearInputBuffer(); // 清空输入缓冲区，不止用一个getchar()，因为可能输入多个字符
 
     // 注册
     again:
@@ -64,15 +65,22 @@ int main()
         {
             system("cls"); // 清屏逻辑：输入后进入下一个页面时后，第一句加清屏，防止上一个页面的打印信息没有呈现就被清除
             printf("温馨提示：当前仅支持用户注册，其他请联系管理员。\n");
+
             printf("请输入用户名：\n");
             char account[20];
             scanf("%s", account);
+            clearInputBuffer();
+
             printf("请输入密码：\n");
             char password[20];
             scanf("%s", password);
+            clearInputBuffer();
+
             printf("请再次确认密码：\n");
             char password_confirm[20];
             scanf("%s", password_confirm);
+            clearInputBuffer();
+
             if (strcmp(password, password_confirm) != 0)
             {
                 printf("两次密码输入不一致，请重新输入！\n");
@@ -96,6 +104,8 @@ int main()
                 printf("请输入电话号码：\n");
                 char phone_number[20];
                 scanf("%s", phone_number);
+                clearInputBuffer();
+
                 int default_user_type = 0;
                 int default_receive_status = 0;
                 int default_send_status = 0;
@@ -121,10 +131,14 @@ int main()
             system("cls");
             char account[20];
             char password[20];
+            
             printf("请输入用户名:\n");
             scanf("%s", account);
+            clearInputBuffer();
+
             printf("请输入密码:\n");
             scanf("%s", password);
+            clearInputBuffer();
 
             int ret = 0;
             switch (identity)
