@@ -22,7 +22,10 @@ void courierShowMenu()
             Package *package = (Package *)current->data;
             if (strcmp(package->courier_account, the_courier->account) == 0) // 如果包裹上标注的快递员账号是自己
             {
+                // 将推送信息加入临时链表
                 listAdd(courier_delivery_list, package);
+
+                // 删除推送链表对应节点
                 listRemove(couriers_push_list, package);
             }
             current = current->next;

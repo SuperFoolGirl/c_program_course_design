@@ -4,6 +4,7 @@
 // 由于创建了链表结构体，返回值不再是头节点指针
 List *listInit()
 {
+    // 这里开辟的是List结构体，而不是ListNode结构体
     List *list = (List *)malloc(sizeof(List));
     list->head = NULL;
     list->size = 0;
@@ -124,8 +125,8 @@ void writeListFromFile(const char *file, List *list)
         }
         free(admin);
     }
-    // 4. 平台仓库表和驿站寄件表、五个货架，可以共用
-    else if (strstr(file, "platform_warehouse.txt") != NULL || strstr(file, "users_send.txt") != NULL || strstr(file, "shelf_") != NULL) // 这里就不罗列五个架子了
+    // 4. 其他Package类的表可以共用，因为结构体一样
+    else if (strstr(file, "platform_warehouse.txt") != NULL || strstr(file, "users_send.txt") != NULL || strstr(file, "shelf_") != NULL || strstr(file, "admin_warehouse.txt") != NULL || strstr(file, "users_push.txt") != NULL || strstr(file, "couriers_push.txt") != NULL) 
     {
         Package *package = (Package *)malloc(sizeof(Package));
         while (fscanf(fp, "%s %s %s %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value) != EOF)
@@ -179,7 +180,7 @@ void writeFileFromList(const char *file, List *list)
             current = current->next;
         }
     }
-    else if (strstr(file, "platform_warehouse.txt") != NULL || strstr(file, "users_send.txt") != NULL || strstr(file, "shelf_") != NULL)
+    else if (strstr(file, "platform_warehouse.txt") != NULL || strstr(file, "users_send.txt") != NULL || strstr(file, "shelf_") != NULL || strstr(file, "admin_warehouse.txt") != NULL || strstr(file, "users_push.txt") != NULL || strstr(file, "couriers_push.txt") != NULL)
     {
         while (current != NULL)
         {
@@ -253,7 +254,7 @@ void listAddHead(List *list, void *data)
 {
     ListNode *new_node = (ListNode *)malloc(sizeof(ListNode));
     new_node->data = data;
-    new_node->next = list->head;
+    new_node->next = list->head; // 这一步对于空链表来说也没错，右值是NULL，左值被赋为NULL
     list->head = new_node;
     list->size++;
 }

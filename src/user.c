@@ -24,7 +24,10 @@ void userShowMenu()
             Package *package = (Package *)current->data;
             if (strcmp(package->receiver_account, the_user->account) == 0)
             {
+                // 将推送信息加入临时链表
                 listAdd(user_delivery_list, package);
+
+                // 用户和快递员均在推送弹窗中删除推送节点
                 listRemove(users_push_list, package);
 
                 printf("取件码：%s\n", package->package_id);

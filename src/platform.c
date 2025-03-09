@@ -43,6 +43,9 @@ void writeToBeShippedDelivery()
     clearInputBuffer();
     puts("");
 
+    // 填一个暂时的快递员用户名
+    strcpy(package->courier_account, "0");
+
     printf("请选择是否加急：\n");
     printf("1. 否\n");
     printf("2. 是\n");
@@ -121,7 +124,7 @@ void writeToBeShippedDelivery()
 
     if (package->isExpress == 1)
     {
-        listAdd(platform_warehouse_list, package);
+        listAddHead(platform_warehouse_list, package);
     }
     else
     {
@@ -140,7 +143,8 @@ void matchCourier()
     // 当快递员无法再继续接单时，才换下一个快递员
 
     system("cls");
-    if (platform_warehouse_list->size == 0) // 逻辑判断
+    // 如果平台仓库没有快递
+    if (platform_warehouse_list->size == 0)
     {
         printf("暂无待发货快递！\n");
         printCommonInfo();
@@ -185,8 +189,7 @@ void matchCourier()
         printf("已向快递员 %s 推送消息\n", courier->account);
         courier->status = 1; // 标记快递员状态为正在由 平台->驿站 派送
 
-        Package *tmp = package; // 保存当前节点
-        current = current->next; // 换下一件快递
+        current = current->next; // 转向下一件快递
 
         // 平台仓库节点暂时不能删，后面快递员需要用，要由快递员删除
         // 但需要逻辑删除，即改size，否则要是平台用户全部发货后再误触发货函数，会重复执行
@@ -194,9 +197,8 @@ void matchCourier()
         // current = current->next;
         // platform_warehouse_list->size--;
 
-        // 现在可以直接删除平台仓库节点了
-        // 每次删除的都是头节点
-        listRemove(platform_warehouse_list, tmp);
+        // 加了临时链表，所以可以删掉仓库链表的节点了
+        listRemove(platform_warehouse_list, package);
 
         // 判断本次base点的情况
         base++;

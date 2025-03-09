@@ -1278,7 +1278,7 @@ void modifyShelf(List *shelf_list)
 void addressUserSend()
 {
     system("cls");
-    if (users_send_list->size == 0) // 逻辑判断
+    if (users_send_list->size == 0) // 没有待发货快递
     {
         printf("暂无待发货快递！\n");
         printCommonInfo();
@@ -1299,7 +1299,6 @@ void addressUserSend()
     int base = 0;
     while (courier_current != NULL)
     {
-        // 如果快递没了
         if (current == NULL)
         {
             printf("已全部发货！\n");
@@ -1323,11 +1322,9 @@ void addressUserSend()
         printf("已向快递员 %s 推送消息\n", courier->account);
         courier->status = 2; // 标记快递员状态为正在由 驿站->平台 派送
 
-        Package *tmp = package;  // 保存当前节点，其实保存的数据，因为remove函数需要数据才能删除
-        current = current->next; // 换下一件快递
-
-        // 每次删除的都是头节点
-        listRemove(users_send_list, tmp);
+        current = current->next; // 转向下一件快递
+        
+        listRemove(users_send_list, package); // 从用户待发货链表中删除
 
         // 判断本次base点的情况
         base++;
