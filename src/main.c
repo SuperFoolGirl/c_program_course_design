@@ -189,7 +189,7 @@ int main()
             }
         }
         else // 退出
-            ;
+            break;
 
         // 重写所有文件，注意这句在while循环内部
         rewriteAllFiles();

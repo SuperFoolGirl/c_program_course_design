@@ -9,11 +9,11 @@ List *user_delivery_list = NULL;
 void userShowMenu()
 {
     system("cls");
-    
+    user_delivery_list = listInit(); // 初始化临时链表。必须初始化，否则退出时free函数报错
+
     // 取件弹窗
     if (the_user->receive_status == 1) // 这个还是要有的，迅速判断是否有快递到达，然后进来慢慢找
     {
-        user_delivery_list = listInit(); // 初始化临时链表
         printf("您有快递到达，请及时取件！\n\n");
 
         // 遍历推送链表，找到自己的推送信息

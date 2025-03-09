@@ -107,6 +107,7 @@ void wareHousing()
     if (admin_warehouse_list->size == 0)
     {
         printf("暂无快递到达！\n");
+        printCommonInfo();
         return;
     }
     // 把admin_warehouse_list分配至五个货架
@@ -995,6 +996,12 @@ void viewShelfInfo()
 void viewShelf(List *shelf_list)
 {
     system("cls");
+    if (shelf_list->size == 0)
+    {
+        printf("货架为空！\n");
+        printCommonInfo();
+        return;
+    }
     ListNode *current = shelf_list->head;
     while (current != NULL)
     {

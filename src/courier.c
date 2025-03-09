@@ -9,11 +9,11 @@ List *courier_delivery_list = NULL;
 void courierShowMenu()
 {
     system("cls");
+    courier_delivery_list = listInit();
+
     // 推送
     if (the_courier->status == 1 || the_courier->status == 2)
     {
-        courier_delivery_list = listInit();
-
         // 遍历推送链表，找到自己的推送信息，并添加到临时链表
         // 与此同时，删除推送链表对应节点
         ListNode *current = couriers_push_list->head;
