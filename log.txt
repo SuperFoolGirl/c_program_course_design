@@ -1,0 +1,12 @@
+v1.0
+说明：
+1. 实现了基于task.json的多文件编译
+2. vscode的externalConsole是cmd，修改的windowsPowershell应该是内置的默认终端
+3. 将powershell和cmd的默认编码都改成了utf-8，具体修改方法如下：
+    powershell:https://blog.csdn.net/qq_39494169/article/details/122561317#commentBox
+    cmd:https://blog.csdn.net/qq_45796667/article/details/126107300
+4. 隔壁的基于cmake编译的项目，一直在后台运行？重启后才可以重命名
+问题：
+1. 输入缓冲区用gets解决
+2. 取件码和快递员的逻辑待修改
+3. 修改字符串容量，统一给20太少
