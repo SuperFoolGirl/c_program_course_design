@@ -34,12 +34,6 @@ void listAdd(List *list, void *data);
 // 头插
 void listAddHead(List *list, void *data);
 
-// 从链表中移除指定元素
-// 删除函数可以借助get函数来写。get函数确定结构体，也就是data
-void listRemove(List *list, void *data);
-
-// 释放链表内存
-void listFree(List *list);
 
 // 2 用户表结构体
 typedef struct User
@@ -62,13 +56,12 @@ typedef struct Admin
 // 4 包裹表
 typedef struct Package
 {
-    char package_id[20];       // 包裹货架ID 作为取件码
-    char receiver_account[20]; // 收件人用户名
+    char package_id[20];       // 包裹货架ID，储存货架信息
+    char receiver_account[20]; // 收件人用户名(用户反向寄件时，这里填寄件用户的名字，而不是实际要收货的人)
     char courier_account[20];  // 快递员用户名
-    int isExpress;             // 是否加急，0-普通件，1-加急件
+    int pick_up_code;     // 取件码，需要是整形
 
-    // 以下内容为包裹属性
-    // 后续设计简单算法，通过这些属性，完成快递员的匹配、运输方式的确定
+    int isExpress; // 是否加急，0-普通件，1-加急件
     int volume;       // 体积，0-小件，1-大件
     int weight;       // 重量，0-轻件，1-重件
     int special_type; // 特殊类型，0-普通包裹，1-易碎品、电子产品，2-生鲜
@@ -111,3 +104,13 @@ Admin *adminElementGet(List *list, const char *account);
 void clearInputBuffer();
 
 void printCommonInfo();
+
+// 从链表中移除指定元素
+// 删除函数可以借助get函数来写。get函数确定结构体，也就是data
+void listRemove(List *list, void *data);
+
+// 释放链表内存
+void listFreePackage(List *list);
+void listFreeUser(List *list);
+void listFreeCourier(List *list);
+void listFreeAdmin(List *list);

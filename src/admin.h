@@ -1,6 +1,12 @@
 #pragma once
 #include "common.h"
 #include "data_storage.h"
+#include <time.h>
+
+#define MAX 9000
+#define MIN 1000
+
+#define SIZE 20 // 货架每排最大容量
 
 // admin.c文件需要用到的全局变量
 extern List *users_list;
@@ -31,8 +37,6 @@ void inventoryCheck();
 
 void viewBusinessStatistics();
 
-void pushMessage();
-
 void addUser();
 
 void deleteUser();
@@ -57,6 +61,6 @@ void viewShelf(List *shelf_list);
 
 void modifyShelf(List *shelf_list);
 
-void pushMessageToUser(List *list);
+void pushMessageToUser(Package *package);
 
 void addressUserSend();

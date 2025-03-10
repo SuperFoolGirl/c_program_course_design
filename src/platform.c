@@ -7,9 +7,12 @@ void platformShowMenu()
         system("cls");
         printf("欢迎登陆！");
         printf("请选择您的操作：\n");
-        printf("1.写入待发货快递\n");
-        printf("2.匹配快递员进行发货\n");
-        printf("3.查看发货信息\n");
+        printf("1. 写入待发货快递\n");
+        printf("2. 修改待发货快递\n");
+        printf("3. 删除待发货快递\n");
+        printf("4. 匹配快递员进行发货\n");
+        printf("5. 查看发货信息\n");
+        printf("6. 查看平台仓库信息\n");
         printf("按任意键退出\n");
 
         char choice = getchar();
@@ -21,10 +24,19 @@ void platformShowMenu()
             writeToBeShippedDelivery();
             break;
         case '2':
-            matchCourier();
+            modifyToBeShippedDelivery();
             break;
         case '3':
+            deleteToBeShippedDelivery();
+            break;
+        case '4':
+            matchCourier();
+            break;
+        case '5':
             viewSendInfo();
+            break;
+        case '6':
+            viewPlatformWarehouseInfo();
             break;
         default:
             return;
@@ -36,7 +48,13 @@ void writeToBeShippedDelivery()
 {
     system("cls");
     Package *package = (Package *)malloc(sizeof(Package));
-    strcpy(package->package_id, "A-0-0");
+
+    // 随便填写一个包裹id，为了查找和删除。不能再随便给个默认值了
+    printf("请输入包裹ID：\n");
+    char package_id[20];
+    scanf("%s", package_id);
+    clearInputBuffer();
+    strcpy(package->package_id, package_id);
 
     printf("请输入收件人用户名：\n");
     scanf("%s", package->receiver_account);
@@ -45,6 +63,9 @@ void writeToBeShippedDelivery()
 
     // 填一个暂时的快递员用户名
     strcpy(package->courier_account, "0");
+
+    // 填一个暂时的取件码
+    package->pick_up_code = 0;
 
     printf("请选择是否加急：\n");
     printf("1. 否\n");
@@ -176,7 +197,7 @@ void matchCourier()
         Courier *courier = (Courier *)courier_current->data;
         Package *package = (Package *)current->data;
 
-        // 如果快递员现在正在派送从驿站到用户的快递，就跳过
+        // 如果快递员现在正在另一边工作，就跳过
         if (courier->status == 2)
         {
             courier_current = courier_current->next;
@@ -241,4 +262,190 @@ void viewSendInfo()
         current = current->next;
     }
     printCommonInfo();
+}
+
+void modifyToBeShippedDelivery()
+{
+    // 根据平台链表，找到对应的快递，然后修改
+    system("cls");
+    if (platform_warehouse_list->size == 0)
+    {
+        printf("平台仓库为空！\n");
+        printCommonInfo();
+        return;
+    }
+    printf("请输入要修改的快递的包裹ID：\n");
+    char package_id[20];
+    scanf("%s", package_id);
+    clearInputBuffer();
+
+    // 遍历平台仓库链表，找到要修改的那个快递
+    ListNode *current = platform_warehouse_list->head;
+    while (current != NULL)
+    {
+        Package *package = (Package *)current->data;
+        if (strcmp(package_id, package->package_id) == 0)
+        {
+            while (1)
+            {
+                printf("请选择要修改的信息：\n");
+                printf("1. 收件人账号\n");
+                printf("2. 加急状态\n");
+                printf("3. 体积\n");
+                printf("4. 重量\n");
+                printf("5. 特殊类型\n");
+                printf("6. 价值\n");
+                printf("按其他任意键返回\n");
+
+                char choice = getchar();
+                clearInputBuffer();
+                puts("");
+
+                switch (choice)
+                {
+                case '1':
+                    printf("请输入新的收件人账号：\n");
+                    scanf("%s", package->receiver_account);
+                    clearInputBuffer();
+                    puts("");
+                    break;
+                case '2':
+                    printf("请输入新的加急状态：\n");
+                    printf("1. 否\n");
+                    printf("2. 是\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->isExpress = choice - '0' - 1;
+                    break;
+                case '3':
+                    printf("请输入新的体积：\n");
+                    printf("1. 小\n");
+                    printf("2. 大\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->volume = choice - '0' - 1;
+                    break;
+                case '4':
+                    printf("请输入新的重量：\n");
+                    printf("1. 轻\n");
+                    printf("2. 重\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->weight = choice - '0' - 1;
+                    break;
+                case '5':
+                    printf("请输入新的特殊类型：\n");
+                    printf("1. 普通\n");
+                    printf("2. 易碎品、电子产品\n");
+                    printf("3. 生鲜\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2' && choice != '3')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->special_type = choice - '0' - 1;
+                    break;
+                default:
+                    return; // 修改完想修改的信息后，直接退出这个函数
+                }
+            }
+        }  
+        current = current->next;          
+    }
+
+    // 能走到这来的，说明没找到；找到了的话，早就return了
+    printf("未找到该快递！\n");
+    printCommonInfo();
+}
+
+void deleteToBeShippedDelivery()
+{
+    system("cls");
+    if (platform_warehouse_list->size == 0)
+    {
+        printf("平台仓库为空！\n");
+        printCommonInfo();
+        return;
+    }
+
+    printf("请输入要删除的快递的包裹ID：\n");
+    char package_id[20];
+    scanf("%s", package_id);
+    clearInputBuffer();
+
+    // 遍历平台仓库链表，找到要删除的那个快递
+    ListNode *current = platform_warehouse_list->head;
+    while (current != NULL)
+    {
+        Package *package = (Package *)current->data;
+        if (strcmp(package_id, package->package_id) == 0)
+        {
+            listRemove(platform_warehouse_list, package);
+            printf("删除成功！\n");
+            printCommonInfo();
+            return;
+        }
+        current = current->next;
+    }
+    
+    // 能走到这来的，说明没找到；找到了的话，早就return了
+    printf("未找到该快递！\n");
+    printCommonInfo();
+}
+
+void viewPlatformWarehouseInfo()
+{
+    // 查看链表信息
+    system("cls");
+    if (platform_warehouse_list->size == 0)
+    {
+        printf("平台仓库为空！\n");
+        printCommonInfo();
+        return;
+    }
+    printf("平台仓库内共有快递%d件\n\n", platform_warehouse_list->size);
+
+    ListNode *current = platform_warehouse_list->head;
+    while (current != NULL)
+    {
+        Package *package = (Package *)current->data;
+        printf("包裹ID：%s\n", package->package_id);
+        printf("收件人账号：%s\n", package->receiver_account);
+        printf("加急状态：%s\n", package->isExpress == 1 ? "是" : "否");
+        printf("体积：%s\n", package->volume == 1 ? "大" : "小");
+        printf("重量：%s\n", package->weight == 1 ? "重" : "轻");
+        printf("特殊类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜" : "普通"); // 多重三目运算符
+        printf("价值：%s\n", package->value == 1 ? "高价值" : "低价值");
+        puts("");
+        current = current->next;
+    }
 }

@@ -12,6 +12,9 @@ List *listInit()
 }
 
 // 在链表尾部添加元素
+// 浅拷贝，只复制地址，没有深拷贝出来一块新的内存
+// 但这样面临一个问题：只要这块内存的信息被改了，其他链表中相同的节点也会改变
+// 不过本程序中无妨，我们反而希望信息能够同步
 void listAdd(List *list, void *data)
 {
     ListNode *new_node = (ListNode *)malloc(sizeof(ListNode));
@@ -36,6 +39,7 @@ void listAdd(List *list, void *data)
     list->size++;
 }
 
+
 // 从链表中移除指定元素
 void listRemove(List *list, void *data)
 {
@@ -54,7 +58,10 @@ void listRemove(List *list, void *data)
             {
                 prev->next = current->next;
             }
+
+            // 释放当前节点的内存
             free(current);
+
             list->size--;
             return;
         }
@@ -63,8 +70,11 @@ void listRemove(List *list, void *data)
     }
 }
 
+// 释放内存都需要写4个函数，必须需要类型
+// 节点的数据类型也是用动态内存分配的。不能只释放节点，也要释放数据。否则会内存泄漏
 // 释放链表内存
-void listFree(List *list)
+// 1. 包裹
+void listFreePackage(List *list)
 {
     ListNode *current = list->head;
     ListNode *next;
@@ -72,12 +82,91 @@ void listFree(List *list)
     while (current != NULL)
     {
         next = current->next;
+
+        // 释放 data 所指向的内存，假设 data 指向的是 Package 结构体
+        Package *package = (Package *)current->data;
+        if (package != NULL)
+        {
+            free(package);
+        }
+
         free(current);
         current = next;
     }
     free(list); // 最后释放该List结构体
 }
 
+// 2. 用户
+void listFreeUser(List *list)
+{
+    ListNode *current = list->head;
+    ListNode *next;
+
+    while (current != NULL)
+    {
+        next = current->next;
+
+        // 释放 data 所指向的内存，假设 data 指向的是 User 结构体
+        User *user = (User *)current->data;
+        if (user != NULL)
+        {
+            free(user);
+        }
+
+        free(current);
+        current = next;
+    }
+    free(list); // 最后释放该List结构体
+}
+
+// 3. 管理员
+void listFreeAdmin(List *list)
+{
+    ListNode *current = list->head;
+    ListNode *next;
+
+    while (current != NULL)
+    {
+        next = current->next;
+
+        // 释放 data 所指向的内存，假设 data 指向的是 Admin 结构体
+        Admin *admin = (Admin *)current->data;
+        if (admin != NULL)
+        {
+            free(admin);
+        }
+
+        free(current);
+        current = next;
+    }
+    free(list); // 最后释放该List结构体
+}
+
+// 4. 快递员
+void listFreeCourier(List *list)
+{
+    ListNode *current = list->head;
+    ListNode *next;
+
+    while (current != NULL)
+    {
+        next = current->next;
+
+        // 释放 data 所指向的内存，假设 data 指向的是 Courier 结构体
+        Courier *courier = (Courier *)current->data;
+        if (courier != NULL)
+        {
+            free(courier);
+        }
+
+        free(current);
+        current = next;
+    }
+    free(list); // 最后释放该List结构体
+}
+
+
+// 这函数写的简直一坨，恶心
 // 格式化读取文件，将文件中的数据读取到链表中
 // fscanf参数三需要取地址
 void writeListFromFile(const char *file, List *list)
@@ -86,6 +175,7 @@ void writeListFromFile(const char *file, List *list)
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
+        printCommonInfo();
         return;
     }
 
@@ -95,10 +185,14 @@ void writeListFromFile(const char *file, List *list)
     if (strstr(file, "users_info.txt") != NULL)
     {
         User *user = (User *)malloc(sizeof(User));
+        memset(user, 0, sizeof(User)); // 初始化内存，因为堆区的这块内存可能是脏数据
+
         while (fscanf(fp, "%s %s %s %d %d %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status) != EOF)
         {
             listAdd(list, user);
-            user = (User *)malloc(sizeof(User));
+
+            user = (User *)malloc(sizeof(User)); // 为下一次循环分配内存
+            memset(user, 0, sizeof(User));       // 初始化内存
         }
         free(user); // 释放最后一次分配的内存，这部分内存并没有被使用就出循环了
     }
@@ -107,10 +201,14 @@ void writeListFromFile(const char *file, List *list)
     else if (strstr(file, "couriers_info.txt") != NULL)
     {
         Courier *courier = (Courier *)malloc(sizeof(Courier));
+        memset(courier, 0, sizeof(Courier));
+
         while (fscanf(fp, "%s %s %d\n", courier->account, courier->password, &courier->status) != EOF)
         {
             listAdd(list, courier);
+
             courier = (Courier *)malloc(sizeof(Courier));
+            memset(courier, 0, sizeof(Courier));
         }
         free(courier);
     }
@@ -118,10 +216,14 @@ void writeListFromFile(const char *file, List *list)
     else if (strstr(file, "admins_info.txt") != NULL)
     {
         Admin *admin = (Admin *)malloc(sizeof(Admin));
+        memset(admin, 0, sizeof(Admin));
+
         while (fscanf(fp, "%s %s %d\n", admin->account, admin->password) != EOF)
         {
             listAdd(list, admin);
+
             admin = (Admin *)malloc(sizeof(Admin));
+            memset(admin, 0, sizeof(Admin));
         }
         free(admin);
     }
@@ -129,10 +231,14 @@ void writeListFromFile(const char *file, List *list)
     else if (strstr(file, "platform_warehouse.txt") != NULL || strstr(file, "users_send.txt") != NULL || strstr(file, "shelf_") != NULL || strstr(file, "admin_warehouse.txt") != NULL || strstr(file, "users_push.txt") != NULL || strstr(file, "couriers_push.txt") != NULL) 
     {
         Package *package = (Package *)malloc(sizeof(Package));
-        while (fscanf(fp, "%s %s %s %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value) != EOF)
+        memset(package, 0, sizeof(Package));
+
+        while (fscanf(fp, "%s %s %s %d %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, &package->pick_up_code, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value) != EOF)
         {
             listAdd(list, package);
+
             package = (Package *)malloc(sizeof(Package));
+            memset(package, 0, sizeof(Package));
         }
         free(package);
     }
@@ -149,6 +255,7 @@ void writeFileFromList(const char *file, List *list)
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
+        printCommonInfo();
         return;
     }
 
@@ -185,7 +292,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            fprintf(fp, "%s %s %s %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, package->isExpress, package->volume, package->weight, package->special_type, package->value);
+            fprintf(fp, "%s %s %s %d %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, package->pick_up_code, package->isExpress, package->volume, package->weight, package->special_type, package->value);
             current = current->next;
         }
     }

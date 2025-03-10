@@ -12,6 +12,8 @@ void courierShowMenu()
     courier_delivery_list = listInit();
 
     // 推送
+    // 注意里面删除节点的机制
+    // current的更新依赖于本身存在，不可提前remove掉。或者提前记录以下
     if (the_courier->status == 1 || the_courier->status == 2)
     {
         // 遍历推送链表，找到自己的推送信息，并添加到临时链表
@@ -25,8 +27,13 @@ void courierShowMenu()
                 // 将推送信息加入临时链表
                 listAdd(courier_delivery_list, package);
 
+                // 删除之前先往后走
+                current = current->next;
+
                 // 删除推送链表对应节点
                 listRemove(couriers_push_list, package);
+
+                continue; // 跳过一般的更新
             }
             current = current->next;
         }
@@ -57,7 +64,7 @@ void courierShowMenu()
             break;
         default:
             // 退出时释放临时链表
-            listFree(courier_delivery_list);
+            listFreePackage(courier_delivery_list); // 注意快递员临时链表的类型是Package
             return;
         }
     }
@@ -127,11 +134,15 @@ void confirmCurrentDelivery()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
+            // 这里的代码逻辑和弹窗处相同，注意边读边删时，必须先往后走再删
             if (strcmp(package->courier_account, the_courier->account) == 0)
             {
+                current = current->next; // 先往后走，再删除节点
                 listRemove(courier_delivery_list, package); // 删除临时链表中的快递
                 listAdd(admin_warehouse_list, package);     // 加入驿站仓库
+                continue;
             }
+            current = current->next;
         }
         printf("确认成功！\n");
         printCommonInfo();
@@ -146,6 +157,7 @@ void confirmCurrentDelivery()
             Package *package = (Package *)current->data;
             if (strcmp(package->courier_account, the_courier->account) == 0)
             {
+                current = current->next;
                 listRemove(courier_delivery_list, package); // 删除临时链表中的快递
                 // 无需再加入平台仓库，因为平台是逻辑上的最后一站。加上就循环了
 
@@ -153,7 +165,10 @@ void confirmCurrentDelivery()
                 User *user = userElementGet(users_list, package->receiver_account); // 之前有说过，为了方便，这里的receiver_account是寄件人账号。后续可以再调整
                 user->send_status = 2;
                 printf("已通知用户 %s ，快递已送达！\n", user->account);
+
+                continue;
             }
+            current = current->next;
         }
         printCommonInfo();
     }

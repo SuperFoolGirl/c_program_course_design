@@ -27,11 +27,17 @@ void userShowMenu()
                 // 将推送信息加入临时链表
                 listAdd(user_delivery_list, package);
 
+                // 删除之前先往后走
+                current = current->next;
+
                 // 用户和快递员均在推送弹窗中删除推送节点
                 listRemove(users_push_list, package);
 
-                printf("取件码：%s\n", package->package_id);
+                printf("货架号：%s\n", package->package_id);
+                printf("取件码：%d\n", package->pick_up_code);
                 printf("--------------------\n");
+
+                continue; // 跳过一般的更新
             }
             current = current->next;
         }
@@ -47,7 +53,9 @@ void userShowMenu()
         printf("2. 寄件\n");
         printf("3. 查询取件信息\n");
         printf("4. 查询寄件信息\n");
-        printf("5. 反馈\n");
+        printf("5. 修改寄件信息\n");
+        printf("6. 取消寄件\n");
+        printf("7. 反馈\n");
         printf("按其他任意键退出\n");
 
         char choice = getchar();
@@ -68,11 +76,17 @@ void userShowMenu()
             userQuerySend();
             break;
         case '5':
+            userModifySend();
+            break;
+        case '6':
+            userCancelSend();
+            break;
+        case '7':
             userFeedback();
             break;
         default:
             // 退出时释放临时链表
-            listFree(user_delivery_list);
+            listFreePackage(user_delivery_list); // 注意用户临时链表的类型是Package
             return;
         }
     }
@@ -129,21 +143,25 @@ void userPickup()
             default:
                 break;
             }
+
+            // 推移到下一个快递，再删除
+            current = current->next;
+
             // 从货架中删除。这里我们把快递信息完整存到临时链表里了，所以不用再调用getElement函数
             listRemove(shelf_list, package);
 
             // 取件后，删除临时链表的信息
             listRemove(user_delivery_list, package);
 
-            // 推移到下一个快递
+            
             printf("取件成功！\n");
-            current = current->next;
         }
         else
         {
-            // 如果输入错误，则继续循环，直到输入正确（不进行current的更新）
+            // 如果输入错误，则直接退出，允许用户重新查看取件码
             printf("取件码错误！\n");
             printCommonInfo();
+            return;
         }
     }
     // 全部取完后，将用户的取件状态置为0
@@ -157,14 +175,24 @@ void userSend()
 {
     system("cls");
     // 寄件操作，填写信息，然后加入待发快递链表
-    // 由于不需要考虑取件码，包裹id可以随便写
     // 这里照抄平台函数1
     Package *package = (Package *)malloc(sizeof(Package));
-    strcpy(package->package_id, "A-0-0");
+
+    printf("请输入包裹ID：\n");
+    char package_id[20];
+    scanf("%s", package_id);
+    clearInputBuffer();
+    strcpy(package->package_id, package_id);
 
     // 这里为了逻辑处理，必须改为收件人，因为两边来回发件方向相反
     // 因此不再需要写入，直接取值即可
     strcpy(package->receiver_account, the_user->account);
+
+    // 填一个暂时的快递员用户名
+    strcpy(package->courier_account, "0");
+
+    // 填一个暂时的取件码
+    package->pick_up_code = 0;
 
     printf("请选择是否加急：\n");
     printf("1. 否\n");
@@ -344,7 +372,8 @@ void userQueryPickup()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            printf("取件码为：%s\n", package->package_id);
+            printf("货架号：%s\n", package->package_id);
+            printf("取件码：%d\n", package->pick_up_code);
             printf("--------------------\n");
             current = current->next;
         }
@@ -392,5 +421,197 @@ void userFeedback()
     fprintf(fp, "%s\n", feedback);
     fclose(fp);
     printf("反馈成功！\n");
+    printCommonInfo();
+}
+
+// 按照当前的寄件逻辑，只支持寄一件，否则会有逻辑错误
+void userModifySend()
+{
+    // 对寄件链表进行修改
+    system("cls");
+
+    // 若干提前判断
+    if (the_user->send_status == 0)
+    {
+        printf("暂无快递发出！\n");
+        printCommonInfo();
+        return;
+    }
+    if (the_user->send_status == 2)
+    {
+        printf("您的快递已发出，无法修改！\n");
+        printCommonInfo();
+        return;
+    }
+
+    printf("请输入您的包裹ID：\n");
+    char package_id[20];
+    scanf("%s", package_id);
+    clearInputBuffer();
+
+    // 遍历寄件链表，找到要修改的那个快递
+    // 根据包裹ID找到对应的快递，是唯一的；不要根据用户名来找
+    ListNode *current = users_send_list->head;
+    while (current->next != NULL)
+    {
+        Package *package = (Package *)current->data;
+        if (strcmp(package->package_id, package_id) == 0 && strcmp(package->receiver_account, the_user->account) == 0) // 还要判断是本人
+        {
+            while (1)
+            {
+                printf("请选择要修改的信息：\n"); // 寄件人不允许修改
+                printf("1. 包裹ID\n");
+                printf("2. 加急状态\n");
+                printf("3. 体积\n");
+                printf("4. 重量\n");
+                printf("5. 特殊类型\n");
+                printf("6. 价值\n");
+                printf("按其他任意键返回\n");
+
+                char choice = getchar();
+                clearInputBuffer();
+                puts("");
+
+                switch (choice)
+                {
+                case '1':
+                    printf("请输入新的包裹ID：\n");
+                    char new_package_id[20];
+                    scanf("%s", new_package_id);
+                    clearInputBuffer();
+                    strcpy(package->package_id, new_package_id);
+                    break;
+                case '2':
+                    printf("请输入新的加急状态：\n");
+                    printf("1. 否\n");
+                    printf("2. 是\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->isExpress = choice - '0' - 1;
+                    break;
+                case '3':
+                    printf("请输入新的体积：\n");
+                    printf("1. 小\n");
+                    printf("2. 大\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->volume = choice - '0' - 1;
+                    break;
+                case '4':
+                    printf("请输入新的重量：\n");
+                    printf("1. 轻\n");
+                    printf("2. 重\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->weight = choice - '0' - 1;
+                    break;
+                case '5':
+                    printf("请输入新的特殊类型：\n");
+                    printf("1. 普通\n");
+                    printf("2. 易碎品、电子产品\n");
+                    printf("3. 生鲜\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2' && choice != '3')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->special_type = choice - '0' - 1;
+                    break;
+                case '6':
+                    printf("请输入新的价值：\n");
+                    printf("1. 低价值\n");
+                    printf("2. 高价值\n");
+                    choice = getchar();
+                    clearInputBuffer();
+                    puts("");
+
+                    if (choice != '1' && choice != '2')
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    package->value = choice - '0' - 1;
+                    break;
+                default:
+                    return;
+                }
+            }
+        }
+        current = current->next;
+    }
+    printf("未找到该快递！\n");
+    printCommonInfo();
+}
+
+void userCancelSend()
+{
+    // 对寄件链表进行删除
+    system("cls");
+
+    // 若干提前判断
+    if (the_user->send_status == 0)
+    {
+        printf("暂无快递发出！\n");
+        printCommonInfo();
+        return;
+    }
+    if (the_user->send_status == 2)
+    {
+        printf("您的快递已发出，无法取消！\n");
+        printCommonInfo();
+        return;
+    }
+
+    printf("请输入您的包裹ID：\n");
+    char package_id[20];
+    scanf("%s", package_id);
+    clearInputBuffer();
+
+    // 遍历寄件链表，找到要删除的那个快递
+    // 根据包裹ID找到对应的快递，是唯一的；不要根据用户名来找
+    ListNode *current = users_send_list->head;
+    while (current->next != NULL)
+    {
+        Package *package = (Package *)current->data;
+        if (strcmp(package->package_id, package_id) == 0 && strcmp(package->receiver_account, the_user->account) == 0) // 还要判断是本人
+        {
+            listRemove(users_send_list, package);
+            printf("取消成功！\n");
+            printCommonInfo();
+            return;
+        }
+        current = current->next;
+    }
+    printf("未找到该快递！\n");
     printCommonInfo();
 }

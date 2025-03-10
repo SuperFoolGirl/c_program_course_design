@@ -13,3 +13,9 @@ void writeToBeShippedDelivery();
 void matchCourier();
 
 void viewSendInfo();
+
+void modifyToBeShippedDelivery();
+
+void deleteToBeShippedDelivery();
+
+void viewPlatformWarehouseInfo();

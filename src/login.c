@@ -122,19 +122,18 @@ void rewriteAllFiles()
 // 释放链表内存
 void freeLists()
 {
-    listFree(users_list);
-    listFree(admins_list);
-    listFree(couriers_list);
-    listFree(platform_warehouse_list);
-    listFree(admin_warehouse_list);
-    listFree(users_send_list);
-    listFree(users_push_list);
-
-    listFree(shelf_a_list);
-    listFree(shelf_b_list);
-    listFree(shelf_c_list);
-    listFree(shelf_d_list);
-    listFree(shelf_e_list);
+    listFreeUser(users_list);
+    listFreeAdmin(admins_list);
+    listFreeCourier(couriers_list);
+    listFreePackage(platform_warehouse_list);
+    listFreePackage(admin_warehouse_list);
+    listFreePackage(users_send_list);
+    listFreePackage(users_push_list);
+    listFreePackage(shelf_a_list);
+    listFreePackage(shelf_b_list);
+    listFreePackage(shelf_c_list);
+    listFreePackage(shelf_d_list);
+    listFreePackage(shelf_e_list);
 }
 
 // 初始化所有链表
