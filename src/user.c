@@ -109,15 +109,16 @@ void userPickup()
     while (current != NULL)
     {
         Package *package = (Package *)current->data;
+        printf("快递货架号为：%s\n", package->package_id);
         printf("请输入取件码：\n");
-        char input[20];
-        scanf("%s", input);
+        int input;
+        scanf("%d", &input);
         clearInputBuffer();
         puts("");
 
         // 如果输入正确，则取件成功，并执行出库操作和推送链表删除操作
         // 出库操作，在待取快递对应的货架里删除该快递节点
-        if (strcmp(input, package->package_id) == 0)
+        if (input == package->pick_up_code)
         {
             int index_of_shelf = package->package_id[0] - 'A';
             List *shelf_list;

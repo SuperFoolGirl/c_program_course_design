@@ -1000,7 +1000,7 @@ void viewShelfInfo()
             viewShelf(shelf_e_list);
             break;
         default:
-            break;
+            return;
         }
     }
 }
