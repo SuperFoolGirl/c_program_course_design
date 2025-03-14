@@ -13,3 +13,9 @@ void courierShowMenu();
 void queryCurrentDelivery();
 
 void confirmCurrentDelivery();
+
+void refuseCurrentDelivery();
+
+void invisibleModel();
+
+void viewCourierDelivery();

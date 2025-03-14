@@ -47,8 +47,11 @@ void courierShowMenu()
         system("cls");
         printf("欢迎登陆！");
         printf("请选择您的操作：\n");
-        printf("1.查询当前任务\n");
-        printf("2.确认当前快递送达\n");
+        printf("1. 查询当前任务\n");
+        printf("2. 确认当前快递送达\n");
+        printf("3. 拒绝当前任务\n");
+        printf("4. 隐身状态\n");
+        printf("5. 查看包裹信息\n");
         printf("按任意键退出\n");
 
         char choice = getchar();
@@ -62,7 +65,16 @@ void courierShowMenu()
         case '2':
             confirmCurrentDelivery();
             break;
-        default:
+        case '3':
+            refuseCurrentDelivery();
+            break;
+        case '4':
+            invisibleModel();
+            break;
+        case '5':
+            viewCourierDelivery();
+            break;
+        default :
             // 退出时释放临时链表
             listFreePackage(courier_delivery_list); // 注意快递员临时链表的类型是Package
             return;
@@ -171,5 +183,141 @@ void confirmCurrentDelivery()
             current = current->next;
         }
         printCommonInfo();
+    }
+}
+
+void refuseCurrentDelivery()
+{
+    // 如果当前被指派任务，可进行拒绝操作
+    // 删掉临时链表里的任务，并还给平台仓库和驿站仓库
+    // 理应能通知平台和驿站 但暂时先不做
+    system("cls");
+
+    if (the_courier->status == 0)
+    {
+        printf("当前无任务！\n");
+        printCommonInfo();
+        return;
+    }
+
+    // 平台给安排活了
+    if (the_courier->status == 1)
+    {
+        the_courier->status = 0;
+        ListNode *current = courier_delivery_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            
+            current = current->next;
+            listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+            listAdd(platform_warehouse_list, package); // 加入平台仓库
+    
+            current = current->next;
+        }
+        printf("已拒绝任务！\n");
+        printCommonInfo();
+    }
+    // 驿站安排活了
+    else
+    {
+        the_courier->status = 0;
+        ListNode *current = courier_delivery_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            
+            current = current->next;
+            listRemove(courier_delivery_list, package); // 删除临时链表中的快递，可自动完成size--
+            listAdd(users_send_list, package); // 加入驿站寄件链表
+    
+            current = current->next;
+        }
+        printf("已拒绝任务！\n");
+        printCommonInfo();
+    }
+}
+
+void invisibleModel()
+{
+    // 隐身模式，不接收任务
+    system("cls");
+    if (courier_delivery_list->size != 0)
+    {
+        printf("您有未完成的任务，无法进入隐身模式！\n");
+        printCommonInfo();
+        return;
+    }
+
+    // 设定status取1且临时链表中没有任务时，为隐身模式
+    if (the_courier->status == 1)
+    {
+        printf("您正处于隐身模式，是否关闭？\n");
+        printf("1. 是\n");
+        printf("2. 否\n");
+
+        char choice = getchar();
+        clearInputBuffer();
+
+        if (choice == '1')
+        {
+            the_courier->status = 0;
+            printf("已关闭隐身模式！\n");
+            printCommonInfo();
+        }
+        else
+        {
+            printf("已取消！\n");
+            printCommonInfo();
+        }
+    }
+
+    // 未处于隐身模式
+    if (the_courier->status == 0)
+    {
+        printf("您是否进入隐身模式？\n");
+        printf("1. 是\n");
+        printf("2. 否\n");
+
+        char choice = getchar();
+        clearInputBuffer();
+
+        if (choice == '1')
+        {
+            the_courier->status = 1;
+            printf("已进入隐身模式！\n");
+            printCommonInfo();
+        }
+        else
+        {
+            printf("已取消！\n");
+            printCommonInfo();
+        }
+    }
+}
+
+void viewCourierDelivery()
+{
+    if (courier_delivery_list->size == 0)
+    {
+        printf("暂无任务！\n");
+        printCommonInfo();
+        return;
+    }
+
+    ListNode *current = courier_delivery_list->head;
+    while (current != NULL)
+    {
+        Package *package = (Package *)current->data;
+        printf("包裹ID：%s\n", package->package_id);
+        printf("收件人：%s\n", package->receiver_account);
+        printf("快递员：%s\n", package->courier_account);
+        printf("是否加急：%s\n", package->isExpress == 1 ? "是" : "否");
+        printf("体积：%s\n", package->volume == 1 ? "大" : "小");
+        printf("重量：%s\n", package->weight == 1 ? "重" : "轻");
+        printf("快递类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜" : "普通");
+        printf("价值：%s\n", package->value == 1 ? "高价值" : "低价值");
+        puts("");
+        current = current->next;
     }
 }
