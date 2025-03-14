@@ -22,7 +22,7 @@ void userQuerySend();
 
 void userFeedback();
 
-void userPay(int isExpress);
+void userPay(const int isExpress);
 
 void userModifySend();
 

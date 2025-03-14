@@ -324,7 +324,7 @@ void viewBusinessStatistics()
     printCommonInfo();
 }
 
-void pushMessageToUser(Package *package)
+void pushMessageToUser(Package *package) // 不能用const修饰，listAdd函数会报警
 {
     User *user = userElementGet(users_list, package->receiver_account);
     if (user == NULL)
@@ -1005,7 +1005,7 @@ void viewShelfInfo()
     }
 }
 
-void viewShelf(List *shelf_list)
+void viewShelf(const List *shelf_list)
 {
     system("cls");
     if (shelf_list->size == 0)

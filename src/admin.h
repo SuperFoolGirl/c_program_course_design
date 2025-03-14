@@ -57,7 +57,7 @@ void viewShelfInfo();
 
 void modifyShelfInfo();
 
-void viewShelf(List *shelf_list);
+void viewShelf(const List *shelf_list);
 
 void modifyShelf(List *shelf_list);
 

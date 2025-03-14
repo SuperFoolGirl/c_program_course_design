@@ -297,7 +297,7 @@ void userSend()
     userPay(package->isExpress);
 }
 
-void userPay(int isExpress)
+void userPay(const int isExpress)
 {
     system("cls");
     if (the_user->user_type == 0)
