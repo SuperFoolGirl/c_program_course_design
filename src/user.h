@@ -24,8 +24,10 @@ void userQuerySend();
 
 void userFeedback();
 
-void userPay(const int isExpress);
+void userPay(const int isExpress, int payment);
 
 void userModifySend();
 
 void userCancelSend();
+
+int payment(Package *package);

@@ -314,10 +314,10 @@ void userSend()
     clearInputBuffer();
 
     // 付费模块
-    userPay(package->isExpress);
+    userPay(package->isExpress, payment(package));
 }
 
-void userPay(const int isExpress)
+void userPay(const int isExpress, int payment)
 {
     system("cls");
     if (the_user->user_type == 0)
@@ -325,10 +325,13 @@ void userPay(const int isExpress)
         if (isExpress == 1)
         {
             printf("您的用户类型为普通用户，请原价支付加急件\n");
+            printf("支付金额为：%d\n", payment * 2);
+            
         }
         else
         {
             printf("您的用户类型为普通用户，请原价支付普通件\n");
+            printf("支付金额为：%d\n", payment);
         }
     }
     else if (the_user->user_type == 1)
@@ -336,10 +339,12 @@ void userPay(const int isExpress)
         if (isExpress == 1)
         {
             printf("您的用户类型为会员用户，可享受8折优惠支付加急件\n");
+            printf("支付金额为：%d\n", payment * 2 * 0.8);
         }
         else
         {
             printf("您的用户类型为会员用户，可享受8折优惠\n");
+            printf("支付金额为：%d\n", payment * 0.8);
         }
     }
     else if (the_user->user_type == 2)
@@ -379,6 +384,52 @@ void userPay(const int isExpress)
         printf("支付取消！\n");
     }
     printCommonInfo();
+}
+
+int payment(Package *package)
+{
+    int payment = 0;
+    if (package->volume == 0)
+    {
+        payment += 5;
+    }
+    else
+    {
+        payment += 10;
+    }
+
+    if (package->weight == 0)
+    {
+        payment += 5;
+    }
+    else
+    {
+        payment += 10;
+    }
+
+    if (package->special_type == 0)
+    {
+        payment += 5;
+    }
+    else if (package->special_type == 1)
+    {
+        payment += 10;
+    }
+    else
+    {
+        payment += 15;
+    }
+
+    if (package->value == 0)
+    {
+        payment += 5;
+    }
+    else
+    {
+        payment += 10;
+    }
+
+    return payment;
 }
 
 void userQueryPickup()
