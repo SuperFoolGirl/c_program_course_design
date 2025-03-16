@@ -5,51 +5,8 @@ Admin *the_admin = NULL;
 void adminShowMenu()
 {
     system("cls");
-
-    // 弹窗提醒模块
-    if (admin_warehouse_list->size > 0)
-    {
-        printf("快递已到达，请及时入库！\n");
-
-        // 为了防止弹窗一闪而过 需要加一个确认判断
-        printCommonInfo();
-
-        system("cls"); // 为下一个弹窗清屏
-    }
-    puts("");
-
-    // 架子容量警告，达到80%时提醒
-    int flag = 0;
-    if (shelf_a_list->size >= SIZE * 4)
-    {
-        printf("货架A已接近满载，请及时清理！\n");
-        flag = 1;
-    }
-    if (shelf_b_list->size >= SIZE * 4)
-    {
-        printf("货架B已接近满载，请及时清理！\n");
-        flag = 1;
-    }
-    if (shelf_c_list->size >= SIZE * 4)
-    {
-        printf("货架C已接近满载，请及时清理！\n");
-        flag = 1;
-    }
-    if (shelf_d_list->size >= SIZE * 4)
-    {
-        printf("货架D已接近满载，请及时清理！\n");
-        flag = 1;
-    }
-    if (shelf_e_list->size >= SIZE * 4)
-    {
-        printf("货架E已接近满载，请及时清理！\n");
-        flag = 1;
-    }
-    if (flag == 1)
-    {
-        printCommonInfo();
-    }
-
+    adminPop();
+    
     while (1)
     {
         system("cls");
@@ -93,6 +50,53 @@ void adminShowMenu()
         default:
             return; // 这里必须是return 否则无法退出while循环。在进入这些函数的二级菜单中，最后就是break了，因为外边没有while循环
         }
+    }
+}
+
+void adminPop()
+{
+    // 弹窗提醒模块
+    if (admin_warehouse_list->size > 0)
+    {
+        printf("快递已到达，请及时入库！\n");
+
+        // 为了防止弹窗一闪而过 需要加一个确认判断
+        printCommonInfo();
+
+        system("cls"); // 为下一个弹窗清屏
+    }
+    puts("");
+
+    // 架子容量警告，达到80%时提醒
+    int flag = 0;
+    if (shelf_a_list->size >= SIZE * 4)
+    {
+        printf("货架A已接近满载，请及时清理！\n");
+        flag = 1;
+    }
+    if (shelf_b_list->size >= SIZE * 4)
+    {
+        printf("货架B已接近满载，请及时清理！\n");
+        flag = 1;
+    }
+    if (shelf_c_list->size >= SIZE * 4)
+    {
+        printf("货架C已接近满载，请及时清理！\n");
+        flag = 1;
+    }
+    if (shelf_d_list->size >= SIZE * 4)
+    {
+        printf("货架D已接近满载，请及时清理！\n");
+        flag = 1;
+    }
+    if (shelf_e_list->size >= SIZE * 4)
+    {
+        printf("货架E已接近满载，请及时清理！\n");
+        flag = 1;
+    }
+    if (flag == 1)
+    {
+        printCommonInfo();
     }
 }
 

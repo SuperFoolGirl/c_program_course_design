@@ -11,38 +11,7 @@ void userShowMenu()
     system("cls");
     user_delivery_list = listInit(); // 初始化临时链表。必须初始化，否则退出时free函数报错
 
-    // 取件弹窗
-    if (the_user->receive_status == 1) // 这个还是要有的，迅速判断是否有快递到达，然后进来慢慢找
-    {
-        printf("您有快递到达，请及时取件！\n\n");
-
-        // 遍历推送链表，找到自己的推送信息
-        // 与此同时，删除推送链表对应节点。因为有用信息已经转移到临时链表了
-        ListNode *current = users_push_list->head;
-        while (current != NULL)
-        {
-            Package *package = (Package *)current->data;
-            if (strcmp(package->receiver_account, the_user->account) == 0)
-            {
-                // 将推送信息加入临时链表
-                listAdd(user_delivery_list, package);
-
-                // 删除之前先往后走
-                current = current->next;
-
-                // 用户和快递员均在推送弹窗中删除推送节点
-                listRemove(users_push_list, package);
-
-                printf("货架号：%s\n", package->package_id);
-                printf("取件码：%d\n", package->pick_up_code);
-                printf("--------------------\n");
-
-                continue; // 跳过一般的更新
-            }
-            current = current->next;
-        }
-        printCommonInfo();
-    }
+    userPop(); // 弹出推送
 
     while (1)
     {
@@ -89,6 +58,42 @@ void userShowMenu()
             listFreePackage(user_delivery_list); // 注意用户临时链表的类型是Package
             return;
         }
+    }
+}
+
+void userPop()
+{
+    // 取件弹窗
+    if (the_user->receive_status == 1) // 这个还是要有的，迅速判断是否有快递到达，然后进来慢慢找
+    {
+        printf("您有快递到达，请及时取件！\n\n");
+
+        // 遍历推送链表，找到自己的推送信息
+        // 与此同时，删除推送链表对应节点。因为有用信息已经转移到临时链表了
+        ListNode *current = users_push_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->receiver_account, the_user->account) == 0)
+            {
+                // 将推送信息加入临时链表
+                listAdd(user_delivery_list, package);
+
+                // 删除之前先往后走
+                current = current->next;
+
+                // 用户和快递员均在推送弹窗中删除推送节点
+                listRemove(users_push_list, package);
+
+                printf("货架号：%s\n", package->package_id);
+                printf("取件码：%d\n", package->pick_up_code);
+                printf("--------------------\n");
+
+                continue; // 跳过一般的更新
+            }
+            current = current->next;
+        }
+        printCommonInfo();
     }
 }
 
@@ -183,6 +188,21 @@ void userSend()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+
+    // 加入包裹ID重名检测
+    ListNode *current = users_send_list->head;
+    while (current != NULL)
+    {
+        Package *temp = (Package *)current->data;
+        if (strcmp(package_id, temp->package_id) == 0)
+        {
+            printf("包裹ID重名！\n");
+            printCommonInfo();
+            return;
+        }
+        current = current->next;
+    }
+    
     strcpy(package->package_id, package_id);
 
     // 这里为了逻辑处理，必须改为收件人，因为两边来回发件方向相反

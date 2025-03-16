@@ -54,6 +54,21 @@ void writeToBeShippedDelivery()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+
+    // 加入包裹ID重名检测
+    ListNode *current = platform_warehouse_list->head;
+    while (current != NULL)
+    {
+        Package *temp = (Package *)current->data;
+        if (strcmp(package_id, temp->package_id) == 0)
+        {
+            printf("包裹ID重名！\n");
+            printCommonInfo();
+            return;
+        }
+        current = current->next;
+    }
+    
     strcpy(package->package_id, package_id);
 
     printf("请输入收件人用户名：\n");

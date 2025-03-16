@@ -12,6 +12,8 @@ extern List *users_push_list;
 
 void userShowMenu();
 
+void userPop();
+
 void userPickup();
 
 void userSend();

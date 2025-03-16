@@ -11,36 +11,7 @@ void courierShowMenu()
     system("cls");
     courier_delivery_list = listInit();
 
-    // 推送
-    // 注意里面删除节点的机制
-    // current的更新依赖于本身存在，不可提前remove掉。或者提前记录以下
-    if (the_courier->status == 1 || the_courier->status == 2)
-    {
-        // 遍历推送链表，找到自己的推送信息，并添加到临时链表
-        // 与此同时，删除推送链表对应节点
-        ListNode *current = couriers_push_list->head;
-        while (current != NULL)
-        {
-            Package *package = (Package *)current->data;
-            if (strcmp(package->courier_account, the_courier->account) == 0) // 如果包裹上标注的快递员账号是自己
-            {
-                // 将推送信息加入临时链表
-                listAdd(courier_delivery_list, package);
-
-                // 删除之前先往后走
-                current = current->next;
-
-                // 删除推送链表对应节点
-                listRemove(couriers_push_list, package);
-
-                continue; // 跳过一般的更新
-            }
-            current = current->next;
-        }
-
-        printf("您有新的任务，请及时查看！\n");
-        printCommonInfo();
-    }
+    courierPop();
 
     while (1)
     {
@@ -79,6 +50,39 @@ void courierShowMenu()
             listFreePackage(courier_delivery_list); // 注意快递员临时链表的类型是Package
             return;
         }
+    }
+}
+
+void courierPop()
+{
+    // 注意里面删除节点的机制
+    // current的更新依赖于本身存在，不可提前remove掉。或者提前记录以下
+    if (the_courier->status == 1 || the_courier->status == 2)
+    {
+        // 遍历推送链表，找到自己的推送信息，并添加到临时链表
+        // 与此同时，删除推送链表对应节点
+        ListNode *current = couriers_push_list->head;
+        while (current != NULL)
+        {
+            Package *package = (Package *)current->data;
+            if (strcmp(package->courier_account, the_courier->account) == 0) // 如果包裹上标注的快递员账号是自己
+            {
+                // 将推送信息加入临时链表
+                listAdd(courier_delivery_list, package);
+
+                // 删除之前先往后走
+                current = current->next;
+
+                // 删除推送链表对应节点
+                listRemove(couriers_push_list, package);
+
+                continue; // 跳过一般的更新
+            }
+            current = current->next;
+        }
+
+        printf("您有新的任务，请及时查看！\n");
+        printCommonInfo();
     }
 }
 

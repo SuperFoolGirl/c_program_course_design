@@ -50,7 +50,7 @@ int main()
     {
         // 界面展示
         system("cls");
-        printf("欢迎使用快递管理系统！\n");
+        printf("欢迎使用快递管理系统！\n\n");
         printf("请登录：\n");
         printf("1. 用户\n");
         printf("2. 管理员\n");

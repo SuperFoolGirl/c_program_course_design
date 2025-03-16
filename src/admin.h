@@ -25,6 +25,8 @@ extern List *couriers_push_list;
 
 void adminShowMenu();
 
+void adminPop();
+
 void wareHousing();
 
 void userManagement();

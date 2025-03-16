@@ -82,3 +82,11 @@ v1.6
 说明：
 1. 增加了快递员新功能
 2. 部分函数形参进行了const修饰化
+3. 加入SDL库
+    1. task.json中，-I即外部库include目录，-L即外部库lib目录，-l加名称
+    2. 将SDL3.dll动态库拉到可执行文件所在的目录(cwd)中来，注意不是根目录
+    3. configuration UI中增添includePath，否则搜索不到头文件
+4. 默认路径问题：vscode的默认搜索路径launch.json的cwd，vs默认搜索路径为根目录
+5. vs的unicode使用的是UTF-16LE，vscode中UTF-8的文件在记事本中转为16小端即可
+6. 加入包裹ID重名检测
+7. 利用好vscode的缩略图和代码块折叠，提高效率

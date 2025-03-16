@@ -10,6 +10,8 @@ extern List *couriers_push_list;
 
 void courierShowMenu();
 
+void courierPop();
+
 void queryCurrentDelivery();
 
 void confirmCurrentDelivery();
