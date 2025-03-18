@@ -1,6 +1,6 @@
 #pragma once
-#include "common.h"
 #include "data_storage.h"
+#include "ui.h"
 #include <time.h>
 
 #define MAX 9000

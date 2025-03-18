@@ -3,6 +3,7 @@
 #include "admin.h"
 #include "courier.h"
 #include "platform.h"
+#include "ui.h"
 
 // 定义全局变量链表--在main函数处定义。其他源文件若想使用，去对应头文件声明全局变量即可
 // 平台账号没有使用链表储存，因为逻辑上来说，平台与驿站是深度合作关系，管理员无权限修改平台相关信息
@@ -35,8 +36,6 @@ List *shelf_b_list; // Package类型链表
 List *shelf_c_list; // Package类型链表
 List *shelf_d_list; // Package类型链表
 List *shelf_e_list; // Package类型链表
-
-
 
 int main()
 {

@@ -1,10 +1,5 @@
 #include "login.h"
 
-// 登录者结构体在登录成功时进行赋值
-extern Admin *the_admin;
-extern Courier *the_courier;
-extern User *the_user;
-
 // 通过查询链表实现登录
 int verifyUser(const char *account, const char *password)
 {

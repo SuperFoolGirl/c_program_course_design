@@ -1,6 +1,6 @@
 #pragma once
-#include "common.h"
 #include "data_storage.h"
+#include "ui.h"
 
 extern List *platform_warehouse_list;
 extern List *couriers_list;

@@ -1,5 +1,6 @@
 #include "admin.h"
 
+// 在源文件中定义全局变量
 Admin *the_admin = NULL;
 
 void adminShowMenu()
