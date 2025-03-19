@@ -1,5 +1,4 @@
 #pragma once
-#include "common.h"
 #include "data_storage.h"
 #include <time.h>
 
@@ -23,46 +22,46 @@ extern List *shelf_e_list;
 extern List *users_push_list;
 extern List *couriers_push_list;
 
-void adminShowMenu();
+void adminShowMenu(); // 管理员菜单
 
-void adminPop();
+void adminPop(); // 弹窗提醒
 
-void wareHousing();
+void wareHousing(); // 入库
 
-void userManagement();
+void userManagement(); // 用户管理
 
-void shelfManagement();
+void shelfManagement(); // 货架管理
 
-void viewFeedback();
+void viewFeedback(); // 查看反馈
 
-void inventoryCheck();
+void inventoryCheck(); // 库存查看
 
-void viewBusinessStatistics();
+void viewBusinessStatistics(); // 查看业务统计
 
-void addUser();
+void addUser(); // 添加用户
 
-void deleteUser();
+void deleteUser(); // 删除用户
 
-void modifyUser();
+void modifyUser(); // 修改用户信息
 
-void viewUserInfo();
+void viewUserInfo(); // 查看用户信息
 
-void registerUser();
+void registerUser(); // 注册用户
 
-void registerCourier();
+void registerCourier(); // 注册快递员
 
-void registerAdmin();
+void registerAdmin(); // 注册管理员
 
-void registerPlatform();
+void registerPlatform(); // 注册平台
 
-void viewShelfInfo();
+void viewShelfInfo(); // 查看货架信息
 
-void modifyShelfInfo();
+void modifyShelfInfo(); // 修改货架信息
 
-void viewShelf(const List *shelf_list);
+void viewShelf(const List *shelf_list); // 查看货架
 
-void modifyShelf(List *shelf_list);
+void modifyShelf(List *shelf_list); // 修改货架
 
-void pushMessageToUser(Package *package);
+void pushMessageToUser(Package *package); // 推送消息
 
-void addressUserSend();
+void addressUserSend(); // 处理用户寄件

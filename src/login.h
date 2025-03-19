@@ -1,5 +1,4 @@
 #pragma once
-#include "common.h"
 #include "data_storage.h"
 
 extern List *users_list;
@@ -20,18 +19,22 @@ extern List *shelf_c_list;
 extern List *shelf_d_list;
 extern List *shelf_e_list;
 
-int verifyUser(const char *account, const char *password);
+int verifyUser(const char *account, const char *password); // 验证用户
 
-int verifyAdmin(const char *account, const char *password);
+int verifyAdmin(const char *account, const char *password); // 验证管理员
 
-int verifyCourier(const char *account, const char *password);
+int verifyCourier(const char *account, const char *password); // 验证快递员
 
-int verifyPlatform(const char *account, const char *password);
+int verifyPlatform(const char *account, const char *password); // 验证运输平台
 
-void recoverListData();
+void recoverListData(); // 读取文件中的数据，恢复链表数据
 
-void rewriteAllFiles();
+void rewriteAllFiles(); // 把链表全部更新到文件中
 
-void freeLists();
+void freeLists(); // 释放链表内存
 
-void listsInit();
+void listsInit(); // 初始化所有链表
+
+void registering(); // 注册
+
+void login(); // 登录

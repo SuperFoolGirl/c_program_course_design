@@ -5,6 +5,7 @@ Courier *the_courier = NULL;
 // 创建临时链表，思路类似于用户推送
 List *courier_delivery_list = NULL;
 
+static int isDeleted = 0; // 只能在本文件使用
 
 void courierShowMenu()
 {
@@ -15,14 +16,23 @@ void courierShowMenu()
 
     while (1)
     {
+        // 如果账号被删除，直接退出
+        if (isDeleted)
+        {
+            listFreePackage(courier_delivery_list);
+            isDeleted = 0; // 重置标志位
+            return;
+        }
+
         system("cls");
-        printf("欢迎登陆！");
+        printf("欢迎登录！\n\n");
         printf("请选择您的操作：\n");
         printf("1. 查询当前任务\n");
         printf("2. 确认当前快递送达\n");
         printf("3. 拒绝当前任务\n");
         printf("4. 隐身状态\n");
         printf("5. 查看包裹信息\n");
+        printf("6. 注销账号\n\n");
         printf("按任意键退出\n");
 
         char choice = getchar();
@@ -45,7 +55,10 @@ void courierShowMenu()
         case '5':
             viewCourierDelivery();
             break;
-        default :
+        case '6':
+            deleteCourierAccount();
+            break;
+        default:
             // 退出时释放临时链表
             listFreePackage(courier_delivery_list); // 注意快递员临时链表的类型是Package
             return;
@@ -323,5 +336,31 @@ void viewCourierDelivery()
         printf("价值：%s\n", package->value == 1 ? "高价值" : "低价值");
         puts("");
         current = current->next;
+    }
+}
+
+void deleteCourierAccount()
+{
+    system("cls");
+    printf("您确定要注销账号吗？\n");
+    printf("1. 是\n");
+    printf("按其他任意键返回\n");
+
+    char choice = getchar();
+    clearInputBuffer();
+
+    if (choice == '1')
+    {
+        // 在链表中删除
+        listRemove(couriers_list, the_courier);
+
+        isDeleted = 1;
+        printf("注销成功！\n");
+        printCommonInfo();
+    }
+    else
+    {
+        printf("已取消！\n");
+        printCommonInfo();
     }
 }

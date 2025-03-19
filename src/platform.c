@@ -5,14 +5,14 @@ void platformShowMenu()
     while (1)
     {
         system("cls");
-        printf("欢迎登陆！");
+        printf("欢迎登录！\n\n");
         printf("请选择您的操作：\n");
         printf("1. 写入待发货快递\n");
         printf("2. 修改待发货快递\n");
         printf("3. 删除待发货快递\n");
         printf("4. 匹配快递员进行发货\n");
         printf("5. 查看发货信息\n");
-        printf("6. 查看平台仓库信息\n");
+        printf("6. 查看平台仓库信息\n\n");
         printf("按任意键退出\n");
 
         char choice = getchar();
@@ -54,6 +54,7 @@ void writeToBeShippedDelivery()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+    puts("");
 
     // 加入包裹ID重名检测
     ListNode *current = platform_warehouse_list->head;
@@ -204,7 +205,7 @@ void matchCourier()
         // 如果快递没了
         if (current == NULL)
         {
-            printf("已全部发货！\n");
+            printf("\n已全部发货！\n");
             printCommonInfo();
             return;
         }
@@ -255,7 +256,7 @@ void matchCourier()
             // 判断下一个快递员是否为空
             if (courier_current == NULL)
             {
-                printf("暂无快递员接单！\n");
+                printf("\n暂无快递员接单！\n");
                 printCommonInfo();
                 return;
             }
@@ -309,7 +310,7 @@ void modifyToBeShippedDelivery()
                 printf("3. 体积\n");
                 printf("4. 重量\n");
                 printf("5. 特殊类型\n");
-                printf("6. 价值\n");
+                printf("6. 价值\n\n");
                 printf("按其他任意键返回\n");
 
                 char choice = getchar();

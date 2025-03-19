@@ -10,7 +10,7 @@ void adminShowMenu()
     while (1)
     {
         system("cls");
-        printf("欢迎登陆！");
+        printf("欢迎登录！\n\n");
         printf("请您选择操作：\n");
         printf("1. 入库\n");
         printf("2. 用户管理\n");
@@ -219,9 +219,9 @@ void userManagement()
         system("cls");
         printf("请选择您要进行的操作：\n");
         printf("1. 添加用户\n");     // 四种类型皆可
-        printf("2. 删除用户\n");     // 不支持快递平台
+        printf("2. 删除用户\n");     // 不支持快递平台，认为没有权限删除平台，需要更高级的管理员。下同。
         printf("3. 修改用户信息\n"); // 不支持快递平台
-        printf("4. 查看用户信息\n"); // 四种类型皆可
+        printf("4. 查看用户信息\n\n"); // 不支持快递平台
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -255,7 +255,7 @@ void shelfManagement()
         system("cls");
         printf("请选择您要进行的操作：\n");
         printf("1. 查看货架信息\n");
-        printf("2. 修改货架信息\n");
+        printf("2. 修改货架信息\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -279,9 +279,11 @@ void viewFeedback()
 {
     system("cls");
     FILE *fp = fopen("../files/feedback.txt", "r");
+    // 如果文件无内容，fp为空
     if (fp == NULL)
     {
-        printf("文件打开失败！\n");
+        printf("暂无反馈！\n");
+        printCommonInfo();
         return;
     }
 
@@ -324,7 +326,42 @@ void inventoryCheck()
 void viewBusinessStatistics()
 {
     system("cls");
-    printf("查看业务统计模块\n");
+    // 显示所有用户的取件、收件情况
+    // 分别打开pickup_records.txt和send_records.txt，全部打印
+    FILE *fp = fopen("../files/pickup_records.txt", "r");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        return;
+    }
+    // 读取文件内容并打印，并进行计数
+    char record[200];
+    int cnt = 0;
+    while (fgets(record, 100, fp) != NULL)
+    {
+        cnt++;
+        printf("%s\n", record);
+    }
+    printf("取件总数：%d\n", cnt);
+    fclose(fp);
+
+    printf("\n\n\n========================\n\n\n");
+
+    fp = fopen("../files/send_records.txt", "r");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        return;
+    }
+    cnt = 0;
+    while (fgets(record, 100, fp) != NULL)
+    {
+        cnt++;
+        printf("%s\n", record);
+    }
+    printf("寄件总数：%d\n", cnt);
+    fclose(fp);
+
     printCommonInfo();
 }
 
@@ -348,7 +385,7 @@ void addUser()
         printf("1. 普通用户\n");
         printf("2. 快递员\n");
         printf("3. 管理员\n");
-        printf("4. 快递平台\n");
+        printf("4. 快递平台\n\n");
         printf("按任意其他键返回\n");
 
         char choice = getchar();
@@ -553,7 +590,7 @@ void deleteUser()
         printf("请选择要删除的用户类型：\n");
         printf("1. 用户\n");
         printf("2. 快递员\n");
-        printf("3. 管理员\n");
+        printf("3. 管理员\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -627,7 +664,7 @@ void modifyUser()
         printf("请选择要修改的用户类型：\n");
         printf("1. 用户\n");
         printf("2. 快递员\n");
-        printf("3. 管理员\n");
+        printf("3. 管理员\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -653,7 +690,7 @@ void modifyUser()
             printf("1. 用户名\n");
             printf("2. 密码\n");
             printf("3. 电话号码\n");
-            printf("4. 用户类型\n");
+            printf("4. 用户类型\n\n");
             printf("按其他任意键返回\n");
 
             choice2 = getchar();
@@ -738,7 +775,7 @@ void modifyUser()
             }
             printf("请选择要修改的信息：\n");
             printf("1. 用户名\n");
-            printf("2. 密码\n");
+            printf("2. 密码\n\n");
             printf("按其他任意键返回\n");
 
             choice2 = getchar();
@@ -785,7 +822,7 @@ void modifyUser()
             }
             printf("请选择要修改的信息：\n");
             printf("1. 用户名\n");
-            printf("2. 密码\n");
+            printf("2. 密码\n\n");
             printf("按其他任意键返回\n");
 
             choice2 = getchar();
@@ -832,7 +869,7 @@ void viewUserInfo()
         printf("请选择要查看的用户类型：\n");
         printf("1. 用户\n");
         printf("2. 快递员\n");
-        printf("3. 管理员\n");
+        printf("3. 管理员\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -979,7 +1016,7 @@ void viewShelfInfo()
         printf("2. 货架B\n");
         printf("3. 货架C\n");
         printf("4. 货架D\n");
-        printf("5. 货架E\n");
+        printf("5. 货架E\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -1114,7 +1151,7 @@ void modifyShelfInfo()
         printf("2. 货架B\n");
         printf("3. 货架C\n");
         printf("4. 货架D\n");
-        printf("5. 货架E\n");
+        printf("5. 货架E\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -1168,7 +1205,7 @@ void modifyShelf(List *shelf_list)
             printf("3. 体积\n");
             printf("4. 重量\n");
             printf("5. 特殊类型\n");
-            printf("6. 价值\n");
+            printf("6. 价值\n\n");
             printf("按其他任意键返回\n");
 
             char choice = getchar();

@@ -1,5 +1,4 @@
 #pragma once
-#include "common.h"
 #include "data_storage.h"
 
 extern List *shelf_a_list;
@@ -9,25 +8,34 @@ extern List *shelf_d_list;
 extern List *shelf_e_list;
 extern List *users_send_list;
 extern List *users_push_list;
+extern List *users_list;
 
-void userShowMenu();
+void userShowMenu(); // 用户菜单
 
-void userPop();
+void userPop(); // 弹窗提醒
 
-void userPickup();
+void userPickup(); // 取件
 
-void userSend();
+void userSend(); // 寄件
 
-void userQueryPickup();
+void userQueryPickup(); // 查询取件信息
 
-void userQuerySend();
+void userQuerySend(); // 查询寄件信息
 
-void userFeedback();
+void userFeedback(); // 反馈
 
-void userPay(const int isExpress, int payment);
+void userPay(const int isExpress, int payment); // 付费
 
-void userModifySend();
+void userModifySend(); // 修改寄件信息
 
-void userCancelSend();
+void userCancelSend(); // 取消寄件
 
-int payment(Package *package);
+int payment(Package *package); // 计算价格
+
+struct tm *getTime(); // 获取时间
+
+void recordSendBehaviors(const char *account, const char *package_id, struct tm *time); // 记录寄件行为
+
+void recordPickUpBehaviors(const char *account, const char *package_id, struct tm *time); // 记录取件行为
+
+void deleteUserAccount(); // 注销账号

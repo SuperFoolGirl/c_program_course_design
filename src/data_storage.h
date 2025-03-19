@@ -101,8 +101,11 @@ Package *packageElementGetByCourier(List *list, const char *receiver_account);
 
 Admin *adminElementGet(List *list, const char *account);
 
+
+// 清空输入缓冲区
 void clearInputBuffer();
 
+// 打印通用信息
 void printCommonInfo();
 
 // 从链表中移除指定元素

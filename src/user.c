@@ -1,6 +1,9 @@
 #include "user.h"
+#include <time.h>
 
 User *the_user = NULL;
+
+static int isDeleted = 0;
 
 // 创建临时链表，来存储快递信息
 // 不怕退出程序数据消失，因为是基于推送文件的
@@ -15,8 +18,16 @@ void userShowMenu()
 
     while (1)
     {
+        // 如果账号被删除，直接退出
+        if (isDeleted)
+        {
+            listFreePackage(user_delivery_list);
+            isDeleted = 0; // 重置标志位
+            return;
+        }
+
         system("cls");
-        printf("欢迎登陆！");
+        printf("欢迎登录！\n\n");
         printf("请您选择操作：\n");
         printf("1. 取件\n");
         printf("2. 寄件\n");
@@ -25,6 +36,7 @@ void userShowMenu()
         printf("5. 修改寄件信息\n");
         printf("6. 取消寄件\n");
         printf("7. 反馈\n");
+        printf("8. 注销账号\n\n");
         printf("按其他任意键退出\n");
 
         char choice = getchar();
@@ -52,6 +64,9 @@ void userShowMenu()
             break;
         case '7':
             userFeedback();
+            break;
+        case '8':
+            deleteUserAccount();
             break;
         default:
             // 退出时释放临时链表
@@ -159,8 +174,10 @@ void userPickup()
             // 取件后，删除临时链表的信息
             listRemove(user_delivery_list, package);
 
-            
-            printf("取件成功！\n");
+            // 写入行为文件
+            recordPickUpBehaviors(the_user->account, package->package_id, getTime());
+
+            printf("取件成功！\n\n");
         }
         else
         {
@@ -188,6 +205,7 @@ void userSend()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+    puts("");
 
     // 加入包裹ID重名检测
     ListNode *current = users_send_list->head;
@@ -309,6 +327,10 @@ void userSend()
     the_user->send_status = 1; // 发件状态置为未发出
     puts("");
     printf("寄件成功！\n");
+
+    // 写入行为文件
+    recordSendBehaviors(the_user->account, package->package_id, getTime());
+
     printf("按任意键跳转付费界面\n");
     getchar();
     clearInputBuffer();
@@ -537,7 +559,7 @@ void userModifySend()
                 printf("3. 体积\n");
                 printf("4. 重量\n");
                 printf("5. 特殊类型\n");
-                printf("6. 价值\n");
+                printf("6. 价值\n\n");
                 printf("按其他任意键返回\n");
 
                 char choice = getchar();
@@ -686,4 +708,77 @@ void userCancelSend()
     }
     printf("未找到该快递！\n");
     printCommonInfo();
+}
+
+void recordPickUpBehaviors(const char *user_name, const char *package, struct tm *local_time)
+{
+    FILE *fp = fopen("../files/pickup_records.txt", "a");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        return;
+    }
+    // 把用户名、包裹号、时间写入文件
+    fprintf(fp, "%s %s %d-%d-%d %d:%d:%d\n", user_name, package, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    fclose(fp);
+}
+
+void recordSendBehaviors(const char *user_name, const char *package, struct tm *local_time)
+{
+    FILE *fp = fopen("../files/send_records.txt", "a");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        return;
+    }
+    // 把用户名、包裹号、时间写入文件
+    fprintf(fp, "%s %s %d-%d-%d %d:%d:%d\n", user_name, package, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    fclose(fp);
+}
+
+struct tm *getTime()
+{
+    time_t current_time;
+    struct tm *local_time;
+    // 获取当前时间戳
+    current_time = time(NULL);
+    if (current_time == ((time_t)-1))
+    {
+        fprintf(stderr, "获取时间戳失败\n");
+        return NULL;
+    }
+    // 将时间戳转换为本地时间
+    local_time = localtime(&current_time);
+    if (local_time == NULL)
+    {
+        fprintf(stderr, "转换为本地时间失败\n");
+        return NULL;
+    }
+    return local_time;
+}
+
+void deleteUserAccount()
+{
+    system("cls");
+    printf("您确定要注销账号吗？\n");
+    printf("1. 是\n");
+    printf("按其他任意键返回\n");
+
+    char choice = getchar();
+    clearInputBuffer();
+
+    if (choice == '1')
+    {
+        // 从用户链表中删除
+        listRemove(users_list, the_user);
+
+        isDeleted = 1;
+        printf("注销成功！\n");
+        printCommonInfo();
+    }
+    else
+    {
+        printf("取消注销！\n");
+        printCommonInfo();
+    }
 }

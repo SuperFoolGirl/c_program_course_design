@@ -1,4 +1,8 @@
 #include "login.h"
+#include "user.h"
+#include "admin.h"
+#include "courier.h"
+#include "platform.h"
 
 // 登录者结构体在登录成功时进行赋值
 extern Admin *the_admin;
@@ -152,4 +156,156 @@ void listsInit()
     shelf_c_list = listInit();
     shelf_d_list = listInit();
     shelf_e_list = listInit();
+}
+
+void registering()
+{
+again:
+    system("cls"); // 清屏逻辑：输入后进入下一个页面时后，第一句加清屏，防止上一个页面的打印信息没有呈现就被清除
+    printf("温馨提示：当前仅支持用户注册，其他请联系管理员。\n\n");
+
+    printf("请输入用户名：\n");
+    char account[20];
+    scanf("%s", account);
+    clearInputBuffer();
+    puts("");
+
+    printf("请输入密码：\n");
+    char password[20];
+    scanf("%s", password);
+    clearInputBuffer();
+    puts("");
+
+    printf("请再次确认密码：\n");
+    char password_confirm[20];
+    scanf("%s", password_confirm);
+    clearInputBuffer();
+    puts("");
+
+    if (strcmp(password, password_confirm) != 0)
+    {
+        printf("两次密码输入不一致，请重新输入！\n");
+        printCommonInfo();
+        goto again;
+    }
+    else
+    {
+        // 添加用户名重复检查
+        ListNode *node = users_list->head;
+        while (node != NULL)
+        {
+            User *user = (User *)node->data;
+            if (strcmp(user->account, account) == 0)
+            {
+                printf("用户名已存在，请重新输入！\n");
+                printCommonInfo();
+                goto again;
+            }
+            node = node->next;
+        }
+
+        printf("请输入电话号码：\n");
+        char phone_number[20];
+        scanf("%s", phone_number);
+        clearInputBuffer();
+        puts("");
+
+        int default_user_type = 0;
+        int default_receive_status = 0;
+        int default_send_status = 0;
+
+        // 先把结构体写入链表
+        User *user = (User *)malloc(sizeof(User));
+        strcpy(user->account, account);
+        strcpy(user->password, password);
+        strcpy(user->phone_number, phone_number);
+        user->user_type = default_user_type;
+        user->receive_status = default_receive_status;
+        user->send_status = default_send_status;
+        listAdd(users_list, user);
+
+        printf("注册成功！\n");
+        printCommonInfo();
+    }
+}
+
+void login()
+{
+    while (1)
+    {
+        system("cls");
+        printf("请选择登录身份：\n");
+        printf("1. 用户\n");
+        printf("2. 管理员\n");
+        printf("3. 快递员\n");
+        printf("4. 运输平台\n\n");
+        printf("按其他任意键退出\n");
+
+        char choice = getchar();
+        clearInputBuffer();
+
+        if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
+        {
+            return;
+        }
+
+        system("cls");
+        char account[20];
+        char password[20];
+
+        printf("请输入用户名:\n");
+        scanf("%s", account);
+        clearInputBuffer();
+        puts("");
+
+        printf("请输入密码:\n");
+        scanf("%s", password);
+        clearInputBuffer();
+        puts("");
+
+        int ret = 0;
+        switch (choice)
+        {
+        case '1':
+            ret = verifyUser(account, password);
+            break;
+        case '2':
+            ret = verifyAdmin(account, password);
+            break;
+        case '3':
+            ret = verifyCourier(account, password);
+            break;
+        case '4':
+            ret = verifyPlatform(account, password);
+            break;
+        default:
+            break;
+        }
+        // 登录失败
+        if (ret == 0)
+        {
+            printf("登陆失败，请检查用户名和密码是否正确\n");
+            printCommonInfo();
+            continue;
+        }
+
+        // 登录成功后，根据身份进入对应的菜单
+        switch (choice)
+        {
+        case '1':
+            userShowMenu();
+            break;
+        case '2':
+            adminShowMenu();
+            break;
+        case '3':
+            courierShowMenu();
+            break;
+        case '4':
+            platformShowMenu();
+            break;
+        default:
+            break;
+        }
+    }
 }
