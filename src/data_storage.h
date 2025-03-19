@@ -19,7 +19,7 @@ typedef struct ListNode
 // 通用链表结构体
 // 我们需要创建多个链表，统一用List结构体来管理
 // 结构体里包含链表长度，有利于遍历
-typedef struct
+typedef struct List
 {
     ListNode *head; // 链表头指针
     int size;       // 链表长度。一方面可以立刻知道链表长度，另一方面可以用来逻辑删除

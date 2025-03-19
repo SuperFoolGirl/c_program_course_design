@@ -148,3 +148,13 @@ void listsInit()
     shelf_d_list = listInit();
     shelf_e_list = listInit();
 }
+
+int loginCallback()
+{
+
+}
+
+int registerCallback()
+{
+
+}

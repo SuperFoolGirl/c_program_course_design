@@ -15,19 +15,19 @@
 // 3. 每次对链表进行增删改操作后。无需立刻更新文件。只有在退出程序时，才会统一更新文件，以减少IO操作。
 
 // 三条用户链表
-List *users_list; // User类型链表
-List *admins_list; // Admin类型链表
+List *users_list;    // User类型链表
+List *admins_list;   // Admin类型链表
 List *couriers_list; // Courier类型链表
 
 // 两个仓库链表
 List *platform_warehouse_list; // Package类型链表
-List *admin_warehouse_list; // Package类型链表
+List *admin_warehouse_list;    // Package类型链表
 
 // 用户寄件链表
 List *users_send_list; // Package类型链表
 
 // 两个推送链表
-List *users_push_list; // Package类型链表
+List *users_push_list;    // Package类型链表
 List *couriers_push_list; // Package类型链表
 
 // 五个货架链表
@@ -47,10 +47,39 @@ int main()
 
     while (1)
     {
+        // 初始化GUI
+        if (GUI_Init() < 0)
+        {
+            return -1;
+        }
+
+        // 初始化背景
+        
+
+        // 定义按钮
+        Button loginButton = {
+            .rect = {760, 300, 400, 50},
+            .text = "登录",
+            .callback = loginCallback};
+
+        Button registerButton = {
+            .rect = {760, 400, 400, 50},
+            .text = "注册",
+            .callback = registerCallback};
+
+        Button buttons[] = {loginButton, registerButton};
+        int numButtons = sizeof(buttons) / sizeof(buttons[0]);
+
+        // 绘制界面
+        GUI_Draw(buttons, numButtons);
+
+        // 更新事件
+        GUI_Update(buttons, numButtons);
+
         // 界面展示
         system("cls");
         printf("欢迎使用快递管理系统！\n\n");
-        printf("请登录：\n");
+        printf("请选择：\n");
         printf("1. 用户\n");
         printf("2. 管理员\n");
         printf("3. 快递员\n");

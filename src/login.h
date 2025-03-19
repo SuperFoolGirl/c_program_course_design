@@ -39,3 +39,7 @@ void rewriteAllFiles();
 void freeLists();
 
 void listsInit();
+
+int loginCallback();
+
+int registerCallback();
