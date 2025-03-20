@@ -1,5 +1,6 @@
 #pragma once
 #include "data_storage.h"
+#include <time.h>
 
 extern List *shelf_a_list;
 extern List *shelf_b_list;
@@ -32,10 +33,10 @@ void userCancelSend(); // 取消寄件
 
 int payment(Package *package); // 计算价格
 
-struct tm *getTime(); // 获取时间
-
 void recordSendBehaviors(const char *account, const char *package_id, struct tm *time); // 记录寄件行为
 
 void recordPickUpBehaviors(const char *account, const char *package_id, struct tm *time); // 记录取件行为
 
 void deleteUserAccount(); // 注销账号
+
+void userSubstitute(); // 代取

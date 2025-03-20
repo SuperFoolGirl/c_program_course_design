@@ -1,5 +1,4 @@
 #include "../include/user.h"
-#include <time.h>
 
 User *the_user = NULL;
 
@@ -21,7 +20,7 @@ void userShowMenu()
         // 如果账号被删除，直接退出
         if (isDeleted)
         {
-            listFreePackage(user_delivery_list);
+            listFreeNode(user_delivery_list);
             isDeleted = 0; // 重置标志位
             return;
         }
@@ -36,7 +35,8 @@ void userShowMenu()
         printf("5. 修改寄件信息\n");
         printf("6. 取消寄件\n");
         printf("7. 反馈\n");
-        printf("8. 注销账号\n\n");
+        printf("8. 代取\n");
+        printf("9. 注销账号\n\n");
         printf("按其他任意键退出\n");
 
         char choice = getchar();
@@ -66,11 +66,14 @@ void userShowMenu()
             userFeedback();
             break;
         case '8':
+            userSubstitute();
+            break;
+        case '9':
             deleteUserAccount();
             break;
         default:
-            // 退出时释放临时链表
-            listFreePackage(user_delivery_list); // 注意用户临时链表的类型是Package
+            // 退出时释放临时链表，但不释放内存
+            listFreeNode(user_delivery_list); // 注意用户临时链表的类型是Package
             return;
         }
     }
@@ -84,7 +87,8 @@ void userPop()
         printf("您有快递到达，请及时取件！\n\n");
 
         // 遍历推送链表，找到自己的推送信息
-        // 与此同时，删除推送链表对应节点。因为有用信息已经转移到临时链表了
+        // 注意，不能直接删除推送链表。如果下号了，那用户再次上号，数据不就彻底没了吗？
+        // 因此，取件后再删除推送消息
         ListNode *current = users_push_list->head;
         while (current != NULL)
         {
@@ -94,17 +98,9 @@ void userPop()
                 // 将推送信息加入临时链表
                 listAdd(user_delivery_list, package);
 
-                // 删除之前先往后走
-                current = current->next;
-
-                // 用户和快递员均在推送弹窗中删除推送节点
-                listRemove(users_push_list, package);
-
                 printf("货架号：%s\n", package->package_id);
                 printf("取件码：%d\n", package->pick_up_code);
                 printf("--------------------\n");
-
-                continue; // 跳过一般的更新
             }
             current = current->next;
         }
@@ -136,7 +132,7 @@ void userPickup()
         clearInputBuffer();
         puts("");
 
-        // 如果输入正确，则取件成功，并执行出库操作和推送链表删除操作
+        // 如果输入正确，则取件成功，并执行出库操作和临时、推送链表删除操作
         // 出库操作，在待取快递对应的货架里删除该快递节点
         if (input == package->pick_up_code)
         {
@@ -174,10 +170,15 @@ void userPickup()
             // 取件后，删除临时链表的信息
             listRemove(user_delivery_list, package);
 
+            // 删除推送链表的信息
+            listRemove(users_push_list, package);
+
             // 写入行为文件
             recordPickUpBehaviors(the_user->account, package->package_id, getTime());
 
-            printf("取件成功！\n\n");
+            printf("取件成功！\n");
+
+            continue; // 跳过一般更新
         }
         else
         {
@@ -186,11 +187,11 @@ void userPickup()
             printCommonInfo();
             return;
         }
+        current = current->next;
     }
     // 全部取完后，将用户的取件状态置为0
     the_user->receive_status = 0;
-    puts("");
-    printf("全部取件成功！\n");
+    printf("\n全部取件成功！\n");
     printCommonInfo();
 }
 
@@ -722,7 +723,7 @@ void recordPickUpBehaviors(const char *user_name, const char *package, struct tm
         return;
     }
     // 把用户名、包裹号、时间写入文件
-    fprintf(fp, "%s %s %d-%d-%d %d:%d:%d\n", user_name, package, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    fprintf(fp, "用户名：%s  货架号：%s  时间：%d-%d-%d %d:%d:%d\n", user_name, package, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
     fclose(fp);
 }
 
@@ -735,29 +736,8 @@ void recordSendBehaviors(const char *user_name, const char *package, struct tm *
         return;
     }
     // 把用户名、包裹号、时间写入文件
-    fprintf(fp, "%s %s %d-%d-%d %d:%d:%d\n", user_name, package, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    fprintf(fp, "用户名：%s  包裹名：%s  时间：%d-%d-%d %d:%d:%d\n", user_name, package, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
     fclose(fp);
-}
-
-struct tm *getTime()
-{
-    time_t current_time;
-    struct tm *local_time;
-    // 获取当前时间戳
-    current_time = time(NULL);
-    if (current_time == ((time_t)-1))
-    {
-        fprintf(stderr, "获取时间戳失败\n");
-        return NULL;
-    }
-    // 将时间戳转换为本地时间
-    local_time = localtime(&current_time);
-    if (local_time == NULL)
-    {
-        fprintf(stderr, "转换为本地时间失败\n");
-        return NULL;
-    }
-    return local_time;
 }
 
 void deleteUserAccount()
@@ -796,4 +776,122 @@ void deleteUserAccount()
         printf("取消注销！\n");
         printCommonInfo();
     }
+}
+
+void userSubstitute()
+{
+    system("cls");
+    // 通过手机号和用户名来验证代取人与快递主人身份
+    // 正确输入后，依然需要取件码验证
+    // 因此，需要主人告知代取者取件码
+    printf("请输入代取人用户名：\n");
+    char substitute_account[20];
+    scanf("%s", substitute_account);
+    clearInputBuffer();
+    puts("");
+
+    printf("请输入代取人手机号：\n");
+    char substitute_phone_number[20];
+    scanf("%s", substitute_phone_number);
+    clearInputBuffer();
+    puts("");
+
+    // 调用get函数，找快递主人
+    // get函数写得比较苛刻，找包裹的话，只能用包裹ID，没法用用户名去找；而且只能找到一个，因为包裹ID是唯一的。但一个用户可能有多个包裹，所以用户名没法送来给包裹写get函数
+    User *user = userElementGet(users_list, substitute_account);
+    if (user == NULL)
+    {
+        printf("用户不存在！\n");
+        printCommonInfo();
+        return;
+    }
+    if (strcmp(user->phone_number, substitute_phone_number) != 0)
+    {
+        printf("手机号错误！\n");
+        printCommonInfo();
+        return;
+    }
+
+    // 代取人身份验证成功
+
+    // 判断是否有快递需要代取
+    if (user->receive_status == 0)
+    {
+        printf("暂无快递可代取！\n");
+        printCommonInfo();
+        return;
+    }
+
+    // 遍历推送链表，找到对应的快递
+    ListNode *current = users_push_list->head;
+    while (current != NULL)
+    {
+        Package *package = (Package *)current->data;
+        if (strcmp(package->receiver_account, substitute_account) == 0)
+        {
+            printf("货架号：%s\n", package->package_id);
+            printf("--------------------\n");
+            printf("请输入取件码：\n");
+            int input;
+            scanf("%d", &input);
+            clearInputBuffer();
+            puts("");
+
+            if (input == package->pick_up_code)
+            {
+                // 代取成功，执行出库操作
+                int index_of_shelf = package->package_id[0] - 'A';
+                List *shelf_list;
+
+                // 根据货架号的第一个字母，选择对应的货架链表
+                switch (index_of_shelf)
+                {
+                case 0:
+                    shelf_list = shelf_a_list;
+                    break;
+                case 1:
+                    shelf_list = shelf_b_list;
+                    break;
+                case 2:
+                    shelf_list = shelf_c_list;
+                    break;
+                case 3:
+                    shelf_list = shelf_d_list;
+                    break;
+                case 4:
+                    shelf_list = shelf_e_list;
+                    break;
+                default:
+                    break;
+                }
+
+                // 推移到下一个快递，再删除
+                current = current->next;
+
+                // 从货架中删除。这里我们把快递信息完整存到临时链表里了，所以不用再调用getElement函数
+                listRemove(shelf_list, package);
+
+                // 代取成功，删除推送链表的信息
+                listRemove(users_push_list, package);
+
+                // 写入行为文件
+                recordPickUpBehaviors(the_user->account, package->package_id, getTime()); // 用户名写代取人信息
+
+                printf("代取成功！\n\n");
+                // 这里不要再按任意键继续了 不符合逻辑
+
+                continue; // 跳过一般更新
+            }
+            else
+            {
+                printf("取件码错误！\n");
+                printCommonInfo();
+                return;
+            }
+        }
+        current = current->next;
+    }
+    user->receive_status = 0; // 代取完后，将代取人的取件状态置为0
+    printf("\n全部代取成功！\n");
+    printCommonInfo();
 }

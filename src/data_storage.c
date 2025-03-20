@@ -1,4 +1,5 @@
 #include "../include/data_storage.h"
+#include <time.h>
 
 // 初始化链表
 // 由于创建了链表结构体，返回值不再是头节点指针
@@ -182,6 +183,24 @@ void listFreePlatform(List *list)
             free(platform);
         }
 
+        free(current);
+        current = next;
+    }
+    free(list); // 最后释放该List结构体
+}
+
+// 6. 释放包裹类链表的特殊函数：不释放包裹内存，只释放节点和链表内存
+// List, ListNode, data三个结构体都是动态分配的内存，释放是各自独立的
+// 虽然data是ListNode的一个成员，但是ListNode的内存释放不会影响data的内存
+// 所以这里只释放ListNode和List的内存
+void listFreeNode(List *list)
+{
+    ListNode *current = list->head;
+    ListNode *next;
+
+    while (current != NULL)
+    {
+        next = current->next;
         free(current);
         current = next;
     }
@@ -461,4 +480,25 @@ void printCommonInfo()
     printf("按任意键继续\n");
     getchar();
     clearInputBuffer();
+}
+
+struct tm *getTime()
+{
+    time_t current_time;
+    struct tm *local_time;
+    // 获取当前时间戳
+    current_time = time(NULL);
+    if (current_time == ((time_t)-1))
+    {
+        fprintf(stderr, "获取时间戳失败\n");
+        return NULL;
+    }
+    // 将时间戳转换为本地时间
+    local_time = localtime(&current_time);
+    if (local_time == NULL)
+    {
+        fprintf(stderr, "转换为本地时间失败\n");
+        return NULL;
+    }
+    return local_time;
 }

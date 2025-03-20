@@ -66,3 +66,7 @@ void modifyShelf(List *shelf_list); // 修改货架
 void pushMessageToUser(Package *package); // 推送消息
 
 void addressUserSend(); // 处理用户寄件
+
+void recordModifyInfo(const char *package_id, const char *account, const char *modity_info, struct tm *time); // 记录修改信息
+
+void modifyShelfPosition(Package *package, List *shelf_list); // 修改货架位置

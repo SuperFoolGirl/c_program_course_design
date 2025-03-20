@@ -105,8 +105,8 @@ void clearInputBuffer();
 // 打印通用信息
 void printCommonInfo();
 
-// 从链表中移除指定元素
-// 删除函数可以借助get函数来写。get函数确定结构体，也就是data
+// 删除函数
+// 对于只知道用户名的情况，可以先调用getelement函数，其返回值作为data写在参数二的位置
 void listRemove(List *list, void *data);
 
 // 释放链表内存
@@ -115,3 +115,6 @@ void listFreeUser(List *list);
 void listFreeCourier(List *list);
 void listFreeAdmin(List *list);
 void listFreePlatform(List *list);
+void listFreeNode(List *list); // 只释放链表节点
+
+struct tm *getTime(); // 获取当前时间

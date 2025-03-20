@@ -203,7 +203,7 @@ void wareHousing()
         listRemove(admin_warehouse_list, package);
     }
 
-    printf("入库成功并全部向用户推送取件消息！\n");
+    printf("\n入库成功并全部向用户推送取件消息！\n");
     printCommonInfo();
 }
 
@@ -315,7 +315,7 @@ void inventoryCheck()
 {
     system("cls");
     // 输出现在的驿站仓库情况、五个货架情况
-    printf("驿站仓库快递数目：%d\n", admin_warehouse_list->size);
+    printf("驿站仓库快递数目：%d\n\n", admin_warehouse_list->size);
     printf("货架A快递数目：%d\n", shelf_a_list->size);
     printf("货架B快递数目：%d\n", shelf_b_list->size);
     printf("货架C快递数目：%d\n", shelf_c_list->size);
@@ -373,10 +373,10 @@ void pushMessageToUser(Package *package) // 不能用const修饰，listAdd函数
     if (user == NULL)
     {
         // 处理该用户未注册或注销的情况
-        printf("包裹 %s 的收件人不存在！\n", package->package_id);
-        printf("系统将自动为用户注册账号\n");
+        printf("包裹 %s 的收件人 %s 不存在！\n", package->package_id, package->receiver_account);
+        printf("系统将自动为用户注册账号：\n");
         printf("默认密码为123456\n");
-        printf("请及时联系用户完善账号信息\n");
+        printf("请及时联系用户完善账号信息!\n");
 
         user = (User *)malloc(sizeof(User));
         strcpy(user->account, package->receiver_account);
@@ -1327,12 +1327,13 @@ void modifyShelf(List *shelf_list)
             printf("3. 体积\n");
             printf("4. 重量\n");
             printf("5. 特殊类型\n");
-            printf("6. 价值\n\n");
+            printf("6. 价值\n");
+            printf("7. 货架位置\n\n");
             printf("按其他任意键返回\n");
 
             char choice = getchar();
             clearInputBuffer();
-            gets("");
+            puts("");
 
             switch (choice)
             {
@@ -1341,7 +1342,7 @@ void modifyShelf(List *shelf_list)
                 char new_receiver_account[20];
                 scanf("%s", new_receiver_account);
                 clearInputBuffer();
-                gets("");
+                puts("");
 
                 // 判断新的收件人账号是否存在
                 // 原则上，必须该用户存在于用户列表中
@@ -1354,6 +1355,7 @@ void modifyShelf(List *shelf_list)
                 }
 
                 strcpy(package->receiver_account, new_receiver_account);
+                // 推送链表中的信息不需要更改，浅拷贝，所有数据都一样
                 break;
             case '2':
                 printf("请输入新的加急状态：\n");
@@ -1447,9 +1449,44 @@ void modifyShelf(List *shelf_list)
 
                 package->value = new_value - '0' - 1;
                 break;
+            case '7':
+                modifyShelfPosition(package, shelf_list);
+                break;
             default:
                 break;
             }
+
+            // 写入快递单修改文件modify_records.txt
+            // 写入内容：快递号，快递收件人账号，修改内容，修改时间
+            char modify_info[50];
+            switch (choice)
+            {
+            case '1':
+                strcpy(modify_info, "收件人账号");
+                break;
+            case '2':
+                strcpy(modify_info, "加急状态");
+                break;
+            case '3':
+                strcpy(modify_info, "体积");
+                break;
+            case '4':
+                strcpy(modify_info, "重量");
+                break;
+            case '5':
+                strcpy(modify_info, "特殊类型");
+                break;
+            case '6':
+                strcpy(modify_info, "价值");
+                break;
+            case '7':
+                strcpy(modify_info, "货架位置");
+                break;
+            default:
+                break;
+            }
+            recordModifyInfo(package->package_id, package->receiver_account, modify_info, getTime());
+
             printf("修改成功！\n");
             printCommonInfo();
             return;
@@ -1535,4 +1572,143 @@ void addressUserSend()
             }
         }
     }
+}
+
+void modifyShelfPosition(Package *package, List *shelf_list) // shelf_list为当前货架
+{
+    system("cls");
+    // 注意 由于货架是有序插入的，不能自定义货架号，只能改货架，将其尾插
+
+    // 修改货架号的逻辑
+    // 1. 从原货架链表中删除
+    // 2. 加入新的货架链表
+    // 3. 修改快递包裹的货架号
+    // 4. 调整用户推送表中的货架号
+
+    // 获取当前货架
+    char now_shelf = package->package_id[0];
+
+    printf("请选择新的货架：\n\n");
+    printf("1. 货架A\n");
+    printf("2. 货架B\n");
+    printf("3. 货架C\n");
+    printf("4. 货架D\n");
+    printf("5. 货架E\n\n");
+    printf("按其他任意键返回\n");
+
+    char choice = getchar();
+    clearInputBuffer();
+    puts("");
+
+    switch (choice)
+    {
+    case '1':
+        if (now_shelf == 'A')
+        {
+            printf("货架未改变！\n");
+            printCommonInfo();
+            return;
+        }
+        // 新货架满了
+        if (shelf_a_list->size == 10)
+        {
+            printf("货架已满！\n");
+            printCommonInfo();
+            return;
+        }
+        // 从原货架链表中删除
+        listRemove(shelf_list, package);
+        // 加入新的货架链表
+        listAdd(shelf_a_list, package);
+        // 修改快递包裹的货架号
+        // 回忆sprintf，格式化写入字符串
+        // C没有类似的直接写入字符串，非格式化写入还是用strcpy就好
+        sprintf(package->package_id, "A-%d-%d", shelf_a_list->size / SIZE, shelf_a_list->size % SIZE);
+        // 由于浅拷贝，用户推送表中的货架号也会自动修改
+        break;
+    case '2':
+        if (now_shelf == 'B')
+        {
+            printf("货架未改变！\n");
+            printCommonInfo();
+            return;
+        }
+        if (shelf_b_list->size == 10)
+        {
+            printf("货架已满！\n");
+            printCommonInfo();
+            return;
+        }
+        listRemove(shelf_list, package);
+        listAdd(shelf_b_list, package);
+        sprintf(package->package_id, "B-%d-%d", shelf_b_list->size / SIZE, shelf_b_list->size % SIZE);
+        break;
+    case '3':
+        if (now_shelf == 'C')
+        {
+            printf("货架未改变！\n");
+            printCommonInfo();
+            return;
+        }
+        if (shelf_c_list->size == 10)
+        {
+            printf("货架已满！\n");
+            printCommonInfo();
+            return;
+        }
+        listRemove(shelf_list, package);
+        listAdd(shelf_c_list, package);
+        sprintf(package->package_id, "C-%d-%d", shelf_c_list->size / SIZE, shelf_c_list->size % SIZE);
+        break;
+    case '4':
+        if (now_shelf == 'D')
+        {
+            printf("货架未改变！\n");
+            printCommonInfo();
+            return;
+        }
+        if (shelf_d_list->size == 10)
+        {
+            printf("货架已满！\n");
+            printCommonInfo();
+            return;
+        }
+        listRemove(shelf_list, package);
+        listAdd(shelf_d_list, package);
+        sprintf(package->package_id, "D-%d-%d", shelf_d_list->size / SIZE, shelf_d_list->size % SIZE);
+        break;
+    case '5':
+        if (now_shelf == 'E')
+        {
+            printf("货架未改变！\n");
+            printCommonInfo();
+            return;
+        }
+        if (shelf_e_list->size == 10)
+        {
+            printf("货架已满！\n");
+            printCommonInfo();
+            return;
+        }
+        listRemove(shelf_list, package);
+        listAdd(shelf_e_list, package);
+        sprintf(package->package_id, "E-%d-%d", shelf_e_list->size / SIZE, shelf_e_list->size % SIZE);
+        break;
+    default:
+        return;
+    }
+
+}
+
+void recordModifyInfo(const char *package_id, const char *account, const char *modify_info, struct tm *local_time)
+{
+    FILE *fp = fopen("../files/modify_records.txt", "a");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        exit(1);
+    }
+
+    fprintf(fp, "货架号：%s  用户名：%s  修改信息：%s  时间：%d-%d-%d %d:%d:%d\n", package_id, account, modify_info, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    fclose(fp);
 }

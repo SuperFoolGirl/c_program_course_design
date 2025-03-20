@@ -50,7 +50,8 @@ void courierShowMenu()
             break;
         default:
             // 退出时释放临时链表
-            listFreePackage(courier_delivery_list); // 注意快递员临时链表的类型是Package
+            // 注意 不能调用listFreePackage函数，因为这个函数会释放掉包裹的内存
+            listFreeNode(courier_delivery_list);
             return;
         }
     }
@@ -63,7 +64,6 @@ void courierPop()
     if (the_courier->status == 1 || the_courier->status == 2)
     {
         // 遍历推送链表，找到自己的推送信息，并添加到临时链表
-        // 与此同时，删除推送链表对应节点
         ListNode *current = couriers_push_list->head;
         while (current != NULL)
         {
@@ -72,14 +72,6 @@ void courierPop()
             {
                 // 将推送信息加入临时链表
                 listAdd(courier_delivery_list, package);
-
-                // 删除之前先往后走
-                current = current->next;
-
-                // 删除推送链表对应节点
-                listRemove(couriers_push_list, package);
-
-                continue; // 跳过一般的更新
             }
             current = current->next;
         }
@@ -170,6 +162,7 @@ void confirmCurrentDelivery()
             {
                 current = current->next; // 先往后走，再删除节点
                 listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+                listRemove(couriers_push_list, package);    // 删除推送链表
                 listAdd(admin_warehouse_list, package);     // 加入驿站仓库
                 continue;
             }
@@ -190,6 +183,7 @@ void confirmCurrentDelivery()
             {
                 current = current->next;
                 listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+                listRemove(couriers_push_list, package);    // 删除推送链表
                 // 无需再加入平台仓库，因为平台是逻辑上的最后一站。加上就循环了
 
                 // 下面要实现对用户的寄件通知及弹窗操作
