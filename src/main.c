@@ -54,7 +54,10 @@ int main()
         printf("按其他任意键退出\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            break;
+        }
 
         if (choice == '1')
         {

@@ -467,11 +467,15 @@ Package *packageElementGetByCourier(List *list, const char *receiver_account)
 }
 
 // 清空输入缓冲区的函数
-void clearInputBuffer()
+int clearInputBuffer()
 {
     int c;
+    int flag = 0;
     while ((c = getchar()) != '\n' && c != EOF)
-        ;
+    {
+        flag = 1;
+    }
+    return flag;
 }
 
 void printCommonInfo()

@@ -22,7 +22,10 @@ void adminShowMenu()
         printf("按其他任意键退出\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
 
         switch (choice)
         {
@@ -226,7 +229,10 @@ void userManagement()
         printf("按其他任意键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
 
         switch (choice)
         {
@@ -260,7 +266,10 @@ void shelfManagement()
         printf("按其他任意键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
 
         switch (choice)
         {
@@ -300,7 +309,7 @@ void viewFeedback()
         char choice = getchar();
         clearInputBuffer();
         puts("");
-        // 后续暂时不再处理，假装加了个处理反馈的模块
+        // 后续暂时不再处理，假装加了个处理反馈的模块，所以输入什么无所谓了
     }
     fclose(fp);
 
@@ -406,7 +415,10 @@ void addUser()
         printf("按任意其他键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
 
         switch (choice)
         {
@@ -611,7 +623,10 @@ void deleteUser()
         printf("按其他任意键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
         puts("");
         char account[20];
 
@@ -716,7 +731,10 @@ void modifyUser()
         printf("按其他任意键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
         puts("");
 
         char account[20];
@@ -744,7 +762,10 @@ void modifyUser()
             printf("按其他任意键返回\n");
 
             choice2 = getchar();
-            clearInputBuffer();
+            if (clearInputBuffer() != 0)
+            {
+                return;
+            }
             puts("");
 
             switch (choice2)
@@ -791,7 +812,12 @@ void modifyUser()
                 printf("5. 合作商家用户\n");
 
                 char new_user_type = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
                 puts("");
                 // 这里说一下，虽然没输入整形数据
                 // 但整形数据不是不需要清空缓存区，而是，如果保证输入的都是整形的话，那不会读空白字符，因此不需要清空缓存区；但这个程序里显然是整形与字符混和输入
@@ -831,7 +857,10 @@ void modifyUser()
             printf("按其他任意键返回\n");
 
             choice2 = getchar();
-            clearInputBuffer();
+            if (clearInputBuffer() != 0)
+            {
+                return;
+            }
             puts("");
 
             switch (choice2)
@@ -879,7 +908,10 @@ void modifyUser()
             printf("按其他任意键返回\n");
 
             choice2 = getchar();
-            clearInputBuffer();
+            if (clearInputBuffer() != 0)
+            {
+                return;
+            }
             puts("");
 
             switch (choice2)
@@ -927,7 +959,10 @@ void modifyUser()
             printf("按其他任意键返回\n");
 
             choice2 = getchar();
-            clearInputBuffer();
+            if (clearInputBuffer() != 0)
+            {
+                return;
+            }
             puts("");
 
             switch (choice2)
@@ -975,7 +1010,10 @@ void viewUserInfo()
         printf("按其他任意键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
         puts("");
 
         char account[20];
@@ -1141,7 +1179,10 @@ void viewShelfInfo()
         printf("按其他任意键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
         puts("");
 
         switch (choice)
@@ -1276,7 +1317,10 @@ void modifyShelfInfo()
         printf("按其他任意键返回\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
         puts("");
 
         switch (choice)
@@ -1332,7 +1376,10 @@ void modifyShelf(List *shelf_list)
             printf("按其他任意键返回\n");
 
             char choice = getchar();
-            clearInputBuffer();
+            if (clearInputBuffer() != 0)
+            {
+                return;
+            }
             puts("");
 
             switch (choice)
@@ -1363,7 +1410,12 @@ void modifyShelf(List *shelf_list)
                 printf("2. 是\n");
 
                 char new_express_type = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
                 puts("");
 
                 // 输入错误判断
@@ -1382,7 +1434,12 @@ void modifyShelf(List *shelf_list)
                 printf("2. 大\n");
 
                 char new_volume = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
                 puts("");
 
                 if (new_volume != '1' && new_volume != '2')
@@ -1400,7 +1457,12 @@ void modifyShelf(List *shelf_list)
                 printf("2. 重\n");
 
                 char new_weight = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
                 puts("");
 
                 if (new_weight != '1' && new_weight != '2')
@@ -1419,7 +1481,12 @@ void modifyShelf(List *shelf_list)
                 printf("3. 生鲜\n");
 
                 char new_special_type = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
                 puts("");
 
                 if (new_special_type != '1' && new_special_type != '2' && new_special_type != '3')
@@ -1437,7 +1504,12 @@ void modifyShelf(List *shelf_list)
                 printf("2. 高价值\n");
 
                 char new_value = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
                 puts("");
 
                 if (new_value != '1' && new_value != '2')
@@ -1597,7 +1669,10 @@ void modifyShelfPosition(Package *package, List *shelf_list) // shelf_list为当
     printf("按其他任意键返回\n");
 
     char choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        return;
+    }
     puts("");
 
     switch (choice)

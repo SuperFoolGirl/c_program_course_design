@@ -40,7 +40,11 @@ void userShowMenu()
         printf("按其他任意键退出\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            listFreeNode(user_delivery_list);
+            return;
+        }
 
         switch (choice)
         {
@@ -129,7 +133,12 @@ void userPickup()
         printf("请输入取件码：\n");
         int input;
         scanf("%d", &input);
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            printf("取件码错误！\n");
+            printCommonInfo();
+            return;
+        }
         puts("");
 
         // 如果输入正确，则取件成功，并执行出库操作和临时、推送链表删除操作
@@ -239,7 +248,12 @@ void userSend()
     printf("2. 是\n");
 
     char choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -255,7 +269,12 @@ void userSend()
     printf("2. 大\n");
 
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -271,7 +290,12 @@ void userSend()
     printf("2. 重\n");
 
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -288,7 +312,12 @@ void userSend()
     printf("3. 生鲜\n");
 
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2' && choice != '3')
@@ -304,7 +333,12 @@ void userSend()
     printf("2. 高价值\n");
 
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -395,7 +429,12 @@ void userPay(const int isExpress, int payment)
     printf("按其他任意键取消支付\n");
 
     char choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("支付取消！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice == '1')
@@ -566,7 +605,10 @@ void userModifySend()
                 printf("按其他任意键返回\n");
 
                 char choice = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    return;
+                }
                 puts("");
 
                 switch (choice)
@@ -583,7 +625,12 @@ void userModifySend()
                     printf("1. 否\n");
                     printf("2. 是\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2')
@@ -599,7 +646,12 @@ void userModifySend()
                     printf("1. 小\n");
                     printf("2. 大\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2')
@@ -615,7 +667,12 @@ void userModifySend()
                     printf("1. 轻\n");
                     printf("2. 重\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2')
@@ -632,7 +689,12 @@ void userModifySend()
                     printf("2. 易碎品、电子产品\n");
                     printf("3. 生鲜\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2' && choice != '3')
@@ -648,7 +710,12 @@ void userModifySend()
                     printf("1. 低价值\n");
                     printf("2. 高价值\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2')
@@ -759,7 +826,12 @@ void deleteUserAccount()
     printf("按其他任意键返回\n");
 
     char choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("取消注销！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice == '1')
@@ -834,7 +906,12 @@ void userSubstitute()
             printf("请输入取件码：\n");
             int input;
             scanf("%d", &input);
-            clearInputBuffer();
+            if (clearInputBuffer() != 0)
+            {
+                printf("取件码错误！\n");
+                printCommonInfo();
+                return;
+            }
             puts("");
 
             if (input == package->pick_up_code)

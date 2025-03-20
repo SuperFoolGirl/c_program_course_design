@@ -100,7 +100,7 @@ Admin *adminElementGet(List *list, const char *account);
 Platform *platformElementGet(List *list, const char *account);
 
 // 清空输入缓冲区
-void clearInputBuffer();
+int clearInputBuffer();
 
 // 打印通用信息
 void printCommonInfo();

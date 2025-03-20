@@ -17,7 +17,10 @@ void platformShowMenu()
         printf("按任意键退出\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        };
 
         switch (choice)
         {
@@ -73,7 +76,7 @@ void writeToBeShippedDelivery()
         }
         current = current->next;
     }
-    
+
     strcpy(package->package_id, package_id);
 
     printf("请输入收件人用户名：\n");
@@ -91,7 +94,12 @@ void writeToBeShippedDelivery()
     printf("1. 否\n");
     printf("2. 是\n");
     char choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -106,7 +114,12 @@ void writeToBeShippedDelivery()
     printf("1. 小\n");
     printf("2. 大\n");
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -121,7 +134,12 @@ void writeToBeShippedDelivery()
     printf("1. 轻\n");
     printf("2. 重\n");
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -137,7 +155,12 @@ void writeToBeShippedDelivery()
     printf("2. 易碎品、电子产品\n");
     printf("3. 生鲜\n");
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2' && choice != '3')
@@ -152,7 +175,12 @@ void writeToBeShippedDelivery()
     printf("1. 低价值\n");
     printf("2. 高价值\n");
     choice = getchar();
-    clearInputBuffer();
+    if (clearInputBuffer() != 0)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
     puts("");
 
     if (choice != '1' && choice != '2')
@@ -226,7 +254,7 @@ void matchCourier()
 
         strcpy(package->courier_account, courier->account); // 包裹信息上标注快递员信息
 
-        listAdd(couriers_push_list, package);                   // 加入快递员的推送链表
+        listAdd(couriers_push_list, package); // 加入快递员的推送链表
         printf("已向快递员 %s 推送消息\n", courier->account);
         courier->status = 1; // 标记快递员状态为正在由 平台->驿站 派送
 
@@ -326,7 +354,10 @@ void modifyToBeShippedDelivery()
                 printf("按其他任意键返回\n");
 
                 char choice = getchar();
-                clearInputBuffer();
+                if (clearInputBuffer() != 0)
+                {
+                    return;
+                }
                 puts("");
 
                 switch (choice)
@@ -342,7 +373,12 @@ void modifyToBeShippedDelivery()
                     printf("1. 否\n");
                     printf("2. 是\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2')
@@ -358,7 +394,12 @@ void modifyToBeShippedDelivery()
                     printf("1. 小\n");
                     printf("2. 大\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2')
@@ -374,7 +415,12 @@ void modifyToBeShippedDelivery()
                     printf("1. 轻\n");
                     printf("2. 重\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2')
@@ -391,7 +437,12 @@ void modifyToBeShippedDelivery()
                     printf("2. 易碎品、电子产品\n");
                     printf("3. 生鲜\n");
                     choice = getchar();
-                    clearInputBuffer();
+                    if (clearInputBuffer() != 0)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        return;
+                    }
                     puts("");
 
                     if (choice != '1' && choice != '2' && choice != '3')
@@ -406,8 +457,8 @@ void modifyToBeShippedDelivery()
                     return; // 修改完想修改的信息后，直接退出这个函数
                 }
             }
-        }  
-        current = current->next;          
+        }
+        current = current->next;
     }
 
     // 能走到这来的，说明没找到；找到了的话，早就return了
@@ -445,7 +496,7 @@ void deleteToBeShippedDelivery()
         }
         current = current->next;
     }
-    
+
     // 能走到这来的，说明没找到；找到了的话，早就return了
     printf("未找到该快递！\n");
     printCommonInfo();
@@ -472,7 +523,8 @@ void viewPlatformWarehouseInfo()
         printf("加急状态：%s\n", package->isExpress == 1 ? "是" : "否");
         printf("体积：%s\n", package->volume == 1 ? "大" : "小");
         printf("重量：%s\n", package->weight == 1 ? "重" : "轻");
-        printf("特殊类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜" : "普通"); // 多重三目运算符
+        printf("特殊类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜"
+                                                                                                              : "普通"); // 多重三目运算符
         printf("价值：%s\n", package->value == 1 ? "高价值" : "低价值");
         puts("");
         current = current->next;
@@ -482,6 +534,6 @@ void viewPlatformWarehouseInfo()
 void deletePlatformAccount()
 {
     system("cls");
-    printf("请练习管理员进行账号删除！\n");
+    printf("请联系管理员进行账号删除！\n");
     printCommonInfo();
 }

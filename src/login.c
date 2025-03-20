@@ -237,7 +237,10 @@ void login()
         printf("按其他任意键退出\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
 
         if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
         {

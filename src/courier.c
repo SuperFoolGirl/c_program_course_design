@@ -26,7 +26,11 @@ void courierShowMenu()
         printf("按任意键退出\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            listFreeNode(courier_delivery_list);
+            return;
+        }
 
         switch (choice)
         {
@@ -272,7 +276,12 @@ void invisibleModel()
         printf("2. 否\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            printf("已取消！\n");
+            printCommonInfo();
+            return;
+        }
         puts("");
 
         if (choice == '1')
@@ -280,11 +289,13 @@ void invisibleModel()
             the_courier->status = 0;
             printf("已关闭隐身模式！\n");
             printCommonInfo();
+            return;
         }
         else
         {
             printf("已取消！\n");
             printCommonInfo();
+            return;
         }
     }
 
@@ -296,7 +307,12 @@ void invisibleModel()
         printf("2. 否\n");
 
         char choice = getchar();
-        clearInputBuffer();
+        if (clearInputBuffer() != 0)
+        {
+            printf("已取消！\n");
+            printCommonInfo();
+            return;
+        }
         puts("");
 
         if (choice == '1')
