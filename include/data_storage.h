@@ -74,7 +74,7 @@ typedef struct Courier
 {
     char account[20];          // 用户名
     char password[20];         // 密码
-    int status;                // 快递员状态，0-空闲，1-平台任务中，2-驿站任务中
+    int status;                // 快递员状态，0-空闲，1-平台任务中，2-驿站任务中，3-隐身状态
 } Courier;
 
 // 6 平台表
@@ -91,16 +91,13 @@ void writeListFromFile(const char *file, List *list);
 void writeFileFromList(const char *file, List *list);
 
 // 取得链表中指定的元素，便于后续修改
+// 只通过用户名来获取对应结构体，因为用户名是唯一的
 User *userElementGet(List *list, const char *account);
-
 Courier *courierElementGet(List *list, const char *account);
-
 Package *packageElementGet(List *list, const char *package_id);
-
 Package *packageElementGetByCourier(List *list, const char *receiver_account);
-
 Admin *adminElementGet(List *list, const char *account);
-
+Platform *platformElementGet(List *list, const char *account);
 
 // 清空输入缓冲区
 void clearInputBuffer();
@@ -117,3 +114,4 @@ void listFreePackage(List *list);
 void listFreeUser(List *list);
 void listFreeCourier(List *list);
 void listFreeAdmin(List *list);
+void listFreePlatform(List *list);

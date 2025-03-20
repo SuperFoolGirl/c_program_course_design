@@ -1,11 +1,9 @@
-#include "courier.h"
+#include "../include/courier.h"
 
 Courier *the_courier = NULL;
 
 // 创建临时链表，思路类似于用户推送
 List *courier_delivery_list = NULL;
-
-static int isDeleted = 0; // 只能在本文件使用
 
 void courierShowMenu()
 {
@@ -16,14 +14,6 @@ void courierShowMenu()
 
     while (1)
     {
-        // 如果账号被删除，直接退出
-        if (isDeleted)
-        {
-            listFreePackage(courier_delivery_list);
-            isDeleted = 0; // 重置标志位
-            return;
-        }
-
         system("cls");
         printf("欢迎登录！\n\n");
         printf("请选择您的操作：\n");
@@ -108,6 +98,12 @@ void queryCurrentDelivery()
         printCommonInfo();
         return;
     }
+    else if (the_courier->status == 3)
+    {
+        printf("您当前处于隐身状态！\n");
+        printCommonInfo();
+        return;
+    }
     else if (the_courier->status == 1)
     {
         // 遍历临时链表
@@ -152,6 +148,12 @@ void confirmCurrentDelivery()
     if (the_courier->status == 0)
     {
         printf("当前无任务！\n");
+        printCommonInfo();
+        return;
+    }
+    else if (the_courier->status == 3)
+    {
+        printf("您当前处于隐身状态！\n");
         printCommonInfo();
         return;
     }
@@ -216,9 +218,14 @@ void refuseCurrentDelivery()
         printCommonInfo();
         return;
     }
-
+    else if (the_courier->status == 3)
+    {
+        printf("您当前处于隐身状态！\n");
+        printCommonInfo();
+        return;
+    }
     // 平台给安排活了
-    if (the_courier->status == 1)
+    else if (the_courier->status == 1)
     {
         the_courier->status = 0;
         ListNode *current = courier_delivery_list->head;
@@ -229,8 +236,6 @@ void refuseCurrentDelivery()
             current = current->next;
             listRemove(courier_delivery_list, package); // 删除临时链表中的快递
             listAdd(platform_warehouse_list, package); // 加入平台仓库
-    
-            current = current->next;
         }
         printf("已拒绝任务！\n");
         printCommonInfo();
@@ -247,8 +252,6 @@ void refuseCurrentDelivery()
             current = current->next;
             listRemove(courier_delivery_list, package); // 删除临时链表中的快递，可自动完成size--
             listAdd(users_send_list, package); // 加入驿站寄件链表
-    
-            current = current->next;
         }
         printf("已拒绝任务！\n");
         printCommonInfo();
@@ -259,6 +262,7 @@ void invisibleModel()
 {
     // 隐身模式，不接收任务
     system("cls");
+
     if (courier_delivery_list->size != 0)
     {
         printf("您有未完成的任务，无法进入隐身模式！\n");
@@ -266,8 +270,8 @@ void invisibleModel()
         return;
     }
 
-    // 设定status取1且临时链表中没有任务时，为隐身模式
-    if (the_courier->status == 1)
+    // 设定status取3时，为隐身模式
+    if (the_courier->status == 3)
     {
         printf("您正处于隐身模式，是否关闭？\n");
         printf("1. 是\n");
@@ -275,6 +279,7 @@ void invisibleModel()
 
         char choice = getchar();
         clearInputBuffer();
+        puts("");
 
         if (choice == '1')
         {
@@ -298,10 +303,11 @@ void invisibleModel()
 
         char choice = getchar();
         clearInputBuffer();
+        puts("");
 
         if (choice == '1')
         {
-            the_courier->status = 1;
+            the_courier->status = 3;
             printf("已进入隐身模式！\n");
             printCommonInfo();
         }
@@ -315,6 +321,7 @@ void invisibleModel()
 
 void viewCourierDelivery()
 {
+    system("cls");
     if (courier_delivery_list->size == 0)
     {
         printf("暂无任务！\n");
@@ -341,26 +348,8 @@ void viewCourierDelivery()
 
 void deleteCourierAccount()
 {
+    // 只有用户可以自由注销账号
     system("cls");
-    printf("您确定要注销账号吗？\n");
-    printf("1. 是\n");
-    printf("按其他任意键返回\n");
-
-    char choice = getchar();
-    clearInputBuffer();
-
-    if (choice == '1')
-    {
-        // 在链表中删除
-        listRemove(couriers_list, the_courier);
-
-        isDeleted = 1;
-        printf("注销成功！\n");
-        printCommonInfo();
-    }
-    else
-    {
-        printf("已取消！\n");
-        printCommonInfo();
-    }
+    printf("请联系管理员注销账号！\n");
+    printCommonInfo();
 }

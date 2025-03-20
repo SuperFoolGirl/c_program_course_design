@@ -1,4 +1,4 @@
-#include "platform.h"
+#include "../include/platform.h"
 
 void platformShowMenu()
 {
@@ -12,7 +12,8 @@ void platformShowMenu()
         printf("3. 删除待发货快递\n");
         printf("4. 匹配快递员进行发货\n");
         printf("5. 查看发货信息\n");
-        printf("6. 查看平台仓库信息\n\n");
+        printf("6. 查看平台仓库信息\n");
+        printf("7. 注销账号\n\n");
         printf("按任意键退出\n");
 
         char choice = getchar();
@@ -37,6 +38,9 @@ void platformShowMenu()
             break;
         case '6':
             viewPlatformWarehouseInfo();
+            break;
+        case '7':
+            deletePlatformAccount();
             break;
         default:
             return;
@@ -213,8 +217,8 @@ void matchCourier()
         Courier *courier = (Courier *)courier_current->data;
         Package *package = (Package *)current->data;
 
-        // 如果快递员现在正在另一边工作，就跳过
-        if (courier->status == 2)
+        // 如果快递员现在正在另一侧忙或处于隐身模式，就跳过
+        if (courier->status == 2 || courier->status == 3)
         {
             courier_current = courier_current->next;
             continue; // 为了防止下一个快递员也是2，这里要continue
@@ -267,6 +271,13 @@ void matchCourier()
 void viewSendInfo()
 {
     system("cls");
+    if (couriers_push_list->size == 0)
+    {
+        printf("暂无发货信息！\n");
+        printCommonInfo();
+        return;
+    }
+
     ListNode *current = couriers_list->head;
     while (current != NULL)
     {
@@ -294,6 +305,7 @@ void modifyToBeShippedDelivery()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+    puts("");
 
     // 遍历平台仓库链表，找到要修改的那个快递
     ListNode *current = platform_warehouse_list->head;
@@ -417,6 +429,7 @@ void deleteToBeShippedDelivery()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+    puts("");
 
     // 遍历平台仓库链表，找到要删除的那个快递
     ListNode *current = platform_warehouse_list->head;
@@ -464,4 +477,11 @@ void viewPlatformWarehouseInfo()
         puts("");
         current = current->next;
     }
+}
+
+void deletePlatformAccount()
+{
+    system("cls");
+    printf("请练习管理员进行账号删除！\n");
+    printCommonInfo();
 }

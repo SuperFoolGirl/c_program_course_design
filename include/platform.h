@@ -18,3 +18,5 @@ void modifyToBeShippedDelivery(); // 修改待发货快递
 void deleteToBeShippedDelivery(); // 删除待发货快递
 
 void viewPlatformWarehouseInfo(); // 查看平台仓库信息
+
+void deletePlatformAccount(); // 注销账号

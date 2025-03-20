@@ -1,4 +1,4 @@
-#include "data_storage.h"
+#include "../include/data_storage.h"
 
 // 初始化链表
 // 由于创建了链表结构体，返回值不再是头节点指针
@@ -165,6 +165,29 @@ void listFreeCourier(List *list)
     free(list); // 最后释放该List结构体
 }
 
+// 5. 平台
+void listFreePlatform(List *list)
+{
+    ListNode *current = list->head;
+    ListNode *next;
+
+    while (current != NULL)
+    {
+        next = current->next;
+
+        // 释放 data 所指向的内存，假设 data 指向的是 Platform 结构体
+        Platform *platform = (Platform *)current->data;
+        if (platform != NULL)
+        {
+            free(platform);
+        }
+
+        free(current);
+        current = next;
+    }
+    free(list); // 最后释放该List结构体
+}
+
 
 // 这函数写的简直一坨，恶心
 // 格式化读取文件，将文件中的数据读取到链表中
@@ -242,6 +265,21 @@ void writeListFromFile(const char *file, List *list)
         }
         free(package);
     }
+    // 5. 平台表
+    else if (strstr(file, "platforms_info.txt") != NULL)
+    {
+        Platform *platform = (Platform *)malloc(sizeof(Platform));
+        memset(platform, 0, sizeof(Platform));
+
+        while (fscanf(fp, "%s %s\n", platform->account, platform->password) != EOF)
+        {
+            listAdd(list, platform);
+
+            platform = (Platform *)malloc(sizeof(Platform));
+            memset(platform, 0, sizeof(Platform));
+        }
+        free(platform);
+    }
     else
         ;
     fclose(fp);
@@ -296,6 +334,15 @@ void writeFileFromList(const char *file, List *list)
             current = current->next;
         }
     }
+    else if (strstr(file, "platforms_info.txt") != NULL)
+    {
+        while (current != NULL)
+        {
+            Platform *platform = (Platform *)current->data;
+            fprintf(fp, "%s %s\n", platform->account, platform->password);
+            current = current->next;
+        }
+    }
     else
         ;
     fclose(fp);
@@ -311,6 +358,7 @@ User *userElementGet(List *list, const char *account)
         {
             return user;
         }
+        current = current->next;
     }
     return NULL;
 }
@@ -325,6 +373,7 @@ Courier *courierElementGet(List *list, const char *account)
         {
             return courier;
         }
+        current = current->next;
     }
     return NULL;
 }
@@ -339,6 +388,7 @@ Admin *adminElementGet(List *list, const char *account)
         {
             return admin;
         }
+        current = current->next;
     }
     return NULL;
 }
@@ -353,6 +403,22 @@ Package *packageElementGet(List *list, const char *package_id)
         {
             return package;
         }
+        current = current->next;
+    }
+    return NULL;
+}
+
+Platform *platformElementGet(List *list, const char *account)
+{
+    ListNode *current = list->head;
+    while (current != NULL)
+    {
+        Platform *platform = (Platform *)current->data;
+        if (strcmp(account, platform->account) == 0)
+        {
+            return platform;
+        }
+        current = current->next;
     }
     return NULL;
 }

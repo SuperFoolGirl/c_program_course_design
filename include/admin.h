@@ -11,6 +11,7 @@
 extern List *users_list;
 extern List *admins_list;
 extern List *couriers_list;
+extern List *platforms_list;
 extern List *platform_warehouse_list;
 extern List *admin_warehouse_list;
 extern List *users_send_list;

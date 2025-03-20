@@ -1,4 +1,4 @@
-#include "user.h"
+#include "../include/user.h"
 #include <time.h>
 
 User *the_user = NULL;
@@ -395,6 +395,7 @@ void userPay(const int isExpress, int payment)
 
     char choice = getchar();
     clearInputBuffer();
+    puts("");
 
     if (choice == '1')
     {
@@ -542,6 +543,7 @@ void userModifySend()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+    puts("");
 
     // 遍历寄件链表，找到要修改的那个快递
     // 根据包裹ID找到对应的快递，是唯一的；不要根据用户名来找
@@ -690,6 +692,7 @@ void userCancelSend()
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+    puts("");
 
     // 遍历寄件链表，找到要删除的那个快递
     // 根据包裹ID找到对应的快递，是唯一的；不要根据用户名来找
@@ -760,12 +763,24 @@ struct tm *getTime()
 void deleteUserAccount()
 {
     system("cls");
+
+    // 如果当前未取件，不允许注销
+    // 这样逻辑是自洽的，因为入库推送的策略，就是自动给用户注册账号
+    // 只要用户的快递存在，那么他的号就必须得在
+    if (the_user->receive_status == 1)
+    {
+        printf("您有快递未取件，请先取件！\n");
+        printCommonInfo();
+        return;
+    }
+
     printf("您确定要注销账号吗？\n");
     printf("1. 是\n");
     printf("按其他任意键返回\n");
 
     char choice = getchar();
     clearInputBuffer();
+    puts("");
 
     if (choice == '1')
     {

@@ -6,7 +6,6 @@ extern List *platform_warehouse_list;
 extern List *users_send_list;
 extern List *users_list;
 extern List *couriers_push_list;
-extern List *couriers_list;
 
 void courierShowMenu(); // 快递员菜单
 

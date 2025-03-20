@@ -1,8 +1,8 @@
-#include "login.h"
-#include "user.h"
-#include "admin.h"
-#include "courier.h"
-#include "platform.h"
+#include "../include/login.h"
+#include "../include/user.h"
+#include "../include/admin.h"
+#include "../include/courier.h"
+#include "../include/platform.h"
 
 // 登录者结构体在登录成功时进行赋值
 extern Admin *the_admin;
@@ -60,29 +60,19 @@ int verifyCourier(const char *account, const char *password)
     return 0;
 }
 
-// 读取运输平台信息并验证（无链表）
+// 读取运输平台信息并验证
 int verifyPlatform(const char *account, const char *password)
 {
-    FILE *fp = fopen("../files/platforms_info.txt", "r");
-    if (fp == NULL)
+    ListNode *current = platforms_list->head;
+    while (current != NULL)
     {
-        printf("文件打开失败！\n");
-        return 0;
-    }
-
-    char file_account[20];
-    char file_password[20];
-
-    while (fscanf(fp, "%s %s", file_account, file_password) != EOF)
-    {
-        if (strcmp(account, file_account) == 0 && strcmp(password, file_password) == 0)
+        Platform *platform = (Platform *)current->data;
+        if (strcmp(account, platform->account) == 0 && strcmp(password, platform->password) == 0)
         {
-            fclose(fp);
             return 1;
         }
+        current = current->next;
     }
-
-    fclose(fp);
     return 0;
 }
 
@@ -93,6 +83,7 @@ void recoverListData()
     writeListFromFile("../files/users_info.txt", users_list);
     writeListFromFile("../files/admins_info.txt", admins_list);
     writeListFromFile("../files/couriers_info.txt", couriers_list);
+    writeListFromFile("../files/platforms_info.txt", platforms_list);
     writeListFromFile("../files/platform_warehouse.txt", platform_warehouse_list);
     writeListFromFile("../files/admin_warehouse.txt", admin_warehouse_list);
     writeListFromFile("../files/users_send.txt", users_send_list);
@@ -111,6 +102,7 @@ void rewriteAllFiles()
     writeFileFromList("../files/users_info.txt", users_list);
     writeFileFromList("../files/admins_info.txt", admins_list);
     writeFileFromList("../files/couriers_info.txt", couriers_list);
+    writeFileFromList("../files/platforms_info.txt", platforms_list);
     writeFileFromList("../files/platform_warehouse.txt", platform_warehouse_list);
     writeFileFromList("../files/admin_warehouse.txt", admin_warehouse_list);
     writeFileFromList("../files/users_send.txt", users_send_list);
@@ -129,6 +121,7 @@ void freeLists()
     listFreeUser(users_list);
     listFreeAdmin(admins_list);
     listFreeCourier(couriers_list);
+    listFreePlatform(platforms_list);
     listFreePackage(platform_warehouse_list);
     listFreePackage(admin_warehouse_list);
     listFreePackage(users_send_list);
@@ -146,6 +139,7 @@ void listsInit()
     users_list = listInit();
     admins_list = listInit();
     couriers_list = listInit();
+    platforms_list = listInit();
     platform_warehouse_list = listInit();
     admin_warehouse_list = listInit();
     users_send_list = listInit();
@@ -162,7 +156,8 @@ void registering()
 {
 again:
     system("cls"); // 清屏逻辑：输入后进入下一个页面时后，第一句加清屏，防止上一个页面的打印信息没有呈现就被清除
-    printf("温馨提示：当前仅支持用户注册，其他请联系管理员。\n\n");
+    // 平台和快递员不允许随便注册
+    printf("温馨提示：当前仅支持普通用户注册，其他请联系管理员。\n\n");
 
     printf("请输入用户名：\n");
     char account[20];

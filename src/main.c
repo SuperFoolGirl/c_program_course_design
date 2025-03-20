@@ -1,4 +1,4 @@
-#include "login.h"
+#include "../include/login.h"
 
 // 定义全局变量链表--在main函数处定义。其他源文件若想使用，去对应头文件声明全局变量即可
 // 平台账号没有使用链表储存，因为逻辑上来说，平台与驿站是深度合作关系，管理员无权限修改平台相关信息
@@ -9,10 +9,11 @@
 // 2. 文件只负责储存信息，不负责搜索信息工作。
 // 3. 每次对链表进行增删改操作后。无需立刻更新文件。只有在退出程序时，才会统一更新文件，以减少IO操作。
 
-// 三条用户链表
+// 四条用户链表
 List *users_list; // User类型链表
 List *admins_list; // Admin类型链表
 List *couriers_list; // Courier类型链表
+List *platforms_list; // Platform类型链表
 
 // 两个仓库链表
 List *platform_warehouse_list; // Package类型链表
@@ -67,11 +68,11 @@ int main()
         {
             break;
         }
-
-        // 重写所有文件，注意这句在while循环内部
-        rewriteAllFiles();
     }
-
+    // 每次退出程序前，更新文件数据，然后再销毁链表
+    // 写在这里还有一个作用：如果终途关闭程序，文件不会被修改，因为关闭控制台后不会再运行代码，因此文件会保持运行前的状态
+    // 强行退出时，堆区空间会被释放，不必担心内存泄漏
+    rewriteAllFiles();
     // 释放所有链表内存
     freeLists();
     return 0;

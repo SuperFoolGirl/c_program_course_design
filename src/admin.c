@@ -1,4 +1,4 @@
-#include "admin.h"
+#include "../include/admin.h"
 
 Admin *the_admin = NULL;
 
@@ -196,6 +196,7 @@ void wareHousing()
 
         // 消息推送
         // 根据收件人账号，找到用户，然后推送消息
+        // 这里要负责处理未注册用户的情况
         pushMessageToUser(package);
 
         current = current->next;
@@ -217,11 +218,11 @@ void userManagement()
     while (1)
     {
         system("cls");
-        printf("请选择您要进行的操作：\n");
-        printf("1. 添加用户\n");     // 四种类型皆可
-        printf("2. 删除用户\n");     // 不支持快递平台，认为没有权限删除平台，需要更高级的管理员。下同。
-        printf("3. 修改用户信息\n"); // 不支持快递平台
-        printf("4. 查看用户信息\n\n"); // 不支持快递平台
+        printf("请选择您要进行的操作：\n\n");
+        printf("1. 添加用户\n");
+        printf("2. 删除用户\n");
+        printf("3. 修改用户信息\n");
+        printf("4. 查看用户信息\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -253,7 +254,7 @@ void shelfManagement()
     while (1)
     {
         system("cls");
-        printf("请选择您要进行的操作：\n");
+        printf("请选择您要进行的操作：\n\n");
         printf("1. 查看货架信息\n");
         printf("2. 修改货架信息\n\n");
         printf("按其他任意键返回\n");
@@ -298,6 +299,7 @@ void viewFeedback()
 
         char choice = getchar();
         clearInputBuffer();
+        puts("");
         // 后续暂时不再处理，假装加了个处理反馈的模块
     }
     fclose(fp);
@@ -370,7 +372,22 @@ void pushMessageToUser(Package *package) // 不能用const修饰，listAdd函数
     User *user = userElementGet(users_list, package->receiver_account);
     if (user == NULL)
     {
-        return;
+        // 处理该用户未注册或注销的情况
+        printf("包裹 %s 的收件人不存在！\n", package->package_id);
+        printf("系统将自动为用户注册账号\n");
+        printf("默认密码为123456\n");
+        printf("请及时联系用户完善账号信息\n");
+
+        user = (User *)malloc(sizeof(User));
+        strcpy(user->account, package->receiver_account);
+        strcpy(user->password, "123456");
+        strcpy(user->phone_number, "0");
+        user->user_type = 0;
+        user->receive_status = 0;
+        user->send_status = 0;
+        listAdd(users_list, user);
+
+        printCommonInfo();
     }
     user->receive_status = 1; // 修改用户状态
     listAdd(users_push_list, package); // 推送信息加入推送链表
@@ -381,7 +398,7 @@ void addUser()
     while (1)
     {
         system("cls");
-        printf("选择您要添加的用户类型\n");
+        printf("选择您要添加的用户类型\n\n");
         printf("1. 普通用户\n");
         printf("2. 快递员\n");
         printf("3. 管理员\n");
@@ -421,6 +438,7 @@ void registerUser()
     char account[20];
     scanf("%s", account);
     clearInputBuffer();
+    puts("");
 
     printf("请输入密码：\n");
     char password[20];
@@ -440,11 +458,13 @@ void registerUser()
 
     scanf("%s", password);
     clearInputBuffer();
+    puts("");
 
     printf("请输入电话号码：\n");
     char phone_number[20];
     scanf("%s", phone_number);
     clearInputBuffer();
+    puts("");
 
     int default_user_type = 0;
     int default_receive_status = 0;
@@ -470,11 +490,13 @@ void registerCourier()
     char account[20];
     scanf("%s", account);
     clearInputBuffer();
+    puts("");
 
     printf("请输入密码：\n");
     char password[20];
     scanf("%s", password);
     clearInputBuffer();
+    puts("");
 
     // 用户名重复检查
     ListNode *node = couriers_list->head;
@@ -509,11 +531,13 @@ void registerAdmin()
     char account[20];
     scanf("%s", account);
     clearInputBuffer();
+    puts("");
 
     printf("请输入密码：\n");
     char password[20];
     scanf("%s", password);
     clearInputBuffer();
+    puts("");
 
     // 用户名重复检查
     ListNode *node = admins_list->head;
@@ -537,7 +561,6 @@ void registerAdmin()
     printCommonInfo();
 }
 
-// 无链表，直接写入文件
 void registerPlatform()
 {
     system("cls");
@@ -545,38 +568,31 @@ void registerPlatform()
     char account[20];
     scanf("%s", account);
     clearInputBuffer();
+    puts("");
 
     printf("请输入密码：\n");
     char password[20];
     scanf("%s", password);
     clearInputBuffer();
+    puts("");
 
     // 用户名重复检查
-    FILE *fp = fopen("../files/platforms_info.txt", "r");
-    if (fp == NULL)
+    ListNode *node = platforms_list->head;
+    while (node != NULL)
     {
-        printf("文件打开失败！\n");
-        return;
-    }
-    char temp_account[20];
-    while (fscanf(fp, "%s\n", temp_account) != EOF) // 只格式化读用户名
-    {
-        if (strcmp(temp_account, account) == 0)
+        Platform *platform = (Platform *)node->data;
+        if (strcmp(platform->account, account) == 0)
         {
             printf("用户名已存在，请重新输入！\n");
             return;
         }
+        node = node->next;
     }
-    fclose(fp);
 
-    fp = fopen("../files/platforms_info.txt", "a");
-    if (fp == NULL)
-    {
-        printf("文件打开失败！\n");
-        return;
-    }
-    fprintf(fp, "%s %s\n", account, password);
-    fclose(fp);
+    Platform *platform = (Platform *)malloc(sizeof(Platform));
+    strcpy(platform->account, account);
+    strcpy(platform->password, password);
+    listAdd(platforms_list, platform);
 
     printf("添加平台成功！\n");
     printCommonInfo();
@@ -587,14 +603,16 @@ void deleteUser()
     while (1)
     {
         system("cls");
-        printf("请选择要删除的用户类型：\n");
+        printf("请选择要删除的用户类型：\n\n");
         printf("1. 用户\n");
         printf("2. 快递员\n");
-        printf("3. 管理员\n\n");
+        printf("3. 管理员\n");
+        printf("4. 快递平台\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
         clearInputBuffer();
+        puts("");
         char account[20];
 
         switch (choice)
@@ -603,6 +621,7 @@ void deleteUser()
             printf("请输入要删除的用户账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             User *user = userElementGet(users_list, account);
             if (user == NULL)
@@ -620,6 +639,7 @@ void deleteUser()
             printf("请输入要删除的快递员账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             Courier *courier = courierElementGet(couriers_list, account);
             if (courier == NULL)
@@ -637,6 +657,7 @@ void deleteUser()
             printf("请输入要删除的管理员账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             Admin *admin = adminElementGet(admins_list, account);
             if (admin == NULL)
@@ -646,7 +667,33 @@ void deleteUser()
                 return;
             }
 
+            // 不允许删除自己，从而保证管理员数目至少为1
+            if (strcmp(admin->account, the_admin->account) == 0)
+            {
+                printf("您无法删除自己！\n");
+                printCommonInfo();
+                return;
+            }
+
             listRemove(admins_list, admin);
+            printf("删除成功！\n");
+            printCommonInfo();
+            break;
+        case '4':
+            printf("请输入要删除的平台账号：\n");
+            scanf("%s", account);
+            clearInputBuffer();
+            puts("");
+
+            Platform *platform = platformElementGet(platforms_list, account);
+            if (platform == NULL)
+            {
+                printf("平台不存在！\n");
+                printCommonInfo();
+                return;
+            }
+
+            listRemove(platforms_list, platform);
             printf("删除成功！\n");
             printCommonInfo();
             break;
@@ -661,14 +708,16 @@ void modifyUser()
     while (1)
     {
         system("cls");
-        printf("请选择要修改的用户类型：\n");
+        printf("请选择要修改的用户类型：\n\n");
         printf("1. 用户\n");
         printf("2. 快递员\n");
-        printf("3. 管理员\n\n");
+        printf("3. 管理员\n");
+        printf("4. 快递平台\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
         clearInputBuffer();
+        puts("");
 
         char account[20];
         char choice2;
@@ -678,6 +727,7 @@ void modifyUser()
             printf("请输入要修改的用户账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             User *user = userElementGet(users_list, account);
             if (user == NULL)
@@ -695,6 +745,7 @@ void modifyUser()
 
             choice2 = getchar();
             clearInputBuffer();
+            puts("");
 
             switch (choice2)
             {
@@ -765,6 +816,7 @@ void modifyUser()
             printf("请输入要修改的快递员账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             Courier *courier = courierElementGet(couriers_list, account);
             if (courier == NULL)
@@ -812,6 +864,7 @@ void modifyUser()
             printf("请输入要修改的管理员账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             Admin *admin = adminElementGet(admins_list, account);
             if (admin == NULL)
@@ -855,6 +908,54 @@ void modifyUser()
             printf("修改成功！\n");
             printCommonInfo();
             break;
+        case '4':
+            printf("请输入要修改的平台账号：\n");
+            scanf("%s", account);
+            clearInputBuffer();
+            puts("");
+
+            Platform *platform = platformElementGet(platforms_list, account);
+            if (platform == NULL)
+            {
+                printf("平台不存在！\n");
+                printCommonInfo();
+                return;
+            }
+            printf("请选择要修改的信息：\n");
+            printf("1. 用户名\n");
+            printf("2. 密码\n\n");
+            printf("按其他任意键返回\n");
+
+            choice2 = getchar();
+            clearInputBuffer();
+            puts("");
+
+            switch (choice2)
+            {
+            case '1':
+                printf("请输入新的用户名：\n");
+                char new_account[20];
+                scanf("%s", new_account);
+                clearInputBuffer();
+                puts("");
+
+                strcpy(platform->account, new_account);
+                break;
+            case '2':
+                printf("请输入新的密码：\n");
+                char new_password[20];
+                scanf("%s", new_password);
+                clearInputBuffer();
+                puts("");
+
+                strcpy(platform->password, new_password);
+                break;
+            default:
+                break;
+            }
+            printf("修改成功！\n");
+            printCommonInfo();
+            break;
         default:
             return;
         }
@@ -866,10 +967,11 @@ void viewUserInfo()
     while (1)
     {
         system("cls");
-        printf("请选择要查看的用户类型：\n");
+        printf("请选择要查看的用户类型：\n\n");
         printf("1. 用户\n");
         printf("2. 快递员\n");
-        printf("3. 管理员\n\n");
+        printf("3. 管理员\n");
+        printf("4. 快递平台\n\n");
         printf("按其他任意键返回\n");
 
         char choice = getchar();
@@ -955,6 +1057,7 @@ void viewUserInfo()
             printf("请输入要查看的快递员账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             Courier *courier = courierElementGet(couriers_list, account);
             if (courier == NULL)
@@ -988,6 +1091,7 @@ void viewUserInfo()
             printf("请输入要查看的管理员账号：\n");
             scanf("%s", account);
             clearInputBuffer();
+            puts("");
 
             Admin *admin = adminElementGet(admins_list, account);
             if (admin == NULL)
@@ -998,6 +1102,23 @@ void viewUserInfo()
             }
             printf("用户名：%s\n", admin->account);
             printf("密码：%s\n", admin->password);
+            printCommonInfo();
+            break;
+        case '4':
+            printf("请输入要查看的平台账号：\n");
+            scanf("%s", account);
+            clearInputBuffer();
+            puts("");
+
+            Platform *platform = platformElementGet(platforms_list, account);
+            if (platform == NULL)
+            {
+                printf("平台不存在！\n");
+                printCommonInfo();
+                return;
+            }
+            printf("用户名：%s\n", platform->account);
+            printf("密码：%s\n", platform->password);
             printCommonInfo();
             break;
         default:
@@ -1011,7 +1132,7 @@ void viewShelfInfo()
     while (1)
     {
         system("cls");
-        printf("请选择要查看的货架：\n");
+        printf("请选择要查看的货架：\n\n");
         printf("1. 货架A\n");
         printf("2. 货架B\n");
         printf("3. 货架C\n");
@@ -1146,7 +1267,7 @@ void modifyShelfInfo()
     while (1)
     {
         system("cls");
-        printf("请选择要修改的货架：\n");
+        printf("请选择要修改的货架：\n\n");
         printf("1. 货架A\n");
         printf("2. 货架B\n");
         printf("3. 货架C\n");
@@ -1188,6 +1309,7 @@ void modifyShelf(List *shelf_list)
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
+    puts("");
 
     ListNode *current = shelf_list->head;
     while (current != NULL)
@@ -1371,8 +1493,8 @@ void addressUserSend()
         Courier *courier = (Courier *)courier_current->data;
         Package *package = (Package *)current->data;
 
-        // 如果快递员现在正在另一边工作，就跳过
-        if (courier->status == 1)
+        // 如果快递员在另一侧忙或处于隐身状态，直接跳过
+        if (courier->status == 1 || courier->status == 3)
         {
             courier_current = courier_current->next;
             continue; // 为了防止下一个快递员也是1，这里要continue
