@@ -918,7 +918,7 @@ void userSubstitute()
             {
                 // 代取成功，执行出库操作
                 int index_of_shelf = package->package_id[0] - 'A';
-                List *shelf_list;
+                List *shelf_list = NULL;
 
                 // 根据货架号的第一个字母，选择对应的货架链表
                 switch (index_of_shelf)
