@@ -36,7 +36,8 @@ void userShowMenu()
         printf("6. 取消寄件\n");
         printf("7. 反馈\n");
         printf("8. 代取\n");
-        printf("9. 注销账号\n\n");
+        printf("9. 修改个人信息\n");
+        printf("0. 注销账号\n\n");
         printf("按其他任意键退出\n");
 
         char choice = getchar();
@@ -73,6 +74,9 @@ void userShowMenu()
             userSubstitute();
             break;
         case '9':
+            userModifyInfo();
+            break;
+        case '0':
             deleteUserAccount();
             break;
         default:
@@ -971,4 +975,73 @@ void userSubstitute()
     user->receive_status = 0; // 代取完后，将代取人的取件状态置为0
     printf("\n全部代取成功！\n");
     printCommonInfo();
+}
+
+void userModifyInfo()
+{
+    while (1)
+    {
+        system("cls");
+        printf("请选择要修改的信息：\n\n");
+        printf("1. 用户名\n");
+        printf("2. 密码\n");
+        printf("3. 手机号\n\n");
+        printf("按任意键退出\n");
+
+        char choice = getchar();
+        if (clearInputBuffer() != 0)
+        {
+            return;
+        }
+        puts("");
+
+        switch (choice)
+        {
+        case '1':
+            printf("请输入新的用户名：\n");
+            char new_account[20];
+            scanf("%s", new_account);
+            clearInputBuffer();
+            if (userElementGet(users_list, new_account) != NULL)
+            {
+                printf("用户名已存在！\n");
+                printCommonInfo();
+                return;
+            }
+            strcpy(the_user->account, new_account);
+            printf("修改成功！\n");
+            printCommonInfo();
+            break;
+        case '2':
+            printf("请输入新的密码：\n");
+            char new_password[20];
+            scanf("%s", new_password);
+            clearInputBuffer();
+            printf("请再次输入新的密码：\n");
+            char new_password_confirm[20];
+            scanf("%s", new_password_confirm);
+            clearInputBuffer();
+            if (strcmp(new_password, new_password_confirm) != 0)
+            {
+                printf("两次密码不一致！\n");
+                printCommonInfo();
+                return;
+            }
+            strcpy(the_user->password, new_password);
+            printf("修改成功！\n");
+            printCommonInfo();
+            break;
+        case '3':
+            printf("请输入新的手机号：\n");
+            char new_phone_number[20];
+            scanf("%s", new_phone_number);
+            clearInputBuffer();
+            strcpy(the_user->phone_number, new_phone_number);
+            printf("修改成功！\n");
+            printCommonInfo();
+            break;
+        default:
+            return;
+        }
+    }
 }

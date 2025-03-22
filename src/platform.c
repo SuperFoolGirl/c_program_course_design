@@ -529,6 +529,7 @@ void viewPlatformWarehouseInfo()
         puts("");
         current = current->next;
     }
+    printCommonInfo();
 }
 
 void deletePlatformAccount()

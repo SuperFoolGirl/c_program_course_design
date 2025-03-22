@@ -40,3 +40,5 @@ void recordPickUpBehaviors(const char *account, const char *package_id, struct t
 void deleteUserAccount(); // 注销账号
 
 void userSubstitute(); // 代取
+
+void userModifyInfo(); // 修改个人信息
