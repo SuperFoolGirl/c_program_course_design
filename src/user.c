@@ -353,37 +353,20 @@ void userSend()
     }
     package->value = choice - '0' - 1;
 
-    // 加急件优先头插
-    if (package->isExpress == 1)
-    {
-        listAddHead(users_send_list, package);
-    }
-    else
-    {
-        listAdd(users_send_list, package);
-    }
-
-    the_user->send_status = 1; // 发件状态置为未发出
-    puts("");
-    printf("寄件成功！\n");
-
-    // 写入行为文件
-    recordSendBehaviors(the_user->account, package->package_id, getTime());
-
     printf("按任意键跳转付费界面\n");
     getchar();
     clearInputBuffer();
 
     // 付费模块
-    userPay(package->isExpress, payment(package));
+    userPay(package, payment(package));
 }
 
-void userPay(const int isExpress, int payment)
+void userPay(Package *package, int payment)
 {
     system("cls");
     if (the_user->user_type == 0)
     {
-        if (isExpress == 1)
+        if (package->isExpress == 1)
         {
             printf("您的用户类型为普通用户，请原价支付加急件\n");
             printf("支付金额为：%d\n", payment * 2);
@@ -397,7 +380,7 @@ void userPay(const int isExpress, int payment)
     }
     else if (the_user->user_type == 1)
     {
-        if (isExpress == 1)
+        if (package->isExpress == 1)
         {
             printf("您的用户类型为会员用户，可享受8折优惠支付加急件\n");
             printf("支付金额为：%d\n", payment * 2 * 0.8);
@@ -443,8 +426,20 @@ void userPay(const int isExpress, int payment)
 
     if (choice == '1')
     {
-        printf("支付成功！\n");
-        the_user->send_status = 0; // 重新置为未发出状态
+        printf("寄件成功！\n");
+        the_user->send_status = 1; // 支付成功后，发件状态置为未发出
+        // 写入行为文件
+        recordSendBehaviors(the_user->account, package->package_id, getTime());
+
+        // 加急件优先头插
+        if (package->isExpress == 1)
+        {
+            listAddHead(users_send_list, package);
+        }
+        else
+        {
+            listAdd(users_send_list, package);
+        }
     }
     else
     {
@@ -592,7 +587,7 @@ void userModifySend()
     // 遍历寄件链表，找到要修改的那个快递
     // 根据包裹ID找到对应的快递，是唯一的；不要根据用户名来找
     ListNode *current = users_send_list->head;
-    while (current->next != NULL)
+    while (current != NULL)
     {
         Package *package = (Package *)current->data;
         if (strcmp(package->package_id, package_id) == 0 && strcmp(package->receiver_account, the_user->account) == 0) // 还要判断是本人
@@ -769,13 +764,14 @@ void userCancelSend()
     // 遍历寄件链表，找到要删除的那个快递
     // 根据包裹ID找到对应的快递，是唯一的；不要根据用户名来找
     ListNode *current = users_send_list->head;
-    while (current->next != NULL)
+    while (current != NULL)
     {
         Package *package = (Package *)current->data;
         if (strcmp(package->package_id, package_id) == 0 && strcmp(package->receiver_account, the_user->account) == 0) // 还要判断是本人
         {
             listRemove(users_send_list, package);
             printf("取消成功！\n");
+            printf("您支付的费用将会退还到您的账户！\n");
             printCommonInfo();
             return;
         }

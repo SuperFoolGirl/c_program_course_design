@@ -25,7 +25,7 @@ void userQuerySend(); // 查询寄件信息
 
 void userFeedback(); // 反馈
 
-void userPay(const int isExpress, int payment); // 付费
+void userPay(Package *package, int payment); // 付费
 
 void userModifySend(); // 修改寄件信息
 

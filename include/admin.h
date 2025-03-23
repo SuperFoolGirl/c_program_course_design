@@ -70,3 +70,9 @@ void addressUserSend(); // 处理用户寄件
 void recordModifyInfo(const char *package_id, const char *account, const char *modity_info, struct tm *time); // 记录修改信息
 
 void modifyShelfPosition(Package *package, List *shelf_list); // 修改货架位置
+
+void viewPackageLog(); // 查看快递单修改日志
+
+void modifyUserSend(); // 修改用户寄件信息
+
+void recordModifyInfoOfSend(const char *package_id, const char *account, const char *modity_info, struct tm *time); // 记录修改寄件信息

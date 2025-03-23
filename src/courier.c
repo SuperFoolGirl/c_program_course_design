@@ -111,7 +111,7 @@ void queryCurrentDelivery()
             Package *package = (Package *)current->data;
             if (strcmp(package->courier_account, the_courier->account) == 0)
             {
-                printf("将收件人为 %s 的快递从 快递平台 送至 驿站 \n", package->receiver_account);
+                printf("将收件人为 %s 的快递从 快递平台 送至 驿站\n", package->receiver_account);
             }
             current = current->next;
         }
@@ -128,7 +128,7 @@ void queryCurrentDelivery()
             Package *package = (Package *)current->data;
             if (strcmp(package->courier_account, the_courier->account) == 0)
             {
-                printf("将收件人为 %s 的快递从 驿站 送至 用户 \n", package->receiver_account);
+                printf("将收件人为 %s 的快递从 驿站 送至 平台\n", package->receiver_account);
             }
             current = current->next;
         }

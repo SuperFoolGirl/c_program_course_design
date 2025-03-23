@@ -19,6 +19,8 @@ void adminShowMenu()
         printf("5. 库存盘点\n");
         printf("6. 查看业务统计\n");
         printf("7. 处理用户寄件\n");
+        printf("8. 查看快递单修改日志\n");
+        printf("9. 修改用户寄件信息\n\n");
         printf("按其他任意键退出\n");
 
         char choice = getchar();
@@ -49,6 +51,12 @@ void adminShowMenu()
             break;
         case '7':
             addressUserSend();
+            break;
+        case '8':
+            viewPackageLog();
+            break;
+        case '9':
+            modifyUserSend();
             break;
         default:
             return; // 这里必须是return 否则无法退出while循环。在进入这些函数的二级菜单中，最后就是break了，因为外边没有while循环
@@ -777,6 +785,20 @@ void modifyUser()
                 clearInputBuffer();
                 puts("");
 
+                // 用户名重复检查
+                ListNode *current = users_list->head;
+                while (current != NULL)
+                {
+                    User *user = (User *)current->data;
+                    if (strcmp(user->account, new_account) == 0)
+                    {
+                        printf("用户名已存在，请重新输入！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    current = current->next;
+                }
+
                 strcpy(user->account, new_account);
                 printf("修改成功！\n");
                 printCommonInfo();
@@ -787,6 +809,20 @@ void modifyUser()
                 scanf("%s", new_password);
                 clearInputBuffer();
                 puts("");
+
+                // 确认密码
+                printf("请再次输入新的密码：\n");
+                char new_password_confirm[20];
+                scanf("%s", new_password_confirm);
+                clearInputBuffer();
+                puts("");
+
+                if (strcmp(new_password, new_password_confirm) != 0)
+                {
+                    printf("两次密码不一致！\n");
+                    printCommonInfo();
+                    return;
+                }
 
                 strcpy(user->password, new_password);
                 printf("修改成功！\n");
@@ -1401,6 +1437,11 @@ void modifyShelf(List *shelf_list)
                     return;
                 }
 
+                // 还要修改这两个人的接受快递状态
+                User *old_user = userElementGet(users_list, package->receiver_account);
+                old_user->receive_status = 0;
+                user->receive_status = 1;
+
                 strcpy(package->receiver_account, new_receiver_account);
                 // 推送链表中的信息不需要更改，浅拷贝，所有数据都一样
                 break;
@@ -1781,9 +1822,260 @@ void recordModifyInfo(const char *package_id, const char *account, const char *m
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
-        exit(1);
+        printCommonInfo();
     }
 
-    fprintf(fp, "货架号：%s  用户名：%s  修改信息：%s  时间：%d-%d-%d %d:%d:%d\n", package_id, account, modify_info, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    fprintf(fp, "（取件）货架号：%s  用户名：%s  修改信息：%s  时间：%d-%d-%d %d:%d:%d\n", package_id, account, modify_info, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
     fclose(fp);
+}
+
+void recordModifyInfoOfSend(const char *package_id, const char *account, const char *modify_info, struct tm *local_time)
+{
+    FILE *fp = fopen("../files/modify_records.txt", "a");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        printCommonInfo();
+    }
+
+    fprintf(fp, "（寄件）包裹ID：%s  用户名：%s  修改信息：%s  时间：%d-%d-%d %d:%d:%d\n", package_id, account, modify_info, local_time->tm_year + 1900, local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    fclose(fp);
+}
+
+void viewPackageLog()
+{
+    system("cls");
+    FILE *fp = fopen("../files/modify_records.txt", "r");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        printCommonInfo();
+    }
+
+    char line[100];
+    while (fgets(line, 100, fp) != NULL)
+    {
+        printf("%s", line);
+    }
+    fclose(fp);
+    printCommonInfo();
+}
+
+void modifyUserSend()
+{
+    // 修改完后要进行写入modify_records.txt
+    system("cls");
+    if (users_send_list->size == 0)
+    {
+        printf("暂无待发货快递！\n");
+        printCommonInfo();
+        return;
+    }
+    printf("请选择要修改快递的包裹ID：\n");
+    char package_id[20];
+    scanf("%s", package_id);
+    clearInputBuffer();
+    puts("");
+
+    ListNode *current = users_send_list->head;
+    while (current != NULL)
+    {
+        Package *package = (Package *)current->data;
+        if (strcmp(package_id, package->package_id) == 0)
+        {
+            printf("请选择要修改的信息：\n\n");
+            // 寄件人不允许再改了
+            printf("1. 包裹ID\n");
+            printf("2. 加急状态\n");
+            printf("3. 体积\n");
+            printf("4. 重量\n");
+            printf("5. 特殊类型\n");
+            printf("6. 价值\n\n");
+            printf("按其他任意键返回\n");
+
+            char choice = getchar();
+            if (clearInputBuffer() != 0)
+            {
+                return;
+            }
+            puts("");
+
+            switch (choice)
+            {
+            case '1':
+                printf("请输入新的包裹ID：\n");
+                char new_package_id[20];
+                scanf("%s", new_package_id);
+                clearInputBuffer();
+                puts("");
+
+                // 包裹ID重复检查
+                ListNode *current = users_send_list->head;
+                while (current != NULL)
+                {
+                    Package *package = (Package *)current->data;
+                    if (strcmp(package->package_id, new_package_id) == 0)
+                    {
+                        printf("包裹ID已存在，请重新输入！\n");
+                        printCommonInfo();
+                        return;
+                    }
+                    current = current->next;
+                }
+
+                strcpy(package->package_id, new_package_id);
+                break;
+            case '2':
+                printf("请输入新的加急状态：\n");
+                printf("1. 否\n");
+                printf("2. 是\n");
+
+                char new_express_type = getchar();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+                puts("");
+
+                if (new_express_type != '1' && new_express_type != '2')
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+
+                package->isExpress = new_express_type - '0' - 1;
+                break;
+            case 3:
+                printf("请输入新的体积：\n");
+                printf("1. 小\n");
+                printf("2. 大\n");
+
+                char new_volume = getchar();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+                puts("");
+
+                if (new_volume != '1' && new_volume != '2')
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+
+                package->volume = new_volume - '0' - 1;
+                break;
+            case 4:
+                printf("请输入新的重量：\n");
+                printf("1. 轻\n");
+                printf("2. 重\n");
+
+                char new_weight = getchar();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+                puts("");
+
+                if (new_weight != '1' && new_weight != '2')
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+
+                package->weight = new_weight - '0' - 1;
+                break;
+            case 5:
+                printf("请输入新的快递类型：\n");
+                printf("1. 普通\n");
+                printf("2. 易碎品、电子产品\n");
+                printf("3. 生鲜\n");
+
+                char new_special_type = getchar();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+                puts("");
+
+                if (new_special_type != '1' && new_special_type != '2' && new_special_type != '3')
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+
+                package->special_type = new_special_type - '0' - 1;
+                break;
+            case 6:
+                printf("请输入新的价值：\n");
+                printf("1. 低价值\n");
+                printf("2. 高价值\n");
+
+                char new_value = getchar();
+                if (clearInputBuffer() != 0)
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+                puts("");
+
+                if (new_value != '1' && new_value != '2')
+                {
+                    printf("输入错误！\n");
+                    printCommonInfo();
+                    return;
+                }
+
+                package->value = new_value - '0' - 1;
+                break;
+            default:
+                return;
+            }
+
+            // 写入快递单修改文件modify_records.txt
+            char modify_info[50];
+            switch (choice)
+            {
+            case '1':
+                strcpy(modify_info, "包裹ID");
+                break;
+            case '2':
+                strcpy(modify_info, "加急状态");
+                break;
+            case '3':
+                strcpy(modify_info, "体积");
+                break;
+            case '4':
+                strcpy(modify_info, "重量");
+                break;
+            case '5':
+                strcpy(modify_info, "特殊类型");
+                break;
+            case '6':
+                strcpy(modify_info, "价值");
+                break;
+            default:
+                break;
+            }
+            recordModifyInfoOfSend(package->package_id, package->receiver_account, modify_info, getTime());
+
+            printf("修改成功！\n");
+            printCommonInfo();
+            return;
+        }
+        current = current->next;
+    }
 }

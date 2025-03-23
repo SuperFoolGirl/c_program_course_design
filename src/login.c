@@ -226,6 +226,7 @@ again:
 
 void login()
 {
+    int error_times = 0;
     while (1)
     {
         system("cls");
@@ -282,7 +283,15 @@ void login()
         // 登录失败
         if (ret == 0)
         {
+            error_times++;
+            if (error_times >= 5)
+            {
+                printf("错误次数过多，退出登录！\n");
+                printCommonInfo();
+                exit(0); // 退出程序
+            }
             printf("登陆失败，请检查用户名和密码是否正确\n");
+            printf("您还有%d次机会\n", 5 - error_times);
             printCommonInfo();
             continue;
         }
