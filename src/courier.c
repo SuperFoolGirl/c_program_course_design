@@ -23,7 +23,7 @@ void courierShowMenu()
         printf("4. 隐身状态\n");
         printf("5. 查看包裹信息\n");
         printf("6. 注销账号\n\n");
-        printf("按任意键退出\n");
+        printf("按任意键退出...\n");
 
         char choice = getchar();
         if (clearInputBuffer() != 0)
@@ -104,7 +104,7 @@ void queryCurrentDelivery()
     {
         // 遍历临时链表
         ListNode *current = courier_delivery_list->head;
-        printf("您的任务是：\n\n");
+        printf("您的任务如下，共%d件：\n\n", courier_delivery_list->size);
 
         while (current != NULL)
         {
@@ -233,6 +233,7 @@ void refuseCurrentDelivery()
             
             current = current->next;
             listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+            listRemove(couriers_push_list, package);    // 删除推送链表
             listAdd(platform_warehouse_list, package); // 加入平台仓库
         }
         printf("已拒绝任务！\n");
@@ -339,21 +340,24 @@ void viewCourierDelivery()
         return;
     }
 
+    printf("您的快递信息如下，共%d件：\n\n", courier_delivery_list->size);
     ListNode *current = courier_delivery_list->head;
     while (current != NULL)
     {
         Package *package = (Package *)current->data;
-        printf("包裹ID：%s\n", package->package_id);
+        printf("快递单号：%s\n", package->package_id);
         printf("收件人：%s\n", package->receiver_account);
+        printf("寄件人：%s\n", package->sender_account);
         printf("快递员：%s\n", package->courier_account);
         printf("是否加急：%s\n", package->isExpress == 1 ? "是" : "否");
-        printf("体积：%s\n", package->volume == 1 ? "大" : "小");
-        printf("重量：%s\n", package->weight == 1 ? "重" : "轻");
+        printf("体积(升)：%.2lf\n", package->volume);
+        printf("重量(kg)：%.2lf\n", package->weight);
         printf("快递类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜" : "普通");
-        printf("价值：%s\n", package->value == 1 ? "高价值" : "低价值");
+        printf("价值(元)：%.2lf\n", package->value);
         puts("");
         current = current->next;
     }
+    printCommonInfo();
 }
 
 void deleteCourierAccount()

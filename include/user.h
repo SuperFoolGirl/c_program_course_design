@@ -25,13 +25,13 @@ void userQuerySend(); // 查询寄件信息
 
 void userFeedback(); // 反馈
 
-void userPay(Package *package, int payment); // 付费
+void userPay(Package *package, double payment); // 付费
 
 void userModifySend(); // 修改寄件信息
 
 void userCancelSend(); // 取消寄件
 
-int payment(Package *package); // 计算价格
+double payment(Package *package); // 计算价格
 
 void recordSendBehaviors(const char *account, const char *package_id, struct tm *time); // 记录寄件行为
 
@@ -42,3 +42,17 @@ void deleteUserAccount(); // 注销账号
 void userSubstitute(); // 代取
 
 void userModifyInfo(); // 修改个人信息
+
+void friendFunction(); // 好友功能
+
+void viewUserBehaviors(); // 查看用户行为
+
+void confirmAccountAndPhoneNumber(); // 确认账号和电话号码
+
+void helpFriend(); // 帮助好友取件
+
+void addFriend(); // 添加好友
+
+void viewFriend(); // 查看好友信息
+
+void deleteFriend(); // 删除好友

@@ -76,3 +76,15 @@ void viewPackageLog(); // 查看快递单修改日志
 void modifyUserSend(); // 修改用户寄件信息
 
 void recordModifyInfoOfSend(const char *package_id, const char *account, const char *modity_info, struct tm *time); // 记录修改寄件信息
+
+void remindUserPickup(); // 提醒用户取件
+
+void listAllInfo(); // 查看所有信息
+
+void listAllUsers(); // 查看所有用户信息
+
+void listAllCouriers(); // 查看所有快递员信息
+
+void listAllAdmins(); // 查看所有管理员信息
+
+void listAllPlatforms(); // 查看所有平台信息

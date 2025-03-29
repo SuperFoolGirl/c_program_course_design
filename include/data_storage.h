@@ -44,6 +44,9 @@ typedef struct User
     int user_type;         // 用户类型，5类：0-普通用户，1-会员用户，2-企业用户，3-代理商用户，4-合作商家用户
     int receive_status;    // 收快递状态，0-无需取件，1-需要取件
     int send_status;       // 寄件状态，0-无寄件，1-未发出，2-已发出  // 取件码
+
+    char friend[20]; // 好友 用于代取
+    int delivery_leave; // 包裹滞留状态，0-正常，1-滞留
 } User;
 
 // 3 管理员表结构体
@@ -56,16 +59,19 @@ typedef struct Admin
 // 4 包裹表
 typedef struct Package
 {
-    char package_id[20];       // 包裹货架ID，储存货架信息
-    char receiver_account[20]; // 收件人用户名(用户反向寄件时，这里填寄件用户的名字，而不是实际要收货的人)
+    char package_id[20];       // 快递单号
+    char receiver_account[20]; // 收件人用户名
     char courier_account[20];  // 快递员用户名
     int pick_up_code;     // 取件码，需要是整形
 
     int isExpress; // 是否加急，0-普通件，1-加急件
-    int volume;       // 体积，0-小件，1-大件
-    int weight;       // 重量，0-轻件，1-重件
+    double volume;       // 体积（m³）
+    double weight;       // 重量（kg）
     int special_type; // 特殊类型，0-普通包裹，1-易碎品、电子产品，2-生鲜
-    int value;        // 价值，0-低价值，1-高价值
+    double value;        // 价值（元）
+
+    char sender_account[20]; // 寄件人用户名，寄件时需要填写
+    char shelf_id[20];      // 货架ID，寄件时需要填写
 } Package;
 
 // 5 快递员表

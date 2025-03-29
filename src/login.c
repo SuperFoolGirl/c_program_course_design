@@ -8,6 +8,7 @@
 extern Admin *the_admin;
 extern Courier *the_courier;
 extern User *the_user;
+extern Platform *the_platform;
 
 // 通过查询链表实现登录
 int verifyUser(const char *account, const char *password)
@@ -69,6 +70,7 @@ int verifyPlatform(const char *account, const char *password)
         Platform *platform = (Platform *)current->data;
         if (strcmp(account, platform->account) == 0 && strcmp(password, platform->password) == 0)
         {
+            the_platform = platform; // 赋值给临时结构体
             return 1;
         }
         current = current->next;
@@ -165,6 +167,20 @@ again:
     clearInputBuffer();
     puts("");
 
+    // 添加用户名重复检查
+    ListNode *node = users_list->head;
+    while (node != NULL)
+    {
+        User *user = (User *)node->data;
+        if (strcmp(user->account, account) == 0)
+        {
+            printf("用户名已存在，请重新输入！\n");
+            printCommonInfo();
+            goto again;
+        }
+        node = node->next;
+    }
+
     printf("请输入密码：\n");
     char password[20];
     scanf("%s", password);
@@ -185,20 +201,6 @@ again:
     }
     else
     {
-        // 添加用户名重复检查
-        ListNode *node = users_list->head;
-        while (node != NULL)
-        {
-            User *user = (User *)node->data;
-            if (strcmp(user->account, account) == 0)
-            {
-                printf("用户名已存在，请重新输入！\n");
-                printCommonInfo();
-                goto again;
-            }
-            node = node->next;
-        }
-
         printf("请输入电话号码：\n");
         char phone_number[20];
         scanf("%s", phone_number);
@@ -214,9 +216,11 @@ again:
         strcpy(user->account, account);
         strcpy(user->password, password);
         strcpy(user->phone_number, phone_number);
+        strcpy(user->friend, "0");
         user->user_type = default_user_type;
         user->receive_status = default_receive_status;
         user->send_status = default_send_status;
+        user->delivery_leave = 0;
         listAdd(users_list, user);
 
         printf("注册成功！\n");
@@ -235,7 +239,7 @@ void login()
         printf("2. 管理员\n");
         printf("3. 快递员\n");
         printf("4. 运输平台\n\n");
-        printf("按其他任意键退出\n");
+        printf("按其他任意键退出...\n");
 
         char choice = getchar();
         if (clearInputBuffer() != 0)

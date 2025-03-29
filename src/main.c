@@ -49,7 +49,7 @@ int main()
         printf("请选择：\n");
         printf("1. 登录\n");
         printf("2. 注册\n\n");
-        printf("按其他任意键退出\n");
+        printf("按其他任意键退出...\n");
 
         char choice = getchar();
         if (clearInputBuffer() != 0)

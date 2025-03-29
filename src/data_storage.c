@@ -229,7 +229,7 @@ void writeListFromFile(const char *file, List *list)
         User *user = (User *)malloc(sizeof(User));
         memset(user, 0, sizeof(User)); // 初始化内存，因为堆区的这块内存可能是脏数据
 
-        while (fscanf(fp, "%s %s %s %d %d %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status) != EOF)
+        while (fscanf(fp, "%s %s %s %d %d %d %s %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status, user->friend, &user->delivery_leave) != EOF)
         {
             listAdd(list, user);
 
@@ -275,7 +275,7 @@ void writeListFromFile(const char *file, List *list)
         Package *package = (Package *)malloc(sizeof(Package));
         memset(package, 0, sizeof(Package));
 
-        while (fscanf(fp, "%s %s %s %d %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, &package->pick_up_code, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value) != EOF)
+        while (fscanf(fp, "%s %s %s %d %d %lf %lf %d %lf %s %s\n", package->package_id, package->receiver_account, package->courier_account, &package->pick_up_code, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value, package->sender_account, package->shelf_id) != EOF)
         {
             listAdd(list, package);
 
@@ -322,7 +322,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             User *user = (User *)current->data;
-            fprintf(fp, "%s %s %s %d %d %d\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status);
+            fprintf(fp, "%s %s %s %d %d %d %s %d\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status, user->friend, user->delivery_leave);
             current = current->next;
         }
     }
@@ -349,7 +349,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            fprintf(fp, "%s %s %s %d %d %d %d %d %d\n", package->package_id, package->receiver_account, package->courier_account, package->pick_up_code, package->isExpress, package->volume, package->weight, package->special_type, package->value);
+            fprintf(fp, "%s %s %s %d %d %lf %lf %d %lf %s %s\n", package->package_id, package->receiver_account, package->courier_account, package->pick_up_code, package->isExpress, package->volume, package->weight, package->special_type, package->value, package->sender_account, package->shelf_id);
             current = current->next;
         }
     }
@@ -451,7 +451,7 @@ void listAddHead(List *list, void *data)
     list->size++;
 }
 
-// 为快递员单独写一个packageElementGet函数，因为需要用用户名配对，而不是包裹ID
+// 为快递员单独写一个packageElementGet函数，因为需要用用户名配对，而不是快递单号
 Package *packageElementGetByCourier(List *list, const char *receiver_account)
 {
     ListNode *current = list->head;
@@ -481,7 +481,7 @@ int clearInputBuffer()
 void printCommonInfo()
 {
     puts("");
-    printf("按任意键继续\n");
+    printf("按任意键继续...\n");
     getchar();
     clearInputBuffer();
 }

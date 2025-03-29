@@ -1,5 +1,7 @@
 #include "../include/platform.h"
 
+Platform *the_platform = NULL;
+
 void platformShowMenu()
 {
     while (1)
@@ -14,7 +16,7 @@ void platformShowMenu()
         printf("5. 查看发货信息\n");
         printf("6. 查看平台仓库信息\n");
         printf("7. 注销账号\n\n");
-        printf("按任意键退出\n");
+        printf("按任意键退出...\n");
 
         char choice = getchar();
         if (clearInputBuffer() != 0)
@@ -56,21 +58,21 @@ void writeToBeShippedDelivery()
     system("cls");
     Package *package = (Package *)malloc(sizeof(Package));
 
-    // 随便填写一个包裹id，为了查找和删除。不能再随便给个默认值了
-    printf("请输入包裹ID：\n");
+    // 随便填写一个快递单号，为了查找和删除。不能再随便给个默认值了
+    printf("请输入快递单号：\n");
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
 
-    // 加入包裹ID重名检测
+    // 加入快递单号重名检测
     ListNode *current = platform_warehouse_list->head;
     while (current != NULL)
     {
         Package *temp = (Package *)current->data;
         if (strcmp(package_id, temp->package_id) == 0)
         {
-            printf("包裹ID重名！\n");
+            printf("快递单号重名！\n");
             printCommonInfo();
             return;
         }
@@ -89,6 +91,12 @@ void writeToBeShippedDelivery()
 
     // 填一个暂时的取件码
     package->pick_up_code = 0;
+
+    // 填一个暂时的货架id
+    strcpy(package->shelf_id, "0");
+
+    // 寄件人为平台
+    strcpy(package->sender_account, the_platform->account);
 
     printf("请选择是否加急：\n");
     printf("1. 否\n");
@@ -110,45 +118,15 @@ void writeToBeShippedDelivery()
     }
     package->isExpress = choice - '0' - 1;
 
-    printf("请选择体积：\n");
-    printf("1. 小\n");
-    printf("2. 大\n");
-    choice = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        printf("输入错误！\n");
-        printCommonInfo();
-        return;
-    }
+    printf("请输入体积(升)：\n");
+    scanf("%lf", &package->volume);
+    clearInputBuffer();
     puts("");
 
-    if (choice != '1' && choice != '2')
-    {
-        printf("输入错误！\n");
-        printCommonInfo();
-        return;
-    }
-    package->volume = choice - '0' - 1;
-
-    printf("请选择重量：\n");
-    printf("1. 轻\n");
-    printf("2. 重\n");
-    choice = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        printf("输入错误！\n");
-        printCommonInfo();
-        return;
-    }
+    printf("请输入重量(kg)：\n");
+    scanf("%lf", &package->weight);
+    clearInputBuffer();
     puts("");
-
-    if (choice != '1' && choice != '2')
-    {
-        printf("输入错误！\n");
-        printCommonInfo();
-        return;
-    }
-    package->weight = choice - '0' - 1;
 
     printf("请选择快递类型：\n");
     printf("1. 普通\n");
@@ -171,25 +149,10 @@ void writeToBeShippedDelivery()
     }
     package->special_type = choice - '0' - 1;
 
-    printf("请选择价值：\n");
-    printf("1. 低价值\n");
-    printf("2. 高价值\n");
-    choice = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        printf("输入错误！\n");
-        printCommonInfo();
-        return;
-    }
+    printf("请输入包裹价值(元)：\n");
+    scanf("%lf", &package->value);
+    clearInputBuffer();
     puts("");
-
-    if (choice != '1' && choice != '2')
-    {
-        printf("输入错误！\n");
-        printCommonInfo();
-        return;
-    }
-    package->value = choice - '0' - 1;
 
     if (package->isExpress == 1)
     {
@@ -329,7 +292,7 @@ void modifyToBeShippedDelivery()
         printCommonInfo();
         return;
     }
-    printf("请输入要修改的快递的包裹ID：\n");
+    printf("请输入要修改的快递的快递单号：\n");
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
@@ -344,6 +307,7 @@ void modifyToBeShippedDelivery()
         {
             while (1)
             {
+                system("cls");
                 printf("请选择要修改的信息：\n");
                 printf("1. 收件人账号\n");
                 printf("2. 加急状态\n");
@@ -351,7 +315,7 @@ void modifyToBeShippedDelivery()
                 printf("4. 重量\n");
                 printf("5. 特殊类型\n");
                 printf("6. 价值\n\n");
-                printf("按其他任意键返回\n");
+                printf("按其他任意键返回...\n");
 
                 char choice = getchar();
                 if (clearInputBuffer() != 0)
@@ -476,7 +440,7 @@ void deleteToBeShippedDelivery()
         return;
     }
 
-    printf("请输入要删除的快递的包裹ID：\n");
+    printf("请输入要删除的快递的快递单号：\n");
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
@@ -518,14 +482,15 @@ void viewPlatformWarehouseInfo()
     while (current != NULL)
     {
         Package *package = (Package *)current->data;
-        printf("包裹ID：%s\n", package->package_id);
+        printf("快递单号：%s\n", package->package_id);
         printf("收件人账号：%s\n", package->receiver_account);
+        printf("寄件人账号：%s\n", package->sender_account);
         printf("加急状态：%s\n", package->isExpress == 1 ? "是" : "否");
-        printf("体积：%s\n", package->volume == 1 ? "大" : "小");
-        printf("重量：%s\n", package->weight == 1 ? "重" : "轻");
+        printf("体积：%.2lfm³\n", package->volume);
+        printf("重量：%.2lfkg\n", package->weight);
         printf("特殊类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜"
                                                                                                               : "普通"); // 多重三目运算符
-        printf("价值：%s\n", package->value == 1 ? "高价值" : "低价值");
+        printf("价值：%.2lf元\n", package->value);
         puts("");
         current = current->next;
     }
