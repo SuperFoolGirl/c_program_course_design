@@ -22,7 +22,7 @@ void platformShowMenu()
         if (clearInputBuffer() != 0)
         {
             return;
-        };
+        }
 
         switch (choice)
         {
@@ -234,11 +234,11 @@ void matchCourier()
 
         // 判断本次base点的情况
         base++;
-        if (package->volume == 1)
+        if (package->volume >= 0.5)
         {
             base++;
         }
-        if (package->weight == 1)
+        if (package->weight >= 3)
         {
             base++;
         }

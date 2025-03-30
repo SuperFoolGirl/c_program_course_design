@@ -423,7 +423,7 @@ double payment(Package *package)
     double payment = 0.0;
     
     // 体积
-    payment += package->volume * 5;
+    payment += package->volume * 3;
 
     // 重量
     payment += package->weight * 5;
@@ -442,7 +442,7 @@ double payment(Package *package)
     }
 
     // 价值
-    payment += package->value * 0.05;
+    payment += package->value * 0.01;
 
     return payment;
 }

@@ -153,7 +153,7 @@ void wareHousing()
             listAdd(shelf_e_list, package);
         }
         // 易碎、电子产品、高价值
-        else if (package->special_type == 1 || package->value == 1)
+        else if (package->special_type == 1 || package->value >= 200)
         {
             if (shelf_d_list->size >= 100)
             {
@@ -167,7 +167,7 @@ void wareHousing()
             listAdd(shelf_d_list, package);
         }
         // 大件、重件
-        else if (package->volume == 1 || package->weight == 1)
+        else if (package->volume >= 0.5 || package->weight >= 10)
         {
             if (shelf_c_list->size >= 100)
             {
@@ -685,6 +685,14 @@ void deleteUser()
             if (user == NULL)
             {
                 printf("用户不存在！\n");
+                printCommonInfo();
+                return;
+            }
+
+            // 如果该用户有未取件的快递，则不允许删除
+            if (user->receive_status == 1)
+            {
+                printf("该用户有未取件的快递，请先处理！\n");
                 printCommonInfo();
                 return;
             }
@@ -1626,11 +1634,11 @@ void addressUserSend()
 
         // 判断本次base点的情况
         base++;
-        if (package->volume == 1)
+        if (package->volume >= 0.5)
         {
             base++;
         }
-        if (package->weight == 1)
+        if (package->weight >= 3)
         {
             base++;
         }
