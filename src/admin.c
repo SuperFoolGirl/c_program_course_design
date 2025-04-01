@@ -30,11 +30,7 @@ void adminShowMenu()
         printf("a. 处理拒收包裹\n\n");
         printf("按其他任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
 
         switch (choice)
         {
@@ -263,11 +259,7 @@ void userManagement()
         printf("5. 列出全部用户信息\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
 
         system("cls");
         switch (choice)
@@ -304,11 +296,7 @@ void shelfManagement()
         printf("2. 修改货架信息\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
 
         switch (choice)
         {
@@ -354,11 +342,7 @@ void viewFeedback()
         printf("3. 取消\n\n");
         printf("按其他任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
         puts("");
 
         switch (choice)
@@ -486,11 +470,7 @@ void addUser()
         printf("4. 快递平台\n\n");
         printf("按任意其他键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
 
         switch (choice)
         {
@@ -872,11 +852,7 @@ void deleteUser()
         printf("4. 快递平台\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
         puts("");
         char account[20];
 
@@ -1014,12 +990,7 @@ void modifyFunc()
         printf("4. 快递平台\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         switch (choice)
         {
@@ -1053,12 +1024,7 @@ void viewUserInfo()
         printf("4. 快递平台\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         char account[20];
         system("cls");
@@ -1223,12 +1189,7 @@ void viewShelfInfo()
         printf("5. 货架E\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         switch (choice)
         {
@@ -1328,12 +1289,7 @@ void modifyShelfInfo()
         printf("5. 货架E\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         system("cls");
         switch (choice)
@@ -1396,12 +1352,7 @@ void modifyShelf(List *shelf_list)
             printf("7. 货架位置\n\n");
             printf("按其他任意键返回...\n");
 
-            char choice = getchar();
-            if (clearInputBuffer() != 0)
-            {
-                return;
-            }
-            puts("");
+            char choice = _getch();
 
             system("cls");
             printf("如若需要强制退出，请输入“exit”\n\n");
@@ -1906,12 +1857,7 @@ void modifyUserSend()
             printf("7. 收件人\n\n");
             printf("按其他任意键返回...\n");
 
-            char choice = getchar();
-            if (clearInputBuffer() != 0)
-            {
-                return;
-            }
-            puts("");
+            char choice = _getch();
 
             switch (choice)
             {
@@ -2142,12 +2088,7 @@ void listAllInfo()
         printf("4. 快递平台\n\n");
         printf("按其他任意键返回...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         switch (choice)
         {
@@ -2325,12 +2266,7 @@ void modifyUser()
     printf("4. 用户类型\n\n");
     printf("按其他任意键返回...\n");
 
-    choice2 = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        return;
-    }
-    puts("");
+    choice2 = _getch();
 
     system("cls");
     printf("如若需要强制退出，请输入“exit”\n\n");
@@ -2496,12 +2432,7 @@ void modifyCourier()
     printf("2. 密码\n\n");
     printf("按其他任意键返回...\n");
 
-    choice2 = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        return;
-    }
-    puts("");
+    choice2 = _getch();
 
     system("cls");
     printf("如若需要强制退出，请输入“exit”\n\n");
@@ -2607,12 +2538,7 @@ void modifyAdmin()
     printf("2. 密码\n\n");
     printf("按其他任意键返回...\n");
 
-    choice2 = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        return;
-    }
-    puts("");
+    choice2 = _getch();
 
     system("cls");
     printf("如若需要强制退出，请输入“exit”\n\n");
@@ -2718,12 +2644,7 @@ void modifyPlatform()
     printf("2. 密码\n\n");
     printf("按其他任意键返回...\n");
 
-    choice2 = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        return;
-    }
-    puts("");
+    choice2 = _getch();
 
     system("cls");
     printf("如若需要强制退出，请输入“exit”\n\n");
@@ -2828,12 +2749,7 @@ void handleAbnormalPackage()
         printf("2. 退回\n");
         printf("3. 协商\n");
         printf("按任意键退出...\n");
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         switch(choice)
         {

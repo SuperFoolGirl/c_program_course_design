@@ -25,12 +25,7 @@ void courierShowMenu()
         printf("6. 注销账号\n\n");
         printf("按任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            listFreeNode(courier_delivery_list);
-            return;
-        }
+        char choice = _getch();
 
         switch (choice)
         {
@@ -259,14 +254,7 @@ void invisibleModel()
         printf("1. 是\n");
         printf("2. 否\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            printf("已取消！\n");
-            printCommonInfo();
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         if (choice == '1')
         {
@@ -290,14 +278,7 @@ void invisibleModel()
         printf("1. 是\n");
         printf("2. 否\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            printf("已取消！\n");
-            printCommonInfo();
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         if (choice == '1')
         {

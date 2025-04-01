@@ -58,11 +58,7 @@ int main()
         printf("2. 注册\n\n");
         printf("按其他任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            break;
-        }
+        char choice = _getch();
 
         if (choice == '1')
         {

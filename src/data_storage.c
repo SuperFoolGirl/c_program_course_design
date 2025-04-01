@@ -505,8 +505,7 @@ void printCommonInfo()
 {
     puts("");
     printf("按任意键继续...\n");
-    getchar();
-    clearInputBuffer();
+    _getch(); // 读取一个字符，不需要回车
 }
 
 struct tm *getTime()

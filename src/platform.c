@@ -18,11 +18,7 @@ void platformShowMenu()
         printf("7. 注销账号\n\n");
         printf("按任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
 
         switch (choice)
         {
@@ -422,12 +418,7 @@ void modifyToBeShippedDelivery()
                 printf("6. 价值\n\n");
                 printf("按其他任意键返回...\n");
 
-                char choice = getchar();
-                if (clearInputBuffer() != 0)
-                {
-                    return;
-                }
-                puts("");
+                char choice = _getch();
 
                 system("cls");
                 printf("如若需要强制退出，请输入“exit”\n\n");

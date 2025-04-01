@@ -44,12 +44,7 @@ void userShowMenu()
         printf("d. 查看消息\n\n");
         printf("按其他任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            listFreeNode(user_delivery_list);
-            return;
-        }
+        char choice = _getch();
 
         switch (choice)
         {
@@ -478,8 +473,7 @@ rewrite_value:
     package->value = value;
 
     printf("按任意键跳转付费界面\n");
-    getchar();
-    clearInputBuffer();
+    _getch();
 
     // 付费模块
     userPay(package, payment(package));
@@ -542,14 +536,7 @@ void userPay(Package *package, double payment)
     printf("1. 确认\n");
     printf("按其他任意键取消支付\n");
 
-    char choice = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        printf("支付取消！\n");
-        printCommonInfo();
-        return;
-    }
-    puts("");
+    char choice = _getch();
 
     if (choice == '1')
     {
@@ -659,11 +646,20 @@ void userQuerySend()
 void userFeedback()
 {
     system("cls");
+    printf("如若需要强制退出，请输入“exit”\n\n");
     Feedback *feedback = (Feedback *)malloc(sizeof(Feedback));
     printf("请输入反馈内容：\n");
-    scanf("%s", feedback->content);
+    char content[100];
+    scanf("%s", content);
     clearInputBuffer();
     puts("");
+
+    if (checkExit(content))
+    {
+        free(feedback);
+        return;
+    }
+    strcpy(feedback->content, content);
     strcpy(feedback->account, the_user->account);
     listAdd(feedback_list, feedback); // 加入反馈链表
     printf("反馈成功！\n");
@@ -716,12 +712,7 @@ void userModifySend()
                 printf("7. 收件人\n\n");
                 printf("按其他任意键返回...\n");
 
-                char choice = getchar();
-                if (clearInputBuffer() != 0)
-                {
-                    return;
-                }
-                puts("");
+                char choice = _getch();
 
                 system("cls");
                 printf("如若需要强制退出，请输入“exit”\n\n");
@@ -1008,14 +999,7 @@ void deleteUserAccount()
     printf("1. 是\n");
     printf("按其他任意键返回...\n");
 
-    char choice = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        printf("取消注销！\n");
-        printCommonInfo();
-        return;
-    }
-    puts("");
+    char choice = _getch();
 
     if (choice == '1')
     {
@@ -1046,12 +1030,7 @@ void userSubstitute()
     printf("2. 好友代取\n");
     printf("按其他任意键返回...\n\n");
 
-    char choice = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        return;
-    }
-    puts("");
+    char choice = _getch();
 
     switch (choice)
     {
@@ -1342,12 +1321,7 @@ void userModifyInfo()
         printf("3. 手机号\n\n");
         printf("按任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
-        puts("");
+        char choice = _getch();
 
         system("cls");
         printf("如若需要强制退出，请输入“exit”\n\n");
@@ -1449,12 +1423,7 @@ void friendFunction()
     printf("3. 查看好友\n\n");
     printf("按其他任意键返回...\n");
 
-    char choice = getchar();
-    if (clearInputBuffer() != 0)
-    {
-        return;
-    }
-    puts("");
+    char choice = _getch();
 
     switch (choice)
     {

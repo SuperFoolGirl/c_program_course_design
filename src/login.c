@@ -411,11 +411,7 @@ void login()
         printf("4. 运输平台\n\n");
         printf("按其他任意键退出...\n");
 
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            return;
-        }
+        char choice = _getch();
 
         if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
         {
@@ -425,12 +421,18 @@ void login()
         system("cls");
         char account[20];
         char password[20];
+        printf("如若需要强制退出，请输入“exit”\n\n");
 
     rewrite_account:
         printf("请输入用户名(20字符以内):\n");
         scanf("%s", account);
         clearInputBuffer();
         puts("");
+
+        if (checkExit(account))
+        {
+            return;
+        }
 
         if (checkInputLimit(account) == 0)
         {
@@ -441,6 +443,11 @@ void login()
         printf("请输入密码(20字符以内):\n");
         getPassword(password); // 使用getPassword函数获取密码，隐藏输入
         puts("");
+
+        if (checkExit(password))
+        {
+            return;
+        }
 
         if (checkInputLimit(password) == 0)
         {
