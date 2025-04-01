@@ -72,6 +72,10 @@ int verifyAdmin(const char *account, const char *password)
 
             if (strcmp(password, admin->password) == 0)
             {
+                // 清空尝试次数
+                admin->try_times = 0;
+                // 清空锁定时刻
+                admin->time = 0;
                 return 1;
             }
             else
@@ -116,6 +120,10 @@ int verifyCourier(const char *account, const char *password)
 
             if (strcmp(password, courier->password) == 0)
             {
+                // 清空尝试次数
+                courier->try_times = 0;
+                // 清空锁定时刻
+                courier->time = 0;
                 return 1;
             }
             else
@@ -160,6 +168,10 @@ int verifyPlatform(const char *account, const char *password)
 
             if (strcmp(password, platform->password) == 0)
             {
+                // 清空尝试次数
+                platform->try_times = 0;
+                // 清空锁定时刻
+                platform->time = 0;
                 return 1;
             }
             else
