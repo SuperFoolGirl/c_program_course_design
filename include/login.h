@@ -1,5 +1,6 @@
 #pragma once
 #include "data_storage.h"
+#include <conio.h>
 
 extern List *users_list;
 extern List *admins_list;
@@ -19,6 +20,16 @@ extern List *shelf_b_list;
 extern List *shelf_c_list;
 extern List *shelf_d_list;
 extern List *shelf_e_list;
+extern List *feedback_list;
+extern List *refuse_list;
+
+// 登录者结构体在登录成功时进行赋值
+extern Admin *the_admin;
+extern Courier *the_courier;
+extern User *the_user;
+extern Platform *the_platform;
+
+extern double money; // 驿站账户
 
 int verifyUser(const char *account, const char *password); // 验证用户
 
@@ -39,3 +50,5 @@ void listsInit(); // 初始化所有链表
 void registering(); // 注册
 
 void login(); // 登录
+
+void getPassword(char *password); // 获取密码，隐藏输入

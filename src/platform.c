@@ -57,13 +57,26 @@ void writeToBeShippedDelivery()
 {
     system("cls");
     Package *package = (Package *)malloc(sizeof(Package));
+    printf("如若需要强制退出，请输入“exit”\n\n");
 
-    // 随便填写一个快递单号，为了查找和删除。不能再随便给个默认值了
+rewrite_package_id:
     printf("请输入快递单号：\n");
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
+
+    // 强制退出要写在最前面
+    if (checkExit(package_id))
+    {
+        free(package); // 别忘了释放内存。注意这不是节点，这是数据域，是void*指向的数据
+        return;
+    }
+
+    if (checkInputLimit(package_id) == 0)
+    {
+        goto rewrite_package_id;
+    }
 
     // 加入快递单号重名检测
     ListNode *current = platform_warehouse_list->head;
@@ -74,17 +87,31 @@ void writeToBeShippedDelivery()
         {
             printf("快递单号重名！\n");
             printCommonInfo();
-            return;
+            goto rewrite_package_id;
         }
         current = current->next;
     }
 
     strcpy(package->package_id, package_id);
 
+rewrite_receiver:
     printf("请输入收件人用户名：\n");
-    scanf("%s", package->receiver_account);
+    char receiver_account[20];
+    scanf("%s", receiver_account);
     clearInputBuffer();
     puts("");
+
+    if (checkExit(receiver_account))
+    {
+        free(package);
+        return;
+    }
+
+    if (checkInputLimit(receiver_account) == 0)
+    {
+        goto rewrite_receiver;
+    }
+    strcpy(package->receiver_account, receiver_account);
 
     // 填一个暂时的快递员用户名
     strcpy(package->courier_account, "0");
@@ -98,15 +125,31 @@ void writeToBeShippedDelivery()
     // 寄件人为平台
     strcpy(package->sender_account, the_platform->account);
 
+    // 填写一个暂时的时刻
+    package->time = 0;
+
+    // 填写一个暂时的拒收状态
+    package->rejected = 0;
+
+    // 填写一个暂时的备注
+    strcpy(package->remark, "0");
+
+rewrite_express:
     printf("请选择是否加急：\n");
     printf("1. 否\n");
     printf("2. 是\n");
     char choice = getchar();
+
     if (clearInputBuffer() != 0)
     {
+        if (choice == 'e')
+        {
+            free(package);
+            return;
+        }
         printf("输入错误！\n");
         printCommonInfo();
-        return;
+        goto rewrite_express;
     }
     puts("");
 
@@ -114,30 +157,70 @@ void writeToBeShippedDelivery()
     {
         printf("输入错误！\n");
         printCommonInfo();
-        return;
+        goto rewrite_express;
     }
     package->isExpress = choice - '0' - 1;
 
+rewrite_volume:
     printf("请输入体积(升)：\n");
-    scanf("%lf", &package->volume);
+    double volume = 0;
+    int ret = scanf("%lf", &volume);
     clearInputBuffer();
     puts("");
 
+    // 如果输入了“exit”，scanf的返回值是0。但这里的弊端是，只要输入非数字就会强制返回了。
+    if (ret == 0)
+    {
+        free(package);
+        return;
+    }
+
+    if (volume <= 0 || volume > 5000)
+    {
+        printf("体积输入错误！\n");
+        printCommonInfo();
+        goto rewrite_volume;
+    }
+    package->volume = volume;
+
+rewrite_weight:
     printf("请输入重量(kg)：\n");
-    scanf("%lf", &package->weight);
+    double weight = 0;
+    ret = scanf("%lf", &weight);
     clearInputBuffer();
     puts("");
 
+    if (ret == 0)
+    {
+        free(package);
+        return;
+    }
+
+    if (weight <= 0 || weight > 200)
+    {
+        printf("重量输入错误！\n");
+        printCommonInfo();
+        goto rewrite_weight;
+    }
+    package->weight = weight;
+
+rewrite_special_type:
     printf("请选择快递类型：\n");
     printf("1. 普通\n");
     printf("2. 易碎品、电子产品\n");
     printf("3. 生鲜\n");
     choice = getchar();
+
     if (clearInputBuffer() != 0)
     {
+        if (choice == 'e')
+        {
+            free(package);
+            return;
+        }
         printf("输入错误！\n");
         printCommonInfo();
-        return;
+        goto rewrite_special_type;
     }
     puts("");
 
@@ -145,14 +228,30 @@ void writeToBeShippedDelivery()
     {
         printf("输入错误！\n");
         printCommonInfo();
-        return;
+        goto rewrite_special_type;
     }
     package->special_type = choice - '0' - 1;
 
+rewrite_value:
     printf("请输入包裹价值(元)：\n");
-    scanf("%lf", &package->value);
+    double value = 0;
+    ret = scanf("%lf", &value);
     clearInputBuffer();
     puts("");
+
+    if (ret == 0)
+    {
+        free(package);
+        return;
+    }
+
+    if (value <= 0 || value > 1000000)
+    {
+        printf("价值输入错误！\n");
+        printCommonInfo();
+        goto rewrite_value;
+    }
+    package->value = value;
 
     if (package->isExpress == 1)
     {
@@ -292,11 +391,17 @@ void modifyToBeShippedDelivery()
         printCommonInfo();
         return;
     }
+    printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要修改的快递的快递单号：\n");
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
+
+    if (checkExit(package_id))
+    {
+        return;
+    }
 
     // 遍历平台仓库链表，找到要修改的那个快递
     ListNode *current = platform_warehouse_list->head;
@@ -324,24 +429,43 @@ void modifyToBeShippedDelivery()
                 }
                 puts("");
 
+                system("cls");
+                printf("如若需要强制退出，请输入“exit”\n\n");
                 switch (choice)
                 {
                 case '1':
+                rewrite_receiver_account:
                     printf("请输入新的收件人账号：\n");
-                    scanf("%s", package->receiver_account);
+                    char new_receiver_account[20];
+                    scanf("%s", new_receiver_account);
                     clearInputBuffer();
                     puts("");
+
+                    if (checkExit(new_receiver_account))
+                    {
+                        return;
+                    }
+                    if (checkInputLimit(new_receiver_account) == 0)
+                    {
+                        goto rewrite_receiver_account;
+                    }
+                    strcpy(package->receiver_account, new_receiver_account);
                     break;
                 case '2':
+                rewrite_express:
                     printf("请输入新的加急状态：\n");
                     printf("1. 否\n");
                     printf("2. 是\n");
                     choice = getchar();
                     if (clearInputBuffer() != 0)
                     {
+                        if (choice == 'e')
+                        {
+                            return;
+                        }
                         printf("输入错误！\n");
                         printCommonInfo();
-                        return;
+                        goto rewrite_express;
                     }
                     puts("");
 
@@ -349,53 +473,52 @@ void modifyToBeShippedDelivery()
                     {
                         printf("输入错误！\n");
                         printCommonInfo();
-                        return;
+                        goto rewrite_express;
                     }
                     package->isExpress = choice - '0' - 1;
                     break;
                 case '3':
-                    printf("请输入新的体积：\n");
-                    printf("1. 小\n");
-                    printf("2. 大\n");
-                    choice = getchar();
-                    if (clearInputBuffer() != 0)
-                    {
-                        printf("输入错误！\n");
-                        printCommonInfo();
-                        return;
-                    }
+                rewrite_volume:
+                    printf("请输入新的体积(升)：\n");
+                    double volume = 0;
+                    int ret = scanf("%lf", &volume);
+                    clearInputBuffer();
                     puts("");
 
-                    if (choice != '1' && choice != '2')
+                    if (ret == 0)
+                    {
+                        return;
+                    }
+                    if (volume <= 0 || volume > 5000)
                     {
                         printf("输入错误！\n");
                         printCommonInfo();
-                        return;
+                        goto rewrite_volume;
                     }
-                    package->volume = choice - '0' - 1;
+                    package->volume = volume;
                     break;
                 case '4':
-                    printf("请输入新的重量：\n");
-                    printf("1. 轻\n");
-                    printf("2. 重\n");
-                    choice = getchar();
-                    if (clearInputBuffer() != 0)
-                    {
-                        printf("输入错误！\n");
-                        printCommonInfo();
-                        return;
-                    }
+                rewrite_weight:
+                    printf("请输入新的重量(kg)：\n");
+                    double weight = 0;
+                    ret = scanf("%lf", &weight);
+                    clearInputBuffer();
                     puts("");
 
-                    if (choice != '1' && choice != '2')
+                    if (ret == 0)
+                    {
+                        return;
+                    }
+                    if (weight <= 0 || weight > 200)
                     {
                         printf("输入错误！\n");
                         printCommonInfo();
-                        return;
+                        goto rewrite_weight;
                     }
-                    package->weight = choice - '0' - 1;
+                    package->weight = weight;
                     break;
                 case '5':
+                rewrite_special_type:
                     printf("请输入新的特殊类型：\n");
                     printf("1. 普通\n");
                     printf("2. 易碎品、电子产品\n");
@@ -403,9 +526,13 @@ void modifyToBeShippedDelivery()
                     choice = getchar();
                     if (clearInputBuffer() != 0)
                     {
+                        if (choice == 'e')
+                        {
+                            return;
+                        }
                         printf("输入错误！\n");
                         printCommonInfo();
-                        return;
+                        goto rewrite_special_type;
                     }
                     puts("");
 
@@ -413,9 +540,29 @@ void modifyToBeShippedDelivery()
                     {
                         printf("输入错误！\n");
                         printCommonInfo();
-                        return;
+                        goto rewrite_special_type;
                     }
                     package->special_type = choice - '0' - 1;
+                    break;
+                case '6':
+                rewrite_value:
+                    printf("请输入新的价值(元)：\n");
+                    double value = 0;
+                    ret = scanf("%lf", &value);
+                    clearInputBuffer();
+                    puts("");
+
+                    if (ret == 0)
+                    {
+                        return;
+                    }
+                    if (value <= 0 || value > 1000000)
+                    {
+                        printf("输入错误！\n");
+                        printCommonInfo();
+                        goto rewrite_value;
+                    }
+                    package->value = value;
                     break;
                 default:
                     return; // 修改完想修改的信息后，直接退出这个函数
@@ -440,11 +587,17 @@ void deleteToBeShippedDelivery()
         return;
     }
 
+    printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要删除的快递的快递单号：\n");
     char package_id[20];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
+
+    if (checkExit(package_id))
+    {
+        return;
+    }
 
     // 遍历平台仓库链表，找到要删除的那个快递
     ListNode *current = platform_warehouse_list->head;

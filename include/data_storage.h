@@ -5,6 +5,9 @@
 
 #pragma once
 #include "common.h"
+#include <time.h>
+
+#define MAX_LENGTH 20 // 用户名、密码最大长度
 
 // 1 通用链表
 // 通用链表节点结构体
@@ -47,6 +50,12 @@ typedef struct User
 
     char friend[20]; // 好友 用于代取
     int delivery_leave; // 包裹滞留状态，0-正常，1-滞留
+
+    time_t time; // 记录封号时长
+    int try_times; // 记录输入次数
+
+    char message[200]; // 消息
+    int message_status; // 消息状态，0-已读，1-未读
 } User;
 
 // 3 管理员表结构体
@@ -54,6 +63,9 @@ typedef struct Admin
 {
     char account[20];  // 用户名
     char password[20]; // 密码
+
+    time_t time; // 记录封号时长
+    int try_times; // 记录输入次数
 } Admin;
 
 // 4 包裹表
@@ -72,6 +84,10 @@ typedef struct Package
 
     char sender_account[20]; // 寄件人用户名，寄件时需要填写
     char shelf_id[20];      // 货架ID，寄件时需要填写
+
+    time_t time;
+    int rejected; // 是否拒收，0-未拒收，1-已拒收
+    char remark[200]; // 备注信息，用户可以填写拒收原因
 } Package;
 
 // 5 快递员表
@@ -81,6 +97,9 @@ typedef struct Courier
     char account[20];          // 用户名
     char password[20];         // 密码
     int status;                // 快递员状态，0-空闲，1-平台任务中，2-驿站任务中，3-隐身状态
+
+    time_t time; // 记录封号时刻
+    int try_times; // 记录输入次数
 } Courier;
 
 // 6 平台表
@@ -88,7 +107,17 @@ typedef struct Platform
 {
     char account[20];  // 平台用户名
     char password[20]; // 密码
+
+    time_t time; // 记录封号时刻
+    int try_times; // 记录输入次数
 } Platform;
+
+// 7 反馈表
+typedef struct Feedback
+{
+    char account[20]; // 用户名
+    char content[200]; // 反馈内容
+} Feedback;
 
 // 传过来一个文件和一个链表，将文件中的数据读取到链表中
 void writeListFromFile(const char *file, List *list);
@@ -122,5 +151,14 @@ void listFreeCourier(List *list);
 void listFreeAdmin(List *list);
 void listFreePlatform(List *list);
 void listFreeNode(List *list); // 只释放链表节点
+void listFreeFeedback(List *list);
 
 struct tm *getTime(); // 获取当前时间
+
+int checkInputLimit(const char *account); // 判断当前输入的账号是否超过上限
+
+int checkExit(const char *input); // 判断当前输入是否为退出
+
+void getMoney(const char *file, double *money); // 读取账户余额
+
+void updateMoney(const char *file, double money); // 更新账户余额

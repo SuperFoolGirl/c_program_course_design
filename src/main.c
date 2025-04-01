@@ -31,7 +31,14 @@ List *shelf_c_list; // Package类型链表
 List *shelf_d_list; // Package类型链表
 List *shelf_e_list; // Package类型链表
 
+// 反馈链表
+List *feedback_list; // Feedback类型链表
 
+// 拒收链表
+List *refuse_list; // Package类型链表
+
+// 驿站账户
+double money;
 
 int main()
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "data_storage.h"
-#include <time.h>
+#include "login.h"
 
 extern List *shelf_a_list;
 extern List *shelf_b_list;
@@ -10,6 +10,9 @@ extern List *shelf_e_list;
 extern List *users_send_list;
 extern List *users_push_list;
 extern List *users_list;
+extern List *feedback_list;
+extern List *refuse_list;
+extern double money;
 
 void userShowMenu(); // 用户菜单
 
@@ -37,6 +40,8 @@ void recordSendBehaviors(const char *account, const char *package_id, struct tm 
 
 void recordPickUpBehaviors(const char *account, const char *package_id, struct tm *time); // 记录取件行为
 
+void recordRefuseBehaviors(const char *account, const char *package_id, struct tm *time); // 记录拒收行为
+
 void deleteUserAccount(); // 注销账号
 
 void userSubstitute(); // 代取
@@ -56,3 +61,9 @@ void addFriend(); // 添加好友
 void viewFriend(); // 查看好友信息
 
 void deleteFriend(); // 删除好友
+
+void refuseDelivery(Package *package); // 拒绝当前快递
+
+void viewMessage(); // 查看消息
+
+void viewRefuseDelivery(); // 查看拒收快递

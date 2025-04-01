@@ -4,12 +4,6 @@
 #include "../include/courier.h"
 #include "../include/platform.h"
 
-// 登录者结构体在登录成功时进行赋值
-extern Admin *the_admin;
-extern Courier *the_courier;
-extern User *the_user;
-extern Platform *the_platform;
-
 // 通过查询链表实现登录
 int verifyUser(const char *account, const char *password)
 {
@@ -17,13 +11,45 @@ int verifyUser(const char *account, const char *password)
     while (current != NULL)
     {
         User *user = (User *)current->data;
-        if (strcmp(account, user->account) == 0 && strcmp(password, user->password) == 0)
+        if (strcmp(account, user->account) == 0)
         {
             the_user = user; // 赋值给临时结构体
-            return 1;
+            // 判断是否锁定
+            if (user->try_times >= 5 && difftime(time(NULL), user->time) < 60)
+            {
+                printf("账号已锁定，请1分钟后再试！\n");
+                return 0;
+            }
+            // 判断密码是否正确
+            if (strcmp(password, user->password) == 0)
+            {
+                // 清空尝试次数
+                user->try_times = 0;
+                // 清空锁定时刻
+                user->time = 0;
+                return 1;
+            }
+            else
+            {
+                // 如果登录失败
+                the_user->try_times++; // 记录尝试次数
+                if (the_user->try_times >= 5)
+                {
+                    the_user->time = time(NULL);
+                    printf("您已失败多次，账号将锁定1分钟！\n");
+                }
+                else
+                {
+                    printf("用户名或密码错误！\n");
+                    printf("您还有%d次尝试机会！\n", 5 - the_user->try_times);
+                }
+                return 0;
+            }
         }
         current = current->next;
     }
+    // 如果没有找到用户
+    printf("该用户不存在！\n");
     return 0;
 }
 
@@ -34,13 +60,40 @@ int verifyAdmin(const char *account, const char *password)
     while (current != NULL)
     {
         Admin *admin = (Admin *)current->data;
-        if (strcmp(account, admin->account) == 0 && strcmp(password, admin->password) == 0)
+        if (strcmp(account, admin->account) == 0)
         {
             the_admin = admin; // 赋值给临时结构体
-            return 1;
+            // 判断是否锁定
+            if (admin->try_times >= 5 && difftime(time(NULL), admin->time) < 60)
+            {
+                printf("账号已锁定，请1分钟后再试！\n");
+                return 0;
+            }
+
+            if (strcmp(password, admin->password) == 0)
+            {
+                return 1;
+            }
+            else
+            {
+                // 如果登录失败
+                the_admin->try_times++; // 记录尝试次数
+                if (the_admin->try_times >= 5)
+                {
+                    the_admin->time = time(NULL);
+                    printf("您已失败多次，账号将锁定1分钟！\n");
+                }
+                else
+                {
+                    printf("用户名或密码错误！\n");
+                    printf("您还有%d次尝试机会！\n", 5 - the_admin->try_times);
+                }
+                return 0;
+            }
         }
         current = current->next;
     }
+    printf("该管理员不存在！\n");
     return 0;
 }
 
@@ -51,13 +104,40 @@ int verifyCourier(const char *account, const char *password)
     while (current != NULL)
     {
         Courier *courier = (Courier *)current->data;
-        if (strcmp(account, courier->account) == 0 && strcmp(password, courier->password) == 0)
+        if (strcmp(account, courier->account) == 0)
         {
             the_courier = courier; // 赋值给临时结构体
-            return 1;
+            // 判断是否锁定
+            if (courier->try_times >= 5 && difftime(time(NULL), courier->time) < 60)
+            {
+                printf("账号已锁定，请1分钟后再试！\n");
+                return 0;
+            }
+
+            if (strcmp(password, courier->password) == 0)
+            {
+                return 1;
+            }
+            else
+            {
+                // 如果登录失败
+                the_courier->try_times++; // 记录尝试次数
+                if (the_courier->try_times >= 5)
+                {
+                    the_courier->time = time(NULL);
+                    printf("您已失败多次，账号将锁定1分钟！\n");
+                }
+                else
+                {
+                    printf("用户名或密码错误！\n");
+                    printf("您还有%d次尝试机会！\n", 5 - the_courier->try_times);
+                }
+                return 0;
+            }
         }
         current = current->next;
     }
+    printf("该快递员不存在！\n");
     return 0;
 }
 
@@ -68,13 +148,40 @@ int verifyPlatform(const char *account, const char *password)
     while (current != NULL)
     {
         Platform *platform = (Platform *)current->data;
-        if (strcmp(account, platform->account) == 0 && strcmp(password, platform->password) == 0)
+        if (strcmp(account, platform->account) == 0)
         {
             the_platform = platform; // 赋值给临时结构体
-            return 1;
+            // 判断是否锁定
+            if (platform->try_times >= 5 && difftime(time(NULL), platform->time) < 60)
+            {
+                printf("账号已锁定，请1分钟后再试！\n");
+                return 0;
+            }
+
+            if (strcmp(password, platform->password) == 0)
+            {
+                return 1;
+            }
+            else
+            {
+                // 如果登录失败
+                the_platform->try_times++; // 记录尝试次数
+                if (the_platform->try_times >= 5)
+                {
+                    the_platform->time = time(NULL);
+                    printf("您已失败多次，账号将锁定1分钟！\n");
+                }
+                else
+                {
+                    printf("用户名或密码错误！\n");
+                    printf("您还有%d次尝试机会！\n", 5 - the_platform->try_times);
+                }
+                return 0;
+            }
         }
         current = current->next;
     }
+    printf("该快递平台不存在！\n");
     return 0;
 }
 
@@ -96,6 +203,9 @@ void recoverListData()
     writeListFromFile("../files/shelf_c.txt", shelf_c_list);
     writeListFromFile("../files/shelf_d.txt", shelf_d_list);
     writeListFromFile("../files/shelf_e.txt", shelf_e_list);
+    writeListFromFile("../files/feedback.txt", feedback_list);
+    writeFileFromList("../files/refuse.txt", refuse_list);
+    getMoney("../files/account.txt", &money);
 }
 
 // 把链表全部更新到文件中
@@ -115,6 +225,9 @@ void rewriteAllFiles()
     writeFileFromList("../files/shelf_c.txt", shelf_c_list);
     writeFileFromList("../files/shelf_d.txt", shelf_d_list);
     writeFileFromList("../files/shelf_e.txt", shelf_e_list);
+    writeFileFromList("../files/feedback.txt", feedback_list);
+    writeFileFromList("../files/refuse.txt", refuse_list);
+    updateMoney("../files/account.txt", money); // 更新账户余额
 }
 
 // 释放链表内存
@@ -133,6 +246,8 @@ void freeLists()
     listFreePackage(shelf_c_list);
     listFreePackage(shelf_d_list);
     listFreePackage(shelf_e_list);
+    listFreeFeedback(feedback_list);
+    listFreePackage(refuse_list);
 }
 
 // 初始化所有链表
@@ -152,20 +267,34 @@ void listsInit()
     shelf_c_list = listInit();
     shelf_d_list = listInit();
     shelf_e_list = listInit();
+    feedback_list = listInit();
+    refuse_list = listInit();
 }
 
+// 注册是先写信息再申请的堆区内存，因此退出不需要释放
 void registering()
 {
-again:
+rewrite_account:
     system("cls"); // 清屏逻辑：输入后进入下一个页面时后，第一句加清屏，防止上一个页面的打印信息没有呈现就被清除
     // 平台和快递员不允许随便注册
+    printf("如若需要强制退出，请输入“exit”\n\n");
     printf("温馨提示：当前仅支持普通用户注册，其他请联系管理员。\n\n");
 
-    printf("请输入用户名：\n");
+    printf("请输入用户名(20字符以内)：\n");
     char account[20];
     scanf("%s", account);
     clearInputBuffer();
     puts("");
+
+    if (checkExit(account))
+    {
+        return;
+    }
+
+    if (checkInputLimit(account) == 0)
+    {
+        goto rewrite_account;
+    }
 
     // 添加用户名重复检查
     ListNode *node = users_list->head;
@@ -176,36 +305,62 @@ again:
         {
             printf("用户名已存在，请重新输入！\n");
             printCommonInfo();
-            goto again;
+            goto rewrite_account;
         }
         node = node->next;
     }
 
-    printf("请输入密码：\n");
+rewrite_password:
+    printf("请输入密码(20字符以内)：\n");
     char password[20];
-    scanf("%s", password);
-    clearInputBuffer();
+    getPassword(password); // 使用getPassword函数获取密码，隐藏输入
+    // 不需要清空输入缓冲区，因为getPassword函数已经处理了。这里如果加上clearInputBuffer()，会导致得额外输入一个回车才能结束输入
     puts("");
+
+    if (checkExit(password))
+    {
+        return;
+    }
+
+    if (checkInputLimit(password) == 0)
+    {
+        goto rewrite_password;
+    }
 
     printf("请再次确认密码：\n");
     char password_confirm[20];
-    scanf("%s", password_confirm);
-    clearInputBuffer();
+    getPassword(password_confirm); // 使用getPassword函数获取密码，隐藏输入
     puts("");
+
+    if (checkExit(password_confirm))
+    {
+        return;
+    }
 
     if (strcmp(password, password_confirm) != 0)
     {
         printf("两次密码输入不一致，请重新输入！\n");
         printCommonInfo();
-        goto again;
+        goto rewrite_password;
     }
     else
     {
+    rewrite_phone_number:
         printf("请输入电话号码：\n");
         char phone_number[20];
         scanf("%s", phone_number);
         clearInputBuffer();
         puts("");
+
+        if (checkExit(phone_number))
+        {
+            return;
+        }
+
+        if (checkInputLimit(phone_number) == 0)
+        {
+            goto rewrite_phone_number;
+        }
 
         int default_user_type = 0;
         int default_receive_status = 0;
@@ -221,6 +376,10 @@ again:
         user->receive_status = default_receive_status;
         user->send_status = default_send_status;
         user->delivery_leave = 0;
+        user->time = 0;
+        user->try_times = 0;
+        user->message_status = 0;
+        strcpy(user->message, "0");
         listAdd(users_list, user);
 
         printf("注册成功！\n");
@@ -230,7 +389,6 @@ again:
 
 void login()
 {
-    int error_times = 0;
     while (1)
     {
         system("cls");
@@ -256,16 +414,27 @@ void login()
         char account[20];
         char password[20];
 
-        printf("请输入用户名:\n");
+    rewrite_account:
+        printf("请输入用户名(20字符以内):\n");
         scanf("%s", account);
         clearInputBuffer();
         puts("");
 
-        printf("请输入密码:\n");
-        scanf("%s", password);
-        clearInputBuffer();
+        if (checkInputLimit(account) == 0)
+        {
+            goto rewrite_account;
+        }
+
+    rewrite_password:
+        printf("请输入密码(20字符以内):\n");
+        getPassword(password); // 使用getPassword函数获取密码，隐藏输入
         puts("");
 
+        if (checkInputLimit(password) == 0)
+        {
+            goto rewrite_password;
+        }
+        
         int ret = 0;
         switch (choice)
         {
@@ -287,15 +456,6 @@ void login()
         // 登录失败
         if (ret == 0)
         {
-            error_times++;
-            if (error_times >= 5)
-            {
-                printf("错误次数过多，退出登录！\n");
-                printCommonInfo();
-                exit(0); // 退出程序
-            }
-            printf("登陆失败，请检查用户名和密码是否正确\n");
-            printf("您还有%d次机会\n", 5 - error_times);
             printCommonInfo();
             continue;
         }
@@ -319,4 +479,26 @@ void login()
             break;
         }
     }
+}
+
+void getPassword(char *password)
+{
+    int i = 0;
+    char ch;
+    while ((ch = _getch()) != '\r')
+    {
+        if (ch == '\b' && i > 0)
+        {
+            // 处理退格键
+            i--;
+            printf("\b \b");
+        }
+        else if (i < MAX_LENGTH - 1)
+        {
+            password[i++] = ch;
+            putchar('*');
+        }
+    }
+    password[i] = '\0';
+    putchar('\n');
 }

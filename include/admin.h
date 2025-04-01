@@ -1,11 +1,11 @@
 #pragma once
 #include "data_storage.h"
-#include <time.h>
+#include "login.h"
 
 #define MAX 9000
 #define MIN 1000
-
 #define SIZE 20 // 货架每排最大容量
+#define MAX_TIME 60 // 60s后滞留
 
 // admin.c文件需要用到的全局变量
 extern List *users_list;
@@ -22,6 +22,9 @@ extern List *shelf_d_list;
 extern List *shelf_e_list;
 extern List *users_push_list;
 extern List *couriers_push_list;
+extern List *feedback_list;
+extern List *refuse_list;
+extern double money;
 
 void adminShowMenu(); // 管理员菜单
 
@@ -43,7 +46,7 @@ void addUser(); // 添加用户
 
 void deleteUser(); // 删除用户
 
-void modifyUser(); // 修改用户信息
+void modifyFunc(); // 修改用户信息
 
 void viewUserInfo(); // 查看用户信息
 
@@ -77,8 +80,6 @@ void modifyUserSend(); // 修改用户寄件信息
 
 void recordModifyInfoOfSend(const char *package_id, const char *account, const char *modity_info, struct tm *time); // 记录修改寄件信息
 
-void remindUserPickup(); // 提醒用户取件
-
 void listAllInfo(); // 查看所有信息
 
 void listAllUsers(); // 查看所有用户信息
@@ -88,3 +89,19 @@ void listAllCouriers(); // 查看所有快递员信息
 void listAllAdmins(); // 查看所有管理员信息
 
 void listAllPlatforms(); // 查看所有平台信息
+
+void handleAbnormalPackage(); // 处理异常包裹
+
+void findLeavePackage(); // 查找滞留包裹
+
+void findLeavePackageFromShelf(List *shelf_list); // 查找滞留包裹
+
+void viewAccount();
+
+void modifyUser(); // 修改用户信息
+
+void modifyCourier(); // 修改快递员信息
+
+void modifyPlatform(); // 修改平台信息
+
+void modifyAdmin(); // 修改管理员信息

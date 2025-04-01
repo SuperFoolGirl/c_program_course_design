@@ -189,6 +189,29 @@ void listFreePlatform(List *list)
     free(list); // 最后释放该List结构体
 }
 
+// 6. 反馈
+void listFreeFeedback(List *list)
+{
+    ListNode *current = list->head;
+    ListNode *next;
+
+    while (current != NULL)
+    {
+        next = current->next;
+
+        // 释放 data 所指向的内存，假设 data 指向的是 Feedback 结构体
+        Feedback *feedback = (Feedback *)current->data;
+        if (feedback != NULL)
+        {
+            free(feedback);
+        }
+
+        free(current);
+        current = next;
+    }
+    free(list); // 最后释放该List结构体
+}
+
 // 6. 释放包裹类链表的特殊函数：不释放包裹内存，只释放节点和链表内存
 // List, ListNode, data三个结构体都是动态分配的内存，释放是各自独立的
 // 虽然data是ListNode的一个成员，但是ListNode的内存释放不会影响data的内存
@@ -229,7 +252,7 @@ void writeListFromFile(const char *file, List *list)
         User *user = (User *)malloc(sizeof(User));
         memset(user, 0, sizeof(User)); // 初始化内存，因为堆区的这块内存可能是脏数据
 
-        while (fscanf(fp, "%s %s %s %d %d %d %s %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status, user->friend, &user->delivery_leave) != EOF)
+        while (fscanf(fp, "%s %s %s %d %d %d %s %d %lld %d %s %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status, user->friend, &user->delivery_leave, &user->time, &user->try_times, user->message, &user->message_status) != EOF)
         {
             listAdd(list, user);
 
@@ -245,7 +268,7 @@ void writeListFromFile(const char *file, List *list)
         Courier *courier = (Courier *)malloc(sizeof(Courier));
         memset(courier, 0, sizeof(Courier));
 
-        while (fscanf(fp, "%s %s %d\n", courier->account, courier->password, &courier->status) != EOF)
+        while (fscanf(fp, "%s %s %d %lld %d\n", courier->account, courier->password, &courier->status, &courier->time, &courier->try_times) != EOF)
         {
             listAdd(list, courier);
 
@@ -260,7 +283,7 @@ void writeListFromFile(const char *file, List *list)
         Admin *admin = (Admin *)malloc(sizeof(Admin));
         memset(admin, 0, sizeof(Admin));
 
-        while (fscanf(fp, "%s %s %d\n", admin->account, admin->password) != EOF)
+        while (fscanf(fp, "%s %s %d %lld %d\n", admin->account, admin->password, &admin->time, &admin->try_times) != EOF)
         {
             listAdd(list, admin);
 
@@ -275,7 +298,7 @@ void writeListFromFile(const char *file, List *list)
         Package *package = (Package *)malloc(sizeof(Package));
         memset(package, 0, sizeof(Package));
 
-        while (fscanf(fp, "%s %s %s %d %d %lf %lf %d %lf %s %s\n", package->package_id, package->receiver_account, package->courier_account, &package->pick_up_code, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value, package->sender_account, package->shelf_id) != EOF)
+        while (fscanf(fp, "%s %s %s %d %d %lf %lf %d %lf %s %s %lld %d %s\n", package->package_id, package->receiver_account, package->courier_account, &package->pick_up_code, &package->isExpress, &package->volume, &package->weight, &package->special_type, &package->value, package->sender_account, package->shelf_id, &package->time, &package->rejected, package->remark) != EOF)
         {
             listAdd(list, package);
 
@@ -290,7 +313,7 @@ void writeListFromFile(const char *file, List *list)
         Platform *platform = (Platform *)malloc(sizeof(Platform));
         memset(platform, 0, sizeof(Platform));
 
-        while (fscanf(fp, "%s %s\n", platform->account, platform->password) != EOF)
+        while (fscanf(fp, "%s %s %lld %d\n", platform->account, platform->password, &platform->time, &platform->try_times) != EOF)
         {
             listAdd(list, platform);
 
@@ -322,7 +345,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             User *user = (User *)current->data;
-            fprintf(fp, "%s %s %s %d %d %d %s %d\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status, user->friend, user->delivery_leave);
+            fprintf(fp, "%s %s %s %d %d %d %s %d %lld %d %s %d\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status, user->friend, user->delivery_leave, user->time, user->try_times, user->message, user->message_status);
             current = current->next;
         }
     }
@@ -331,7 +354,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Admin *admin = (Admin *)current->data;
-            fprintf(fp, "%s %s\n", admin->account, admin->password);
+            fprintf(fp, "%s %s %lld %d\n", admin->account, admin->password, admin->time, admin->try_times);
             current = current->next;
         }
     }
@@ -340,7 +363,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Courier *courier = (Courier *)current->data;
-            fprintf(fp, "%s %s %d\n", courier->account, courier->password, courier->status);
+            fprintf(fp, "%s %s %d %lld %d\n", courier->account, courier->password, courier->status, courier->time, courier->try_times);
             current = current->next;
         }
     }
@@ -349,7 +372,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            fprintf(fp, "%s %s %s %d %d %lf %lf %d %lf %s %s\n", package->package_id, package->receiver_account, package->courier_account, package->pick_up_code, package->isExpress, package->volume, package->weight, package->special_type, package->value, package->sender_account, package->shelf_id);
+            fprintf(fp, "%s %s %s %d %d %lf %lf %d %lf %s %s %lld %d %s\n", package->package_id, package->receiver_account, package->courier_account, package->pick_up_code, package->isExpress, package->volume, package->weight, package->special_type, package->value, package->sender_account, package->shelf_id, package->time, package->rejected, package->remark);
             current = current->next;
         }
     }
@@ -358,7 +381,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             Platform *platform = (Platform *)current->data;
-            fprintf(fp, "%s %s\n", platform->account, platform->password);
+            fprintf(fp, "%s %s %lld %d\n", platform->account, platform->password, platform->time, platform->try_times);
             current = current->next;
         }
     }
@@ -505,4 +528,52 @@ struct tm *getTime()
         return NULL;
     }
     return local_time;
+}
+
+// 判断当前输入的账号是否超过上限
+int checkInputLimit(const char *account)
+{
+    if (strlen(account) > MAX_LENGTH)
+    {
+        printf("输入长度超过限制！\n");
+        printCommonInfo();
+        return 0;
+    }
+    return 1;
+}
+
+// 这个函数只能服务于字符串输入
+int checkExit(const char *input)
+{
+    if (strcmp(input, "exit") == 0)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+void getMoney(const char *file, double *money)
+{
+    FILE *fp = fopen(file, "r");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        return;
+    }
+    // 把文件里的一行long long类型读到money指向的内存中
+    fscanf(fp, "%lf\n", money);
+    fclose(fp);
+}
+
+void updateMoney(const char *file, double money)
+{
+    FILE *fp = fopen(file, "w");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        return;
+    }
+    // 把money写入文件
+    fprintf(fp, "%lf\n", money);
+    fclose(fp);
 }

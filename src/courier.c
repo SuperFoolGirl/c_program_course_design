@@ -109,10 +109,7 @@ void queryCurrentDelivery()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            if (strcmp(package->courier_account, the_courier->account) == 0)
-            {
-                printf("将收件人为 %s 的快递从 快递平台 送至 驿站\n", package->receiver_account);
-            }
+            printf("将收件人为 %s 的快递从 快递平台 送至 驿站\n", package->receiver_account);
             current = current->next;
         }
         printCommonInfo();
@@ -126,10 +123,7 @@ void queryCurrentDelivery()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            if (strcmp(package->courier_account, the_courier->account) == 0)
-            {
-                printf("将收件人为 %s 的快递从 驿站 送至 平台\n", package->receiver_account);
-            }
+            printf("将收件人为 %s 的快递从 驿站 送至 平台\n", package->receiver_account);
             current = current->next;
         }
         printCommonInfo();
@@ -162,15 +156,10 @@ void confirmCurrentDelivery()
         {
             Package *package = (Package *)current->data;
             // 这里的代码逻辑和弹窗处相同，注意边读边删时，必须先往后走再删
-            if (strcmp(package->courier_account, the_courier->account) == 0)
-            {
-                current = current->next; // 先往后走，再删除节点
-                listRemove(courier_delivery_list, package); // 删除临时链表中的快递
-                listRemove(couriers_push_list, package);    // 删除推送链表
-                listAdd(admin_warehouse_list, package);     // 加入驿站仓库
-                continue;
-            }
-            current = current->next;
+            current = current->next;                    // 先往后走，再删除节点
+            listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+            listRemove(couriers_push_list, package);    // 删除推送链表
+            listAdd(admin_warehouse_list, package);     // 加入驿站仓库
         }
         printf("确认成功！\n");
         printCommonInfo();
@@ -183,21 +172,15 @@ void confirmCurrentDelivery()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            if (strcmp(package->courier_account, the_courier->account) == 0)
-            {
-                current = current->next;
-                listRemove(courier_delivery_list, package); // 删除临时链表中的快递
-                listRemove(couriers_push_list, package);    // 删除推送链表
-                // 无需再加入平台仓库，因为平台是逻辑上的最后一站。加上就循环了
-
-                // 下面要实现对用户的寄件通知及弹窗操作
-                User *user = userElementGet(users_list, package->receiver_account); // 之前有说过，为了方便，这里的receiver_account是寄件人账号。后续可以再调整
-                user->send_status = 2;
-                printf("已通知用户 %s ，快递已送达！\n", user->account);
-
-                continue;
-            }
             current = current->next;
+            listRemove(courier_delivery_list, package); // 删除临时链表中的快递
+            listRemove(couriers_push_list, package);    // 删除推送链表
+            // 无需再加入平台仓库，因为平台是逻辑上的最后一站。加上就循环了
+
+            // 下面要实现对用户的寄件通知及弹窗操作
+            User *user = userElementGet(users_list, package->receiver_account); // 之前有说过，为了方便，这里的receiver_account是寄件人账号。后续可以再调整
+            user->send_status = 2;
+            printf("已通知用户 %s ，快递已送达！\n", user->account);
         }
         printCommonInfo();
     }
@@ -230,11 +213,11 @@ void refuseCurrentDelivery()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            
+
             current = current->next;
             listRemove(courier_delivery_list, package); // 删除临时链表中的快递
             listRemove(couriers_push_list, package);    // 删除推送链表
-            listAdd(platform_warehouse_list, package); // 加入平台仓库
+            listAdd(platform_warehouse_list, package);  // 加入平台仓库
         }
         printf("已拒绝任务！\n");
         printCommonInfo();
@@ -247,10 +230,10 @@ void refuseCurrentDelivery()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            
+
             current = current->next;
             listRemove(courier_delivery_list, package); // 删除临时链表中的快递，可自动完成size--
-            listAdd(users_send_list, package); // 加入驿站寄件链表
+            listAdd(users_send_list, package);          // 加入驿站寄件链表
         }
         printf("已拒绝任务！\n");
         printCommonInfo();
@@ -352,7 +335,8 @@ void viewCourierDelivery()
         printf("是否加急：%s\n", package->isExpress == 1 ? "是" : "否");
         printf("体积(升)：%.2lf\n", package->volume);
         printf("重量(kg)：%.2lf\n", package->weight);
-        printf("快递类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜" : "普通");
+        printf("快递类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜"
+                                                                                                              : "普通");
         printf("价值(元)：%.2lf\n", package->value);
         puts("");
         current = current->next;
