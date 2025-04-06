@@ -313,7 +313,7 @@ void matchCourier()
         strcpy(package->courier_account, courier->account); // 包裹信息上标注快递员信息
 
         listAdd(couriers_push_list, package); // 加入快递员的推送链表
-        printf("已向快递员 %s 推送消息\n", courier->account);
+        printf("快递 %s 已向快递员 %s 发出派送请求\n", package->package_id, courier->account);
         courier->status = 1; // 标记快递员状态为正在由 平台->驿站 派送
 
         current = current->next; // 转向下一件快递
@@ -364,16 +364,16 @@ void viewSendInfo()
         return;
     }
 
-    ListNode *current = couriers_list->head;
+    // 遍历推送链表
+    ListNode *current = couriers_push_list->head;
+    printf("您的快递信息如下，共%d件：\n\n", couriers_push_list->size);
     while (current != NULL)
     {
-        Courier *courier = (Courier *)current->data;
-        if (courier->status == 1)
-        {
-            printf("快递员 %s 正在派送快递到驿站\n", courier->account);
-        }
+        Package *package = (Package *)current->data;
+        printf("快递 %s 正在由快递员 %s 派送中\n", package->package_id, package->courier_account);
         current = current->next;
     }
+
     printCommonInfo();
 }
 
@@ -620,24 +620,32 @@ void viewPlatformWarehouseInfo()
         printCommonInfo();
         return;
     }
-    printf("平台仓库内共有快递%d件\n\n", platform_warehouse_list->size);
+    printf("平台仓库内共有快递%d件：\n\n", platform_warehouse_list->size);
+
+    // 打印表头
+    printf("+----------------+----------------+----------------+--------------+----------+----------+------------------+------------+\n");
+    printf("|   快递单号     |   收件人账号   |   寄件人账号   |   加急状态   | 体积(m³) | 重量(kg) |     特殊类型     |  价值(元)  |\n");
+    printf("+----------------+----------------+----------------+--------------+----------+----------+------------------+------------+\n");
 
     ListNode *current = platform_warehouse_list->head;
     while (current != NULL)
     {
         Package *package = (Package *)current->data;
-        printf("快递单号：%s\n", package->package_id);
-        printf("收件人账号：%s\n", package->receiver_account);
-        printf("寄件人账号：%s\n", package->sender_account);
-        printf("加急状态：%s\n", package->isExpress == 1 ? "是" : "否");
-        printf("体积：%.2lfm³\n", package->volume);
-        printf("重量：%.2lfkg\n", package->weight);
-        printf("特殊类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜"
-                                                                                                              : "普通"); // 多重三目运算符
-        printf("价值：%.2lf元\n", package->value);
-        puts("");
+        // 精细调整各列宽度和制表符相关设置
+        printf("| %-14s | %-16s | %-16s | %-13s | %-8.2lf | %-8.2lf | %-18s | %-10.2lf |\n",
+               package->package_id,
+               package->receiver_account,
+               package->sender_account,
+               package->isExpress == 1 ? "是" : "否",
+               package->volume,
+               package->weight,
+               package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜"
+                                                                                            : "普通",
+               package->value);
         current = current->next;
     }
+    // 打印表尾
+    printf("+----------------+----------------+----------------+--------------+----------+----------+------------------+------------+\n");
     printCommonInfo();
 }
 

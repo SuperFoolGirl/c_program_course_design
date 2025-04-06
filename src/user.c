@@ -20,7 +20,7 @@ void userShowMenu()
         // 如果账号被删除，直接退出
         if (isDeleted)
         {
-            listFreeNode(user_delivery_list);
+            listFree(user_delivery_list);
             isDeleted = 0; // 重置标志位
             return;
         }
@@ -92,7 +92,7 @@ void userShowMenu()
             break;
         default:
             // 退出时释放临时链表，但不释放内存
-            listFreeNode(user_delivery_list); // 注意用户临时链表的类型是Package
+            listFree(user_delivery_list); // 注意用户临时链表的类型是Package
             return;
         }
     }
@@ -103,7 +103,7 @@ void userPop()
     // 包裹滞留弹窗
     if (the_user->delivery_leave == 1)
     {
-        printf("您有包裹滞留，请及时取件！\n\n");
+        printf("您有包裹滞留，请及时取件！\n");
         printCommonInfo();
         system("cls"); // 为下一个弹窗清屏
     }
@@ -116,6 +116,9 @@ void userPop()
         // 遍历推送链表，找到自己的推送信息
         // 注意，不能直接删除推送链表。如果下号了，那用户再次上号，数据不就彻底没了吗？
         // 因此，取件后再删除推送消息
+        printf("+------------------+------------------+\n");
+        printf("|      货架号      |      取件码      |\n");
+        printf("+------------------+------------------+\n");
         ListNode *current = users_push_list->head;
         while (current != NULL)
         {
@@ -125,12 +128,21 @@ void userPop()
                 // 将推送信息加入临时链表
                 listAdd(user_delivery_list, package);
 
-                printf("货架号：%s\n", package->shelf_id);
-                printf("取件码：%d\n", package->pick_up_code);
-                printf("--------------------\n");
+                // 格式化输出数据行
+                printf("|      %-10s  |       %-10d |\n", package->shelf_id, package->pick_up_code);
             }
             current = current->next;
         }
+        // 打印表尾
+        printf("+------------------+------------------+\n");
+        printCommonInfo();
+        system("cls"); // 为下一个弹窗清屏
+    }
+
+    // 寄件弹窗
+    if (the_user->send_status == 3)
+    {
+        printf("您寄出的快递有新的动态！\n");
         printCommonInfo();
         system("cls"); // 为下一个弹窗清屏
     }
@@ -138,7 +150,7 @@ void userPop()
     // 消息弹窗
     if (the_user->message_status == 1)
     {
-        printf("您有新消息，请及时查看！\n\n");
+        printf("您有新消息，请及时查看！\n");
         printCommonInfo();
     }
 }
@@ -160,6 +172,7 @@ void userPickup()
     ListNode *current = user_delivery_list->head;
     while (current != NULL)
     {
+        system("cls");
         Package *package = (Package *)current->data;
         printf("快递货架号为：%s\n", package->shelf_id);
         printf("请输入取件码：\n");
@@ -206,6 +219,13 @@ void userPickup()
             refuseDelivery(package);
         }
 
+        if (choice != '1' && choice != '2')
+        {
+            printf("输入错误！\n");
+            printCommonInfo();
+            goto back;
+        }
+
         // 如果输入正确，则取件成功，并执行出库操作和临时、推送链表删除操作
         // 出库操作，在待取快递对应的货架里删除该快递节点
         if (input == package->pick_up_code)
@@ -250,6 +270,8 @@ void userPickup()
             // 写入行为文件
             recordPickUpBehaviors(the_user->account, package->package_id, getTime());
 
+            printf("处理成功！\n");
+
             continue; // 跳过一般更新
         }
         else
@@ -265,7 +287,7 @@ void userPickup()
     the_user->receive_status = 0;
     // 不管是否滞留，统一置为0即可
     the_user->delivery_leave = 0;
-    printf("\n操作成功！\n");
+    printf("全部操作成功！\n");
     printCommonInfo();
 }
 
@@ -472,7 +494,7 @@ rewrite_value:
     }
     package->value = value;
 
-    printf("按任意键跳转付费界面\n");
+    printf("按任意键跳转付费界面...\n");
     _getch();
 
     // 付费模块
@@ -533,8 +555,8 @@ void userPay(Package *package, double payment)
 
     puts("");
     printf("确认支付？\n");
-    printf("1. 确认\n");
-    printf("按其他任意键取消支付\n");
+    printf("1. 确认\n\n");
+    printf("按其他任意键取消支付...\n\n");
 
     char choice = _getch();
 
@@ -602,18 +624,24 @@ void userQueryPickup()
     system("cls");
     if (the_user->receive_status == 1)
     {
-        printf("您有快递到达！\n\n");
+        printf("您有%d件快递到达！\n\n", user_delivery_list->size);
 
-        // 这里不用再遍历推送链表，遍历自己的临时链表即可
+        // 打印表头
+        printf("+------------------+------------------+\n");
+        printf("|      货架号      |      取件码      |\n");
+        printf("+------------------+------------------+\n");
+
         ListNode *current = user_delivery_list->head;
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            printf("货架号：%s\n", package->shelf_id);
-            printf("取件码：%d\n", package->pick_up_code);
-            printf("--------------------\n");
+            // 格式化输出数据行
+            printf("|      %-10s  |       %-10d |\n", package->shelf_id, package->pick_up_code);
             current = current->next;
         }
+
+        // 打印表尾
+        printf("+------------------+------------------+\n");
     }
     else
     {
@@ -634,10 +662,14 @@ void userQuerySend()
     {
         printf("您的快递暂未发出！\n");
     }
+    else if (the_user->send_status == 2)
+    {
+        printf("您的快递正在由快递员运送中！\n");
+    }
     else
     {
-        printf("您的快递已发出！\n");
-        the_user->send_status = 0; // 重新置为无发件状态
+        printf("您的快递已送达中转站！\n");
+        the_user->send_status = 0; // 重新设置为0
     }
 
     printCommonInfo();
@@ -647,6 +679,7 @@ void userFeedback()
 {
     system("cls");
     printf("如若需要强制退出，请输入“exit”\n\n");
+
     Feedback *feedback = (Feedback *)malloc(sizeof(Feedback));
     printf("请输入反馈内容：\n");
     char content[100];
@@ -659,6 +692,7 @@ void userFeedback()
         free(feedback);
         return;
     }
+
     strcpy(feedback->content, content);
     strcpy(feedback->account, the_user->account);
     listAdd(feedback_list, feedback); // 加入反馈链表
@@ -1027,8 +1061,8 @@ void userSubstitute()
 
     printf("请选择代取方式：\n\n");
     printf("1. 验证包裹收件人的账号和手机号\n");
-    printf("2. 好友代取\n");
-    printf("按其他任意键返回...\n\n");
+    printf("2. 好友代取\n\n");
+    printf("按其他任意键返回...\n");
 
     char choice = _getch();
 
@@ -1107,6 +1141,8 @@ void confirmAccountAndPhoneNumber()
         Package *package = (Package *)current->data;
         if (strcmp(package->receiver_account, substitute_account) == 0)
         {
+            system("cls");
+            printf("如若需要强制退出，请输入“exit”\n\n");
             printf("货架号：%s\n", package->shelf_id);
             printf("--------------------\n");
             printf("请输入取件码：\n");
@@ -1226,6 +1262,8 @@ void helpFriend()
         Package *package = (Package *)current->data;
         if (strcmp(package->receiver_account, the_user->friend) == 0) // 代取人是好友
         {
+            system("cls");
+            printf("如若需要强制退出，请输入“exit”\n\n");
             printf("货架号：%s\n", package->shelf_id);
             printf("--------------------\n");
             printf("请输入取件码：\n");
@@ -1354,6 +1392,22 @@ void userModifyInfo()
             break;
         case '2':
         rewrite_password:
+            printf("请输入旧密码：\n");
+            char old_password[20];
+            getPassword(old_password);
+            puts("");
+
+            if (checkExit(old_password))
+            {
+                return;
+            }
+            if (strcmp(the_user->password, old_password) != 0)
+            {
+                printf("旧密码错误！\n");
+                printCommonInfo();
+                goto rewrite_password;
+            }
+
             printf("请输入新的密码：\n");
             char new_password[20];
             getPassword(new_password);
@@ -1601,7 +1655,7 @@ void viewMessage()
         printCommonInfo();
         return;
     }
-    printf("您的消息为：\n");
+    printf("您的消息为：\n\n");
     printf("%s\n", the_user->message);
     the_user->message_status = 0; // 置为已读状态
     printCommonInfo();

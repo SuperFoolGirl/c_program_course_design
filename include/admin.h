@@ -5,7 +5,7 @@
 #define MAX 9000
 #define MIN 1000
 #define SIZE 20 // 货架每排最大容量
-#define MAX_TIME 60 // 60s后滞留
+#define MAX_TIME 86400 // 一天后滞留
 
 // admin.c文件需要用到的全局变量
 extern List *users_list;
@@ -105,3 +105,5 @@ void modifyCourier(); // 修改快递员信息
 void modifyPlatform(); // 修改平台信息
 
 void modifyAdmin(); // 修改管理员信息
+
+void viewUserSendInfo(); // 查看用户寄件信息

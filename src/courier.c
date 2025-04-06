@@ -50,7 +50,7 @@ void courierShowMenu()
         default:
             // 退出时释放临时链表
             // 注意 不能调用listFreePackage函数，因为这个函数会释放掉包裹的内存
-            listFreeNode(courier_delivery_list);
+            listFree(courier_delivery_list);
             return;
         }
     }
@@ -104,7 +104,7 @@ void queryCurrentDelivery()
         while (current != NULL)
         {
             Package *package = (Package *)current->data;
-            printf("将收件人为 %s 的快递从 快递平台 送至 驿站\n", package->receiver_account);
+            printf("将快递单号为 %s 的快递从 快递平台 送至 驿站\n", package->package_id);
             current = current->next;
         }
         printCommonInfo();
@@ -173,8 +173,8 @@ void confirmCurrentDelivery()
             // 无需再加入平台仓库，因为平台是逻辑上的最后一站。加上就循环了
 
             // 下面要实现对用户的寄件通知及弹窗操作
-            User *user = userElementGet(users_list, package->receiver_account); // 之前有说过，为了方便，这里的receiver_account是寄件人账号。后续可以再调整
-            user->send_status = 2;
+            User *user = userElementGet(users_list, package->sender_account); // 之前有说过，为了方便，这里的receiver_account是寄件人账号。后续可以再调整
+            user->send_status = 3;
             printf("已通知用户 %s ，快递已送达！\n", user->account);
         }
         printCommonInfo();
@@ -304,24 +304,33 @@ void viewCourierDelivery()
         return;
     }
 
-    printf("您的快递信息如下，共%d件：\n\n", courier_delivery_list->size);
+    printf("您运送的快递信息如下，共%d件：\n\n", courier_delivery_list->size);
+
+    // 打印表头
+    printf("+--------------+------------+------------+------------+--------------+----------+----------+------------------+------------+\n");
+    printf("|   快递单号   |   收件人   |   寄件人   |   快递员   |   是否加急   | 体积(升) | 重量(kg) |     快递类型     |  价值(元)  |\n");
+    printf("+--------------+------------+------------+------------+--------------+----------+----------+------------------+------------+\n");
+
     ListNode *current = courier_delivery_list->head;
     while (current != NULL)
     {
         Package *package = (Package *)current->data;
-        printf("快递单号：%s\n", package->package_id);
-        printf("收件人：%s\n", package->receiver_account);
-        printf("寄件人：%s\n", package->sender_account);
-        printf("快递员：%s\n", package->courier_account);
-        printf("是否加急：%s\n", package->isExpress == 1 ? "是" : "否");
-        printf("体积(升)：%.2lf\n", package->volume);
-        printf("重量(kg)：%.2lf\n", package->weight);
-        printf("快递类型：%s\n", package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜"
-                                                                                                              : "普通");
-        printf("价值(元)：%.2lf\n", package->value);
-        puts("");
+        // 精细调整各列宽度和制表符相关设置
+        printf("| %-12s | %-12s | %-12s | %-13s | %-13s | %-8.2lf | %-8.2lf | %-18s | %-10.2lf |\n",
+               package->package_id,
+               package->receiver_account,
+               package->sender_account,
+               package->courier_account,
+               package->isExpress == 1 ? "是" : "否",
+               package->volume,
+               package->weight,
+               package->special_type == 1 ? "易碎品、电子产品" : package->special_type == 2 ? "生鲜"
+                                                                                            : "普通",
+               package->value);
         current = current->next;
     }
+    // 打印表尾
+    printf("+--------------+------------+------------+------------+--------------+----------+----------+------------------+------------+\n");
     printCommonInfo();
 }
 

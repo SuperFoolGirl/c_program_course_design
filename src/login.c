@@ -205,18 +205,23 @@ void recoverListData()
     writeListFromFile("../files/admins_info.txt", admins_list);
     writeListFromFile("../files/couriers_info.txt", couriers_list);
     writeListFromFile("../files/platforms_info.txt", platforms_list);
+
     writeListFromFile("../files/platform_warehouse.txt", platform_warehouse_list);
     writeListFromFile("../files/admin_warehouse.txt", admin_warehouse_list);
     writeListFromFile("../files/users_send.txt", users_send_list);
+
     writeListFromFile("../files/users_push.txt", users_push_list);
     writeListFromFile("../files/couriers_push.txt", couriers_push_list);
+
     writeListFromFile("../files/shelf_a.txt", shelf_a_list);
     writeListFromFile("../files/shelf_b.txt", shelf_b_list);
     writeListFromFile("../files/shelf_c.txt", shelf_c_list);
     writeListFromFile("../files/shelf_d.txt", shelf_d_list);
     writeListFromFile("../files/shelf_e.txt", shelf_e_list);
+
     writeListFromFile("../files/feedback.txt", feedback_list);
     writeFileFromList("../files/refuse.txt", refuse_list);
+
     getMoney("../files/account.txt", &money);
 }
 
@@ -227,18 +232,23 @@ void rewriteAllFiles()
     writeFileFromList("../files/admins_info.txt", admins_list);
     writeFileFromList("../files/couriers_info.txt", couriers_list);
     writeFileFromList("../files/platforms_info.txt", platforms_list);
+
     writeFileFromList("../files/platform_warehouse.txt", platform_warehouse_list);
     writeFileFromList("../files/admin_warehouse.txt", admin_warehouse_list);
     writeFileFromList("../files/users_send.txt", users_send_list);
+
     writeFileFromList("../files/users_push.txt", users_push_list);
     writeFileFromList("../files/couriers_push.txt", couriers_push_list);
+
     writeFileFromList("../files/shelf_a.txt", shelf_a_list);
     writeFileFromList("../files/shelf_b.txt", shelf_b_list);
     writeFileFromList("../files/shelf_c.txt", shelf_c_list);
     writeFileFromList("../files/shelf_d.txt", shelf_d_list);
     writeFileFromList("../files/shelf_e.txt", shelf_e_list);
+
     writeFileFromList("../files/feedback.txt", feedback_list);
     writeFileFromList("../files/refuse.txt", refuse_list);
+
     updateMoney("../files/account.txt", money); // 更新账户余额
 }
 
@@ -249,16 +259,27 @@ void freeLists()
     listFreeAdmin(admins_list);
     listFreeCourier(couriers_list);
     listFreePlatform(platforms_list);
+
     listFreePackage(platform_warehouse_list);
     listFreePackage(admin_warehouse_list);
     listFreePackage(users_send_list);
+
     listFreePackage(users_push_list);
-    listFreePackage(shelf_a_list);
-    listFreePackage(shelf_b_list);
-    listFreePackage(shelf_c_list);
-    listFreePackage(shelf_d_list);
-    listFreePackage(shelf_e_list);
+    listFreePackage(couriers_push_list);
+
+    // 如果取件了，那包裹节点会彻底消失
+    // 如果没取件，那包裹节点会同时存在于推送链表、临时链表、货架链表
+    // 其中临时链表只释放了链表结构体本身，推送链表已经释放了包裹节点及包裹数据
+    // 如果下面的货架链表再释放，就会导致重复释放包裹节点
+    listFree(shelf_a_list);
+    listFree(shelf_b_list);
+    listFree(shelf_c_list);
+    listFree(shelf_d_list);
+    listFree(shelf_e_list);
+
     listFreeFeedback(feedback_list);
+
+    // 包裹拒收后，对应的节点会在临时、推送、货架中删除，所以这里不存在重复释放的问题
     listFreePackage(refuse_list);
 }
 
@@ -269,16 +290,20 @@ void listsInit()
     admins_list = listInit();
     couriers_list = listInit();
     platforms_list = listInit();
+
     platform_warehouse_list = listInit();
     admin_warehouse_list = listInit();
     users_send_list = listInit();
+    
     users_push_list = listInit();
     couriers_push_list = listInit();
+
     shelf_a_list = listInit();
     shelf_b_list = listInit();
     shelf_c_list = listInit();
     shelf_d_list = listInit();
     shelf_e_list = listInit();
+
     feedback_list = listInit();
     refuse_list = listInit();
 }
@@ -292,7 +317,7 @@ rewrite_account:
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("温馨提示：当前仅支持普通用户注册，其他请联系管理员。\n\n");
 
-    printf("请输入用户名(20字符以内)：\n");
+    printf("请输入用户名(3-12字符)：\n");
     char account[20];
     scanf("%s", account);
     clearInputBuffer();
@@ -323,7 +348,7 @@ rewrite_account:
     }
 
 rewrite_password:
-    printf("请输入密码(20字符以内)：\n");
+    printf("请输入密码(3-12字符)：\n");
     char password[20];
     getPassword(password); // 使用getPassword函数获取密码，隐藏输入
     // 不需要清空输入缓冲区，因为getPassword函数已经处理了。这里如果加上clearInputBuffer()，会导致得额外输入一个回车才能结束输入
@@ -404,7 +429,7 @@ void login()
     while (1)
     {
         system("cls");
-        printf("请选择登录身份：\n");
+        printf("请选择登录身份：\n\n");
         printf("1. 用户\n");
         printf("2. 管理员\n");
         printf("3. 快递员\n");
@@ -424,7 +449,7 @@ void login()
         printf("如若需要强制退出，请输入“exit”\n\n");
 
     rewrite_account:
-        printf("请输入用户名(20字符以内):\n");
+        printf("请输入用户名(3-12字符):\n");
         scanf("%s", account);
         clearInputBuffer();
         puts("");
@@ -440,7 +465,7 @@ void login()
         }
 
     rewrite_password:
-        printf("请输入密码(20字符以内):\n");
+        printf("请输入密码(3-12字符):\n");
         getPassword(password); // 使用getPassword函数获取密码，隐藏输入
         puts("");
 

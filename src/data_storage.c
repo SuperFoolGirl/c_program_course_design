@@ -85,6 +85,7 @@ void listFreePackage(List *list)
         next = current->next;
 
         // 释放 data 所指向的内存，假设 data 指向的是 Package 结构体
+        // 注意这里会造成重复释放，因为程序是浅拷贝的
         Package *package = (Package *)current->data;
         if (package != NULL)
         {
@@ -215,19 +216,12 @@ void listFreeFeedback(List *list)
 // 6. 释放包裹类链表的特殊函数：不释放包裹内存，只释放节点和链表内存
 // List, ListNode, data三个结构体都是动态分配的内存，释放是各自独立的
 // 虽然data是ListNode的一个成员，但是ListNode的内存释放不会影响data的内存
-// 所以这里只释放ListNode和List的内存
-void listFreeNode(List *list)
-{
-    ListNode *current = list->head;
-    ListNode *next;
 
-    while (current != NULL)
-    {
-        next = current->next;
-        free(current);
-        current = next;
-    }
-    free(list); // 最后释放该List结构体
+// 值得注意的是，临时链表的创建，并没有malloc出新的节点，而是直接listAdd了推送链表的节点
+// 因此，这里只能释放list，listNode和data都不能动
+void listFree(List *list)
+{
+    free(list);
 }
 
 
@@ -322,6 +316,21 @@ void writeListFromFile(const char *file, List *list)
         }
         free(platform);
     }
+    // 6. 反馈表
+    else if (strstr(file, "feedback.txt") != NULL)
+    {
+        Feedback *feedback = (Feedback *)malloc(sizeof(Feedback));
+        memset(feedback, 0, sizeof(Feedback));
+
+        while (fscanf(fp, "%s %s\n", feedback->account, feedback->content) != EOF)
+        {
+            listAdd(list, feedback);
+
+            feedback = (Feedback *)malloc(sizeof(Feedback));
+            memset(feedback, 0, sizeof(Feedback));
+        }
+        free(feedback);
+    }
     else
         ;
     fclose(fp);
@@ -382,6 +391,15 @@ void writeFileFromList(const char *file, List *list)
         {
             Platform *platform = (Platform *)current->data;
             fprintf(fp, "%s %s %lld %d\n", platform->account, platform->password, platform->time, platform->try_times);
+            current = current->next;
+        }
+    }
+    else if (strstr(file, "feedback.txt") != NULL)
+    {
+        while (current != NULL)
+        {
+            Feedback *feedback = (Feedback *)current->data;
+            fprintf(fp, "%s %s\n", feedback->account, feedback->content);
             current = current->next;
         }
     }
@@ -506,6 +524,7 @@ void printCommonInfo()
     puts("");
     printf("按任意键继续...\n");
     _getch(); // 读取一个字符，不需要回车
+    puts("");
 }
 
 struct tm *getTime()
@@ -535,6 +554,12 @@ int checkInputLimit(const char *account)
     if (strlen(account) > MAX_LENGTH)
     {
         printf("输入长度超过限制！\n");
+        printCommonInfo();
+        return 0;
+    }
+    if (strlen(account) < MIN_LENGTH)
+    {
+        printf("输入长度小于限制！\n");
         printCommonInfo();
         return 0;
     }

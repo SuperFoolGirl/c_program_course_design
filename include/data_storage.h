@@ -7,7 +7,8 @@
 #include "common.h"
 #include <time.h>
 
-#define MAX_LENGTH 20 // 用户名、密码最大长度
+#define MAX_LENGTH 12 // 用户名、密码最大长度
+#define MIN_LENGTH 3 // 用户名、密码最小长度
 
 // 1 通用链表
 // 通用链表节点结构体
@@ -46,7 +47,7 @@ typedef struct User
     char phone_number[20]; // 电话号码
     int user_type;         // 用户类型，5类：0-普通用户，1-会员用户，2-企业用户，3-代理商用户，4-合作商家用户
     int receive_status;    // 收快递状态，0-无需取件，1-需要取件
-    int send_status;       // 寄件状态，0-无寄件，1-未发出，2-已发出  // 取件码
+    int send_status;       // 寄件状态，0-无寄件，1-未发出，2-已发出，3-已送达
 
     char friend[20]; // 好友 用于代取
     int delivery_leave; // 包裹滞留状态，0-正常，1-滞留
@@ -150,7 +151,7 @@ void listFreeUser(List *list);
 void listFreeCourier(List *list);
 void listFreeAdmin(List *list);
 void listFreePlatform(List *list);
-void listFreeNode(List *list); // 只释放链表节点
+void listFree(List *list); // 只释放链表本身
 void listFreeFeedback(List *list);
 
 struct tm *getTime(); // 获取当前时间
