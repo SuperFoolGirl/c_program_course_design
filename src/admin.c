@@ -456,7 +456,7 @@ void viewBusinessStatistics()
         cnt++;
         printf("%s", record);
     }
-    printf("取件总数：%d\n", cnt);
+    printf("\n取件总数：%d", cnt);
     fclose(fp);
 
     printf("\n\n=============================================================\n\n");
@@ -474,7 +474,7 @@ void viewBusinessStatistics()
         cnt++;
         printf("%s", record);
     }
-    printf("寄件总数：%d\n", cnt);
+    printf("\n寄件总数：%d\n", cnt);
     fclose(fp);
 
     printCommonInfo();
@@ -1152,6 +1152,9 @@ void viewUserInfo()
                 break;
             case2:
                 strcpy(send_status, "已发出");
+                break;
+            case 3:
+                strcpy(send_status, "已送达");
                 break;
             default:
                 break;
@@ -2934,7 +2937,7 @@ void handleAbnormalPackage()
             return;
         }
 
-        printf("请给用户留言：\n\n");
+        printf("\n请给用户留言：\n\n");
         char message[100];
         scanf("%s", message);
         clearInputBuffer();

@@ -196,40 +196,40 @@ void userPickup()
         }
         puts("");
 
-        // 拒收判断
-    back:
-        printf("请检查包裹，是否拒收？\n");
-        printf("1. 否\n");
-        printf("2. 是\n");
-        char choice = getchar();
-        if (clearInputBuffer() != 0)
-        {
-            if (choice == 'e')
-            {
-                return;
-            }
-            printf("输入错误！\n");
-            printCommonInfo();
-            goto back;
-        }
-        puts("");
-
-        if (choice == '2')
-        {
-            refuseDelivery(package);
-        }
-
-        if (choice != '1' && choice != '2')
-        {
-            printf("输入错误！\n");
-            printCommonInfo();
-            goto back;
-        }
-
         // 如果输入正确，则取件成功，并执行出库操作和临时、推送链表删除操作
         // 出库操作，在待取快递对应的货架里删除该快递节点
         if (input == package->pick_up_code)
         {
+            // 拒收判断
+        back:
+            printf("请检查包裹，是否拒收？\n");
+            printf("1. 否\n");
+            printf("2. 是\n");
+            char choice = getchar();
+            if (clearInputBuffer() != 0)
+            {
+                if (choice == 'e')
+                {
+                    return;
+                }
+                printf("输入错误！\n");
+                printCommonInfo();
+                goto back;
+            }
+            puts("");
+
+            if (choice == '2')
+            {
+                refuseDelivery(package);
+            }
+
+            if (choice != '1' && choice != '2')
+            {
+                printf("输入错误！\n");
+                printCommonInfo();
+                goto back;
+            }
+            
             int index_of_shelf = package->shelf_id[0] - 'A';
             List *shelf_list = NULL;
 
@@ -271,6 +271,8 @@ void userPickup()
             recordPickUpBehaviors(the_user->account, package->package_id, getTime());
 
             printf("处理成功！\n");
+
+            printCommonInfo();
 
             continue; // 跳过一般更新
         }
@@ -1672,7 +1674,7 @@ void viewRefuseDelivery()
     }
     char line[100];
     printf("您的拒收记录：\n");
-    printf("--------------------\n");
+    printf("----------------------------------------------\n");
     while (fgets(line, sizeof(line), fp) != NULL)
     {
         if (strstr(line, the_user->account) != NULL) // 查找包含用户名的行
