@@ -229,7 +229,7 @@ void userPickup()
                 printCommonInfo();
                 goto back;
             }
-            
+
             int index_of_shelf = package->shelf_id[0] - 'A';
             List *shelf_list = NULL;
 
@@ -303,7 +303,7 @@ void userSend()
 
 rewrite_id:
     printf("请输入快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
@@ -332,13 +332,13 @@ rewrite_id:
         }
         current = current->next;
     }
-    
+
     strcpy(package->package_id, package_id);
 
 rewrite_receiver:
     // 输入收件人账号
     printf("请输入收件人账号：\n");
-    char receiver_account[20];
+    char receiver_account[200];
     scanf("%s", receiver_account);
     clearInputBuffer();
     puts("");
@@ -513,7 +513,6 @@ void userPay(Package *package, double payment)
             payment *= 2;
             printf("您的用户类型为普通用户，请原价支付加急件\n");
             printf("支付金额为：%.2lf元\n", payment);
-            
         }
         else
         {
@@ -570,7 +569,7 @@ void userPay(Package *package, double payment)
         recordSendBehaviors(the_user->account, package->package_id, getTime());
 
         // 打钱到账户
-        if (the_user->user_type == 0 || the_user->user_type ==  1)
+        if (the_user->user_type == 0 || the_user->user_type == 1)
         {
             money += payment;
         }
@@ -595,7 +594,7 @@ void userPay(Package *package, double payment)
 double payment(Package *package)
 {
     double payment = 0.0;
-    
+
     // 体积
     payment += package->volume * 3;
 
@@ -722,7 +721,7 @@ void userModifySend()
     }
 
     printf("请输入您的快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
@@ -757,7 +756,7 @@ void userModifySend()
                 case '1':
                 rewrite_package_id:
                     printf("请输入新的快递单号：\n");
-                    char new_package_id[20];
+                    char new_package_id[200];
                     scanf("%s", new_package_id);
                     clearInputBuffer();
                     puts("");
@@ -908,7 +907,7 @@ void userModifySend()
                 case '7':
                 rewrite_receiver:
                     printf("请输入新的收件人：\n");
-                    char new_receiver_account[20];
+                    char new_receiver_account[200];
                     scanf("%s", new_receiver_account);
                     clearInputBuffer();
                     puts("");
@@ -953,7 +952,7 @@ void userCancelSend()
     }
 
     printf("请输入您的快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
@@ -1089,7 +1088,7 @@ void confirmAccountAndPhoneNumber()
     // 正确输入后，依然需要取件码验证
     // 因此，需要主人告知代取者取件码
     printf("请输入快递收件人用户名：\n");
-    char substitute_account[20];
+    char substitute_account[200];
     scanf("%s", substitute_account);
     clearInputBuffer();
     puts("");
@@ -1100,7 +1099,7 @@ void confirmAccountAndPhoneNumber()
     }
 
     printf("请输入快递收件人手机号：\n");
-    char substitute_phone_number[20];
+    char substitute_phone_number[200];
     scanf("%s", substitute_phone_number);
     clearInputBuffer();
     puts("");
@@ -1222,7 +1221,7 @@ void confirmAccountAndPhoneNumber()
         current = current->next;
     }
     // 代取完后，将代取人的取件状态置为0
-    user->receive_status = 0; 
+    user->receive_status = 0;
     // 不管是否滞留，统一置为0即可
     user->delivery_leave = 0;
     printf("\n全部代取成功！\n");
@@ -1233,15 +1232,56 @@ void helpFriend()
 {
     system("cls");
 
-    if (strcmp(the_user->friend, "0") == 0) // 弊端在于，用户名不能命名为0了，否则检测不到好友
+    if (strcmp(the_user->friend[0], "0") == 0) // 弊端在于，用户名不能命名为0了，否则检测不到好友
     {
         printf("您没有好友，无法使用好友代取功能！\n");
         printCommonInfo();
         return;
     }
 
+    // 选择一个好友
+    printf("请选择一个好友：\n\n");
+    int cnt = 0;
+    if (strcmp(the_user->friend[0], "0") != 0)
+    {
+        printf("%d. %s\n", cnt + 1, the_user->friend[0]);
+        cnt++;
+    }
+    if (strcmp(the_user->friend[1], "0") != 0)
+    {
+        printf("%d. %s\n", cnt + 1, the_user->friend[1]);
+        cnt++;
+    }
+    if (strcmp(the_user->friend[2], "0") != 0)
+    {
+        printf("%d. %s\n", cnt + 1, the_user->friend[2]);
+        cnt++;
+    }
+    char choice = getchar();
+    if (clearInputBuffer() != 0)
+    {
+        if (choice == 'e')
+        {
+            return;
+        }
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
+    puts("");
+
+    if (choice < '1' || choice > '3' || choice - '0' > cnt)
+    {
+        printf("输入错误！\n");
+        printCommonInfo();
+        return;
+    }
+
+    int friend_index = choice - '0' - 1; // 选择的好友索引
+
+
     // 好友必然在用户链表中，但有可能遇到其注销的情况
-    User *friend_user = userElementGet(users_list, the_user->friend);
+    User *friend_user = userElementGet(users_list, the_user->friend[friend_index]);
     if (friend_user == NULL)
     {
         printf("好友不存在！\n");
@@ -1262,7 +1302,7 @@ void helpFriend()
     while (current != NULL)
     {
         Package *package = (Package *)current->data;
-        if (strcmp(package->receiver_account, the_user->friend) == 0) // 代取人是好友
+        if (strcmp(package->receiver_account, the_user->friend[friend_index]) == 0) // 代取人是好友
         {
             system("cls");
             printf("如若需要强制退出，请输入“exit”\n\n");
@@ -1370,7 +1410,7 @@ void userModifyInfo()
         case '1':
         rewrite_username:
             printf("请输入新的用户名：\n");
-            char new_account[20];
+            char new_account[200];
             scanf("%s", new_account);
             clearInputBuffer();
 
@@ -1395,7 +1435,7 @@ void userModifyInfo()
         case '2':
         rewrite_password:
             printf("请输入旧密码：\n");
-            char old_password[20];
+            char old_password[200];
             getPassword(old_password);
             puts("");
 
@@ -1411,7 +1451,7 @@ void userModifyInfo()
             }
 
             printf("请输入新的密码：\n");
-            char new_password[20];
+            char new_password[200];
             getPassword(new_password);
             puts("");
 
@@ -1426,7 +1466,7 @@ void userModifyInfo()
             }
 
             printf("请再次输入新的密码：\n");
-            char new_password_confirm[20];
+            char new_password_confirm[200];
             getPassword(new_password_confirm);
             puts("");
 
@@ -1448,7 +1488,7 @@ void userModifyInfo()
         case '3':
         rewrite_phone_number:
             printf("请输入新的手机号：\n");
-            char new_phone_number[20];
+            char new_phone_number[200];
             scanf("%s", new_phone_number);
             clearInputBuffer();
 
@@ -1500,17 +1540,19 @@ void friendFunction()
 void addFriend()
 {
     system("cls");
-    // 如果有好友，直接返回
-    if (strcmp(the_user->friend, "0") != 0)
+    printf("提示：好友最大数量为3个\n\n");
+
+    // 只看最后一个就可以
+    if (strcmp(the_user->friend[2], "0") != 0)
     {
-        printf("您已经有好友了！\n");
+        printf("您的好友位已满！\n");
         printCommonInfo();
         return;
     }
 
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入好友的用户名：\n");
-    char friend_account[20];
+    char friend_account[200];
     scanf("%s", friend_account);
     clearInputBuffer();
     puts("");
@@ -1537,10 +1579,27 @@ void addFriend()
         return;
     }
 
-    strcpy(the_user->friend, friend_account);
-    
+    printf("请输入好友的手机号：\n");
+    char friend_phone_number[200];
+    scanf("%s", friend_phone_number);
     clearInputBuffer();
     puts("");
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (strcmp(the_user->friend[i], "0") == 0)
+        {
+            // 获得好友手机号
+            if (strcmp(friend_user->phone_number, friend_phone_number) != 0)
+            {
+                printf("手机号错误！\n");
+                printCommonInfo();
+                return;
+            }
+            strcpy(the_user->friend[i], friend_account);
+            break;
+        }
+    }
     printf("添加成功！\n");
     printCommonInfo();
 }
@@ -1548,8 +1607,8 @@ void addFriend()
 void deleteFriend()
 {
     system("cls");
-    // 如果没有好友，直接返回
-    if (strcmp(the_user->friend, "0") == 0)
+    // 如果没有好友，直接返回。只看第一个就好
+    if (strcmp(the_user->friend[0], "0") == 0)
     {
         printf("您没有好友！\n");
         printCommonInfo();
@@ -1559,7 +1618,7 @@ void deleteFriend()
 rewrite_friend:
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请验证好友的用户名：\n");
-    char friend_account[20];
+    char friend_account[200];
     scanf("%s", friend_account);
     clearInputBuffer();
     puts("");
@@ -1569,15 +1628,23 @@ rewrite_friend:
         return;
     }
 
-    if (strcmp(friend_account, the_user->friend) != 0)
+    if (strcmp(friend_account, the_user->friend[0]) != 0 && strcmp(friend_account, the_user->friend[1]) != 0 && strcmp(friend_account, the_user->friend[2]) != 0)
     {
-        printf("好友用户名错误！\n");
+        // 如果好友不存在，直接返回
+        printf("好友不存在！\n");
         printCommonInfo();
-        goto rewrite_friend;
+        return;
     }
 
     // 删除好友
-    strcpy(the_user->friend, "0");
+    for (int i = 0 ;i < 3; i++)
+    {
+        if (strcmp(the_user->friend[i], friend_account) == 0)
+        {
+            strcpy(the_user->friend[i], "0");
+            break;
+        }
+    }
     printf("删除成功！\n");
     printCommonInfo();
 }
@@ -1585,13 +1652,20 @@ rewrite_friend:
 void viewFriend()
 {
     system("cls");
-    if (strcmp(the_user->friend, "0") == 0)
+    if (strcmp(the_user->friend[0], "0") == 0)
     {
         printf("您没有好友！\n");
         printCommonInfo();
         return;
     }
-    printf("您的好友为：%s\n", the_user->friend);
+    printf("您的好友为：\n\n");
+    for (int i = 0; i < 3; i++)
+    {
+        if (strcmp(the_user->friend[i], "0") != 0)
+        {
+            printf("%s\n", the_user->friend[i]);
+        }
+    }
     printCommonInfo();
 }
 
@@ -1650,7 +1724,7 @@ void refuseDelivery(Package *package)
 
     // 写入拒收文件
     recordRefuseBehaviors(the_user->account, package->package_id, getTime());
-    
+
     printf("\n感谢您的反馈！\n");
     printCommonInfo();
 }

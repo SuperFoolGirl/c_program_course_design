@@ -57,7 +57,7 @@ void writeToBeShippedDelivery()
 
 rewrite_package_id:
     printf("请输入快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
@@ -92,7 +92,7 @@ rewrite_package_id:
 
 rewrite_receiver:
     printf("请输入收件人用户名：\n");
-    char receiver_account[20];
+    char receiver_account[200];
     scanf("%s", receiver_account);
     clearInputBuffer();
     puts("");
@@ -389,7 +389,7 @@ void modifyToBeShippedDelivery()
     }
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要修改的快递的快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
@@ -427,7 +427,7 @@ void modifyToBeShippedDelivery()
                 case '1':
                 rewrite_receiver_account:
                     printf("请输入新的收件人账号：\n");
-                    char new_receiver_account[20];
+                    char new_receiver_account[200];
                     scanf("%s", new_receiver_account);
                     clearInputBuffer();
                     puts("");
@@ -580,7 +580,7 @@ void deleteToBeShippedDelivery()
 
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要删除的快递的快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");

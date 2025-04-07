@@ -49,7 +49,7 @@ typedef struct User
     int receive_status;    // 收快递状态，0-无需取件，1-需要取件
     int send_status;       // 寄件状态，0-无寄件，1-未发出，2-已发出，3-已送达
 
-    char friend[20]; // 好友 用于代取
+    char friend[3][20]; // 好友 用于代取
     int delivery_leave; // 包裹滞留状态，0-正常，1-滞留
 
     time_t time; // 记录封号时长

@@ -246,7 +246,7 @@ void writeListFromFile(const char *file, List *list)
         User *user = (User *)malloc(sizeof(User));
         memset(user, 0, sizeof(User)); // 初始化内存，因为堆区的这块内存可能是脏数据
 
-        while (fscanf(fp, "%s %s %s %d %d %d %s %d %lld %d %s %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status, user->friend, &user->delivery_leave, &user->time, &user->try_times, user->message, &user->message_status) != EOF)
+        while (fscanf(fp, "%s %s %s %d %d %d %s %s %s %d %lld %d %s %d\n", user->account, user->password, user->phone_number, &user->user_type, &user->receive_status, &user->send_status, user->friend[0], user->friend[1], user->friend[2], &user->delivery_leave, &user->time, &user->try_times, user->message, &user->message_status) != EOF)
         {
             listAdd(list, user);
 
@@ -354,7 +354,7 @@ void writeFileFromList(const char *file, List *list)
         while (current != NULL)
         {
             User *user = (User *)current->data;
-            fprintf(fp, "%s %s %s %d %d %d %s %d %lld %d %s %d\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status, user->friend, user->delivery_leave, user->time, user->try_times, user->message, user->message_status);
+            fprintf(fp, "%s %s %s %d %d %d %s %s %s %d %lld %d %s %d\n", user->account, user->password, user->phone_number, user->user_type, user->receive_status, user->send_status, user->friend[0], user->friend[1], user->friend[2], user->delivery_leave, user->time, user->try_times, user->message, user->message_status);
             current = current->next;
         }
     }

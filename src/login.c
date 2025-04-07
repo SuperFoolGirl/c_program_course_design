@@ -318,7 +318,7 @@ rewrite_account:
     printf("温馨提示：当前仅支持普通用户注册，其他请联系管理员。\n\n");
 
     printf("请输入用户名(3-12字符)：\n");
-    char account[20];
+    char account[200];
     scanf("%s", account);
     clearInputBuffer();
     puts("");
@@ -349,7 +349,7 @@ rewrite_account:
 
 rewrite_password:
     printf("请输入密码(3-12字符)：\n");
-    char password[20];
+    char password[200];
     getPassword(password); // 使用getPassword函数获取密码，隐藏输入
     // 不需要清空输入缓冲区，因为getPassword函数已经处理了。这里如果加上clearInputBuffer()，会导致得额外输入一个回车才能结束输入
     puts("");
@@ -365,7 +365,7 @@ rewrite_password:
     }
 
     printf("请再次确认密码：\n");
-    char password_confirm[20];
+    char password_confirm[200];
     getPassword(password_confirm); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -384,7 +384,7 @@ rewrite_password:
     {
     rewrite_phone_number:
         printf("请输入电话号码：\n");
-        char phone_number[20];
+        char phone_number[200];
         scanf("%s", phone_number);
         clearInputBuffer();
         puts("");
@@ -408,7 +408,9 @@ rewrite_password:
         strcpy(user->account, account);
         strcpy(user->password, password);
         strcpy(user->phone_number, phone_number);
-        strcpy(user->friend, "0");
+        strcpy(user->friend[0], "0");
+        strcpy(user->friend[1], "0");
+        strcpy(user->friend[2], "0");
         user->user_type = default_user_type;
         user->receive_status = default_receive_status;
         user->send_status = default_send_status;
@@ -444,8 +446,8 @@ void login()
         }
 
         system("cls");
-        char account[20];
-        char password[20];
+        char account[200];
+        char password[200];
         printf("如若需要强制退出，请输入“exit”\n\n");
 
     rewrite_account:

@@ -494,7 +494,13 @@ void pushMessageToUser(Package *package) // 不能用const修饰，listAdd函数
         user = (User *)malloc(sizeof(User));
         strcpy(user->account, package->receiver_account);
         strcpy(user->password, "123456");
-        strcpy(user->friend, "0");
+        strcpy(user->friend[0], "0");
+        strcpy(user->friend[1], "0");
+        strcpy(user->friend[2], "0");
+        user->time = 0;
+        user->try_times = 0;
+        user->message_status = 0;
+        strcpy(user->message, "0");
         strcpy(user->phone_number, "0");
         user->user_type = 0;
         user->receive_status = 0;
@@ -550,7 +556,7 @@ void registerUser()
     // 先写入链表，再写入文件
 rewrite_account:
     printf("请输入用户名：\n");
-    char account[20];
+    char account[200];
     scanf("%s", account);
     clearInputBuffer();
     puts("");
@@ -581,7 +587,7 @@ rewrite_account:
 
 rewrite_password:
     printf("请输入密码：\n");
-    char password[20];
+    char password[200];
     getPassword(password); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -596,7 +602,7 @@ rewrite_password:
     }
 
     printf("请再次确认密码：\n");
-    char password_confirm[20];
+    char password_confirm[200];
     getPassword(password_confirm); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -614,7 +620,7 @@ rewrite_password:
 
 rewrite_phone:
     printf("请输入电话号码：\n");
-    char phone_number[20];
+    char phone_number[200];
     scanf("%s", phone_number);
     clearInputBuffer();
     puts("");
@@ -640,7 +646,9 @@ rewrite_phone:
     user->user_type = default_user_type;
     user->receive_status = default_receive_status;
     user->send_status = default_send_status;
-    strcpy(user->friend, "0");
+    strcpy(user->friend[0], "0");
+    strcpy(user->friend[1], "0");
+    strcpy(user->friend[2], "0");
     user->delivery_leave = 0;
     user->time = 0;
     user->try_times = 0;
@@ -658,7 +666,7 @@ void registerCourier()
     printf("如若需要强制退出，请输入“exit”\n\n");
 rewrite_account:
     printf("请输入用户名：\n");
-    char account[20];
+    char account[200];
     scanf("%s", account);
     clearInputBuffer();
     puts("");
@@ -689,7 +697,7 @@ rewrite_account:
 
 rewrite_password:
     printf("请输入密码：\n");
-    char password[20];
+    char password[200];
     getPassword(password); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -704,7 +712,7 @@ rewrite_password:
     }
 
     printf("请再次确认密码：\n");
-    char password_confirm[20];
+    char password_confirm[200];
     getPassword(password_confirm); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -738,7 +746,7 @@ void registerAdmin()
     printf("如若需要强制退出，请输入“exit”\n\n");
 rewrite_account:
     printf("请输入用户名：\n");
-    char account[20];
+    char account[200];
     scanf("%s", account);
     clearInputBuffer();
     puts("");
@@ -769,7 +777,7 @@ rewrite_account:
 
 rewrite_password:
     printf("请输入密码：\n");
-    char password[20];
+    char password[200];
     getPassword(password); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -784,7 +792,7 @@ rewrite_password:
     }
 
     printf("请再次确认密码：\n");
-    char password_confirm[20];
+    char password_confirm[200];
     getPassword(password_confirm); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -817,7 +825,7 @@ void registerPlatform()
     printf("如若需要强制退出，请输入“exit”\n\n");
 rewrite_account:
     printf("请输入用户名：\n");
-    char account[20];
+    char account[200];
     scanf("%s", account);
     clearInputBuffer();
     puts("");
@@ -848,7 +856,7 @@ rewrite_account:
 
 rewrite_password:
     printf("请输入密码：\n");
-    char password[20];
+    char password[200];
     getPassword(password); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -863,7 +871,7 @@ rewrite_password:
     }
 
     printf("请再次确认密码：\n");
-    char password_confirm[20];
+    char password_confirm[200];
     getPassword(password_confirm); // 使用getPassword函数获取密码，隐藏输入
     puts("");
 
@@ -904,7 +912,7 @@ void deleteUser()
 
         char choice = _getch();
         puts("");
-        char account[20];
+        char account[200];
 
         system("cls");
         printf("如若需要强制退出，请输入“exit”\n\n");
@@ -1076,7 +1084,7 @@ void viewUserInfo()
 
         char choice = _getch();
 
-        char account[20];
+        char account[200];
         system("cls");
         printf("如若需要强制退出，请输入“exit”\n\n");
         switch (choice)
@@ -1195,6 +1203,8 @@ void viewUserInfo()
                 break;
             case 2:
                 strcpy(status, "忙碌，正从驿站取件");
+            case 3:
+                strcpy(status, "隐身中");
                 break;
             default:
                 break;
@@ -1313,7 +1323,7 @@ void viewShelf(const List *shelf_list)
     {
         Package *package = (Package *)current->data;
 
-        char express[20];
+        char express[200];
         switch (package->isExpress)
         {
         case 0:
@@ -1410,7 +1420,7 @@ void modifyShelf(List *shelf_list)
     }
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要修改的快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
@@ -1452,7 +1462,7 @@ void modifyShelf(List *shelf_list)
                 case '1':
                 rewrite_receiver_account:
                     printf("请输入新的收件人账号：\n");
-                    char new_receiver_account[20];
+                    char new_receiver_account[200];
                     scanf("%s", new_receiver_account);
                     clearInputBuffer();
                     puts("");
@@ -1931,7 +1941,7 @@ void modifyUserSend()
     }
 
     printf("请选择要修改快递的快递单号：\n");
-    char package_id[20];
+    char package_id[200];
     scanf("%s", package_id);
     clearInputBuffer();
     puts("");
@@ -1961,7 +1971,7 @@ void modifyUserSend()
             case '1':
             rewrite_package_id:
                 printf("请输入新的快递单号：\n");
-                char new_package_id[20];
+                char new_package_id[200];
                 scanf("%s", new_package_id);
                 clearInputBuffer();
                 puts("");
@@ -2115,7 +2125,7 @@ void modifyUserSend()
             case 7:
             rewrite_receiver_account:
                 printf("请输入新的收件人账号：\n");
-                char new_receiver_account[20];
+                char new_receiver_account[200];
                 scanf("%s", new_receiver_account);
                 clearInputBuffer();
                 puts("");
@@ -2379,7 +2389,7 @@ void viewAccount()
 void modifyUser()
 {
     system("cls");
-    char account[20];
+    char account[200];
     char choice2;
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要修改的用户账号：\n");
@@ -2416,7 +2426,7 @@ void modifyUser()
     case '1':
     rewrite_account2:
         printf("请输入新的用户名：\n");
-        char new_account[20];
+        char new_account[200];
         scanf("%s", new_account);
         clearInputBuffer();
         puts("");
@@ -2452,7 +2462,7 @@ void modifyUser()
     case '2':
     rewrite_password:
         printf("请输入新的密码：\n");
-        char new_password[20];
+        char new_password[200];
         getPassword(new_password);
         puts("");
 
@@ -2468,7 +2478,7 @@ void modifyUser()
 
         // 确认密码
         printf("请再次输入新的密码：\n");
-        char new_password_confirm[20];
+        char new_password_confirm[200];
         getPassword(new_password_confirm);
         puts("");
 
@@ -2491,7 +2501,7 @@ void modifyUser()
     case '3':
     rewrite_phone_number:
         printf("请输入新的电话号码：\n");
-        char new_phone_number[20];
+        char new_phone_number[200];
         scanf("%s", new_phone_number);
         clearInputBuffer();
         puts("");
@@ -2554,7 +2564,7 @@ void modifyUser()
 void modifyCourier()
 {
     system("cls");
-    char account[20];
+    char account[200];
     char choice2;
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要修改的快递员账号：\n");
@@ -2589,7 +2599,7 @@ void modifyCourier()
     case '1':
     rewrite_account2:
         printf("请输入新的用户名：\n");
-        char new_account[20];
+        char new_account[200];
         scanf("%s", new_account);
         clearInputBuffer();
         puts("");
@@ -2623,7 +2633,7 @@ void modifyCourier()
     case '2':
     rewrite_password:
         printf("请输入新的密码：\n");
-        char new_password[20];
+        char new_password[200];
         getPassword(new_password);
         puts("");
 
@@ -2639,7 +2649,7 @@ void modifyCourier()
 
         // 确认密码
         printf("请再次输入新的密码：\n");
-        char new_password_confirm[20];
+        char new_password_confirm[200];
         getPassword(new_password_confirm);
         puts("");
 
@@ -2658,7 +2668,7 @@ void modifyCourier()
         strcpy(courier->password, new_password);
         break;
     default:
-        break;
+        return;
     }
     printf("修改成功！\n");
     printCommonInfo();
@@ -2667,7 +2677,7 @@ void modifyCourier()
 void modifyAdmin()
 {
     system("cls");
-    char account[20];
+    char account[200];
     char choice2;
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要修改的管理员账号：\n");
@@ -2702,7 +2712,7 @@ void modifyAdmin()
     case '1':
     rewrite_account2:
         printf("请输入新的用户名：\n");
-        char new_account[20];
+        char new_account[200];
         scanf("%s", new_account);
         clearInputBuffer();
         puts("");
@@ -2736,7 +2746,7 @@ void modifyAdmin()
     case '2':
     rewrite_password:
         printf("请输入新的密码：\n");
-        char new_password[20];
+        char new_password[200];
         getPassword(new_password);
         puts("");
 
@@ -2752,7 +2762,7 @@ void modifyAdmin()
 
         // 确认密码
         printf("请再次输入新的密码：\n");
-        char new_password_confirm[20];
+        char new_password_confirm[200];
         getPassword(new_password_confirm);
         puts("");
 
@@ -2780,7 +2790,7 @@ void modifyAdmin()
 void modifyPlatform()
 {
     system("cls");
-    char account[20];
+    char account[200];
     char choice2;
     printf("如若需要强制退出，请输入“exit”\n\n");
     printf("请输入要修改的平台账号：\n");
@@ -2815,7 +2825,7 @@ void modifyPlatform()
     case '1':
     rewrite_account2:
         printf("请输入新的用户名：\n");
-        char new_account[20];
+        char new_account[200];
         scanf("%s", new_account);
         clearInputBuffer();
         puts("");
@@ -2849,7 +2859,7 @@ void modifyPlatform()
     case '2':
     rewrite_password:
         printf("请输入新的密码：\n");
-        char new_password[20];
+        char new_password[200];
         getPassword(new_password);
         puts("");
 
@@ -2865,7 +2875,7 @@ void modifyPlatform()
 
         // 确认密码
         printf("请再次输入新的密码：\n");
-        char new_password_confirm[20];
+        char new_password_confirm[200];
         getPassword(new_password_confirm);
         puts("");
 
