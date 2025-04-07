@@ -1529,6 +1529,14 @@ void addFriend()
         return;
     }
 
+    // 好友不能是自己
+    if (strcmp(friend_user->account, the_user->account) == 0)
+    {
+        printf("不能添加自己为好友！\n");
+        printCommonInfo();
+        return;
+    }
+
     strcpy(the_user->friend, friend_account);
     
     clearInputBuffer();
