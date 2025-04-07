@@ -1579,6 +1579,14 @@ void addFriend()
         return;
     }
 
+    // 已添加的好友不可再添加
+    if (strcmp(the_user->friend[0], friend_account) == 0 || strcmp(the_user->friend[1], friend_account) == 0 || strcmp(the_user->friend[2], friend_account) == 0)
+    {
+        printf("好友已存在！\n");
+        printCommonInfo();
+        return;
+    }
+
     printf("请输入好友的手机号：\n");
     char friend_phone_number[200];
     scanf("%s", friend_phone_number);
