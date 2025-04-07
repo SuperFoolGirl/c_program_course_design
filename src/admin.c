@@ -2781,7 +2781,7 @@ void modifyAdmin()
         strcpy(admin->password, new_password);
         break;
     default:
-        break;
+        return;
     }
     printf("修改成功！\n");
     printCommonInfo();
@@ -2894,7 +2894,7 @@ void modifyPlatform()
         strcpy(platform->password, new_password);
         break;
     default:
-        break;
+        return;
     }
     printf("修改成功！\n");
     printCommonInfo();
