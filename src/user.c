@@ -979,7 +979,7 @@ void userCancelSend()
 
 void recordPickUpBehaviors(const char *user_name, const char *package, struct tm *local_time)
 {
-    FILE *fp = fopen("../files/pickup_records.txt", "a");
+    FILE *fp = fopen("../res/pickup_records.txt", "a");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -992,7 +992,7 @@ void recordPickUpBehaviors(const char *user_name, const char *package, struct tm
 
 void recordSendBehaviors(const char *user_name, const char *package, struct tm *local_time)
 {
-    FILE *fp = fopen("../files/send_records.txt", "a");
+    FILE *fp = fopen("../res/send_records.txt", "a");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -1005,7 +1005,7 @@ void recordSendBehaviors(const char *user_name, const char *package, struct tm *
 
 void recordRefuseBehaviors(const char *user_name, const char *package, struct tm *local_time)
 {
-    FILE *fp = fopen("../files/refuse_records.txt", "a");
+    FILE *fp = fopen("../res/refuse_records.txt", "a");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -1681,7 +1681,7 @@ void viewUserBehaviors()
 {
     system("cls");
     // 分别遍历pickup_records.txt和send_records.txt文件，输出用户的行为记录
-    FILE *fp = fopen("../files/pickup_records.txt", "r");
+    FILE *fp = fopen("../res/pickup_records.txt", "r");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -1700,7 +1700,7 @@ void viewUserBehaviors()
     fclose(fp);
     puts("");
 
-    fp = fopen("../files/send_records.txt", "r");
+    fp = fopen("../res/send_records.txt", "r");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -1756,7 +1756,7 @@ void viewMessage()
 void viewRefuseDelivery()
 {
     system("cls");
-    FILE *fp = fopen("../files/refuse_records.txt", "r");
+    FILE *fp = fopen("../res/refuse_records.txt", "r");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");

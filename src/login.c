@@ -201,55 +201,55 @@ int verifyPlatform(const char *account, const char *password)
 // 恢复的链表为：用户链表、快递员链表、驿站链表、平台链表
 void recoverListData()
 {
-    writeListFromFile("../files/users_info.txt", users_list);
-    writeListFromFile("../files/admins_info.txt", admins_list);
-    writeListFromFile("../files/couriers_info.txt", couriers_list);
-    writeListFromFile("../files/platforms_info.txt", platforms_list);
+    writeListFromFile("../res/users_info.txt", users_list);
+    writeListFromFile("../res/admins_info.txt", admins_list);
+    writeListFromFile("../res/couriers_info.txt", couriers_list);
+    writeListFromFile("../res/platforms_info.txt", platforms_list);
 
-    writeListFromFile("../files/platform_warehouse.txt", platform_warehouse_list);
-    writeListFromFile("../files/admin_warehouse.txt", admin_warehouse_list);
-    writeListFromFile("../files/users_send.txt", users_send_list);
+    writeListFromFile("../res/platform_warehouse.txt", platform_warehouse_list);
+    writeListFromFile("../res/admin_warehouse.txt", admin_warehouse_list);
+    writeListFromFile("../res/users_send.txt", users_send_list);
 
-    writeListFromFile("../files/users_push.txt", users_push_list);
-    writeListFromFile("../files/couriers_push.txt", couriers_push_list);
+    writeListFromFile("../res/users_push.txt", users_push_list);
+    writeListFromFile("../res/couriers_push.txt", couriers_push_list);
 
-    writeListFromFile("../files/shelf_a.txt", shelf_a_list);
-    writeListFromFile("../files/shelf_b.txt", shelf_b_list);
-    writeListFromFile("../files/shelf_c.txt", shelf_c_list);
-    writeListFromFile("../files/shelf_d.txt", shelf_d_list);
-    writeListFromFile("../files/shelf_e.txt", shelf_e_list);
+    writeListFromFile("../res/shelf_a.txt", shelf_a_list);
+    writeListFromFile("../res/shelf_b.txt", shelf_b_list);
+    writeListFromFile("../res/shelf_c.txt", shelf_c_list);
+    writeListFromFile("../res/shelf_d.txt", shelf_d_list);
+    writeListFromFile("../res/shelf_e.txt", shelf_e_list);
 
-    writeListFromFile("../files/feedback.txt", feedback_list);
-    writeFileFromList("../files/refuse.txt", refuse_list);
+    writeListFromFile("../res/feedback.txt", feedback_list);
+    writeFileFromList("../res/refuse.txt", refuse_list);
 
-    getMoney("../files/account.txt", &money);
+    getMoney("../res/account.txt", &money);
 }
 
 // 把链表全部更新到文件中
 void rewriteAllFiles()
 {
-    writeFileFromList("../files/users_info.txt", users_list);
-    writeFileFromList("../files/admins_info.txt", admins_list);
-    writeFileFromList("../files/couriers_info.txt", couriers_list);
-    writeFileFromList("../files/platforms_info.txt", platforms_list);
+    writeFileFromList("../res/users_info.txt", users_list);
+    writeFileFromList("../res/admins_info.txt", admins_list);
+    writeFileFromList("../res/couriers_info.txt", couriers_list);
+    writeFileFromList("../res/platforms_info.txt", platforms_list);
 
-    writeFileFromList("../files/platform_warehouse.txt", platform_warehouse_list);
-    writeFileFromList("../files/admin_warehouse.txt", admin_warehouse_list);
-    writeFileFromList("../files/users_send.txt", users_send_list);
+    writeFileFromList("../res/platform_warehouse.txt", platform_warehouse_list);
+    writeFileFromList("../res/admin_warehouse.txt", admin_warehouse_list);
+    writeFileFromList("../res/users_send.txt", users_send_list);
 
-    writeFileFromList("../files/users_push.txt", users_push_list);
-    writeFileFromList("../files/couriers_push.txt", couriers_push_list);
+    writeFileFromList("../res/users_push.txt", users_push_list);
+    writeFileFromList("../res/couriers_push.txt", couriers_push_list);
 
-    writeFileFromList("../files/shelf_a.txt", shelf_a_list);
-    writeFileFromList("../files/shelf_b.txt", shelf_b_list);
-    writeFileFromList("../files/shelf_c.txt", shelf_c_list);
-    writeFileFromList("../files/shelf_d.txt", shelf_d_list);
-    writeFileFromList("../files/shelf_e.txt", shelf_e_list);
+    writeFileFromList("../res/shelf_a.txt", shelf_a_list);
+    writeFileFromList("../res/shelf_b.txt", shelf_b_list);
+    writeFileFromList("../res/shelf_c.txt", shelf_c_list);
+    writeFileFromList("../res/shelf_d.txt", shelf_d_list);
+    writeFileFromList("../res/shelf_e.txt", shelf_e_list);
 
-    writeFileFromList("../files/feedback.txt", feedback_list);
-    writeFileFromList("../files/refuse.txt", refuse_list);
+    writeFileFromList("../res/feedback.txt", feedback_list);
+    writeFileFromList("../res/refuse.txt", refuse_list);
 
-    updateMoney("../files/account.txt", money); // 更新账户余额
+    updateMoney("../res/account.txt", money); // 更新账户余额
 }
 
 // 释放链表内存

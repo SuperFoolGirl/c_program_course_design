@@ -441,7 +441,7 @@ void viewBusinessStatistics()
     system("cls");
     // 显示所有用户的取件、收件情况
     // 分别打开pickup_records.txt和send_records.txt，全部打印
-    FILE *fp = fopen("../files/pickup_records.txt", "r");
+    FILE *fp = fopen("../res/pickup_records.txt", "r");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -461,7 +461,7 @@ void viewBusinessStatistics()
 
     printf("\n\n=============================================================\n\n");
 
-    fp = fopen("../files/send_records.txt", "r");
+    fp = fopen("../res/send_records.txt", "r");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -1886,7 +1886,7 @@ rewrite_shelf:
 
 void recordModifyInfo(const char *shelf_id, const char *account, const char *modify_info, struct tm *local_time)
 {
-    FILE *fp = fopen("../files/modify_records.txt", "a");
+    FILE *fp = fopen("../res/modify_records.txt", "a");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -1899,7 +1899,7 @@ void recordModifyInfo(const char *shelf_id, const char *account, const char *mod
 
 void recordModifyInfoOfSend(const char *package_id, const char *account, const char *modify_info, struct tm *local_time)
 {
-    FILE *fp = fopen("../files/modify_records.txt", "a");
+    FILE *fp = fopen("../res/modify_records.txt", "a");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
@@ -1913,7 +1913,7 @@ void recordModifyInfoOfSend(const char *package_id, const char *account, const c
 void viewPackageLog()
 {
     system("cls");
-    FILE *fp = fopen("../files/modify_records.txt", "r");
+    FILE *fp = fopen("../res/modify_records.txt", "r");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
