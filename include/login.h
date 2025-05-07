@@ -28,26 +28,26 @@ extern Courier *the_courier;
 extern User *the_user;
 extern Platform *the_platform;
 
-extern double money; // 驿站账户
+extern double money;                                             // 驿站账户
 
-int verifyUser(const char *account, const char *password); // 验证用户
+int verifyUser(const char *account, const char *password);       // 验证用户
 
-int verifyAdmin(const char *account, const char *password); // 验证管理员
+int verifyAdmin(const char *account, const char *password);      // 验证管理员
 
-int verifyCourier(const char *account, const char *password); // 验证快递员
+int verifyCourier(const char *account, const char *password);    // 验证快递员
 
-int verifyPlatform(const char *account, const char *password); // 验证运输平台
+int verifyPlatform(const char *account, const char *password);   // 验证运输平台
 
-void recoverListData(); // 读取文件中的数据，恢复链表数据
+void recoverListData();                                          // 读取文件中的数据，恢复链表数据
 
-void rewriteAllFiles(); // 把链表全部更新到文件中
+void rewriteAllFiles();                                          // 把链表全部更新到文件中
 
-void freeLists(); // 释放链表内存
+void freeLists();                                                // 释放链表内存
 
-void listsInit(); // 初始化所有链表
+void listsInit();                                                // 初始化所有链表
 
-void registering(); // 注册
+void registering();                                              // 注册
 
-void login(); // 登录
+void login();                                                    // 登录
 
-void getPassword(char *password); // 获取密码，隐藏输入
+void getPassword(char *password);                                // 获取密码，隐藏输入
